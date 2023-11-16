@@ -1,0 +1,1291 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.26.2 by Michael Rose
+  Copyright 2013-2024 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Introdução a CTFs em Cibersegurança | baioc</title>
+<meta name="description" content="[pt-BR] A cyber/infosec CTF prepared during UFSC SECCOM 2023">
+
+
+  <meta name="author" content="Gabriel B. Sant'Anna">
+  
+  <meta property="article:author" content="Gabriel B. Sant'Anna">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="baioc">
+<meta property="og:title" content="Introdução a CTFs em Cibersegurança">
+<meta property="og:url" content="https://www.baioc.dev/portfolio/seccom-ctf/">
+
+
+  <meta property="og:description" content="[pt-BR] A cyber/infosec CTF prepared during UFSC SECCOM 2023">
+
+
+
+  <meta property="og:image" content="https://www.baioc.dev/assets/images/seccom-ctf/follow-tcp-stream.png">
+
+
+
+
+
+  <meta property="article:published_time" content="2025-11-28T05:18:00+00:00">
+
+
+
+  <meta property="article:modified_time" content="2023-11-15T00:00:00+00:00">
+
+
+
+
+<link rel="canonical" href="https://www.baioc.dev/portfolio/seccom-ctf/">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="baioc Feed">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script type="text/javascript">
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+
+  
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single long">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Home
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a
+                href="/portfolio/"
+                
+                
+              >Portfolio</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/resume/"
+                
+                
+              >Resume</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/blog/"
+                
+                
+              >Blog</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Introdução a CTFs em Cibersegurança">
+    <meta itemprop="description" content="[pt-BR] A cyber/infosec CTF prepared during UFSC SECCOM 2023">
+    <meta itemprop="datePublished" content="2025-11-28T05:18:00+00:00">
+    <meta itemprop="dateModified" content="2023-11-15T00:00:00+00:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="https://www.baioc.dev/portfolio/seccom-ctf/" itemprop="url">Introdução a CTFs em Cibersegurança
+</a>
+          </h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right sticky">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-bars"></i> Conteúdo</h4></header>
+              <ul class="toc__menu"><li><a href="#contextualização">Contextualização</a></li><li><a href="#writeup-do-desafio">Writeup do desafio</a><ul><li><a href="#disclaimer">Disclaimer</a></li><li><a href="#escondido-à-vista-de-todos">Escondido à vista de todos</a></li><li><a href="#criptografia-quase-perfeita">Criptografia quase perfeita</a></li><li><a href="#engenharia-reversa">Engenharia reversa</a></li><li><a href="#deeper-and-deeper">Deeper and deeper</a></li><li><a href="#let-it-rip">Let it rip!</a></li></ul></li><li><a href="#comentários">Comentários</a></li></ul>
+            </nav>
+          </aside>
+        
+        <h2 id="contextualização">Contextualização</h2>
+
+<p>O tema da SECCOM (Semana Acadêmica de Ciência da Computação e Sistemas de Informação da UFSC) 2023 foi <strong>segurança e criptografia</strong>.
+Durante o evento, fui convidado para palestrar e ajudar a organizar o Hackathon, que neste ano seria focado em CTFs de Cibersegurança e teria <strong>mais de 800 reais em premiação</strong> para as equipes com melhor colocação.</p>
+
+<p>Além de atuar como <strong>jurado do Hackathon</strong> (junto de uma Professora e uma veterana do LabSEC da UFSC), eu fiz apresentações na abertura e no encerramento do evento.
+Na abertura, eu fiz uma <strong>breve apresentação da sub-área de cibersegurança e <em>ethical (white-hat) hacking</em></strong>, seguida de uma <strong>demonstração (da resolução) de um CTF</strong> envolvendo OSINT, forense digital, crypto, engenharia reversa e <em>password cracking</em>.</p>
+
+<p>O objetivo do CTF de demonstração era apresentar algumas técnicas e ferramentas para os alunos de Computação, que normalmente não têm contato com esse tipo de prática no curso.
+Além disso, eles poderiam começar a pensar em como iriam criar seus próprios desafios para o Hackathon.</p>
+
+<p>No fim da abertura, deixei um desafio para as equipes que quisessem se aventurar a resolver um CTF um pouco mais difícil (e ganhar pontos extras no Hackathon).
+Haviam 5 flags a serem capturadas no desafio, que estava <strong>100% contido no arquivo <code class="language-plaintext highlighter-rouge">ctf.zip</code>, presente no 1o commit do repositório <a href="https://github.com/baioc/seccom-ctf">github.com/baioc/seccom-ctf</a></strong>.
+O formato das flags também foi combinado: elas seguiriam a expressão regular <code class="language-plaintext highlighter-rouge">cco{\w+}</code>, por exemplo <strong><code class="language-plaintext highlighter-rouge">cco{example_flag0}</code></strong>.</p>
+
+<p>Sugeri a utilização do Kali Linux para resolver o problema, incrementando uma instalação base da versão 2023.3 com os seguintes pacotes adicionais:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>apt update
+<span class="nv">$ </span><span class="nb">sudo </span>apt <span class="nb">install </span>htop libreoffice gdb xxd ghidra dislocker
+<span class="nv">$ </span>pip <span class="nb">install </span>pycryptodome
+</code></pre></div></div>
+
+<h2 id="writeup-do-desafio"><em>Writeup</em> do desafio</h2>
+
+<p class="notice--warning">O texto que segue é um <em>writeup</em> (um “detonado”) do CTF de desafio.
+Obviamente, ele <strong>contém spoilers</strong>.
+Se você está lendo isso mas planeja tentar resolver o CTF sozinho, não continue a leitura.</p>
+
+<h3 id="disclaimer"><em>Disclaimer</em></h3>
+
+<ul class="notice--danger">
+  <li>Toda a exposição de conteúdo nesta apresentação é feita de forma voluntária e <strong>não implica na sua aprovação por qualquer outra entidade</strong>.</li>
+  <li>Demonstrações serão realizadas <strong>para fins educacionais</strong>;
+<strong>replicar esses procedimentos em sistemas de terceiros pode ser ilegal</strong> (vide artigos 154-A e 154-B do Código Penal).</li>
+  <li>Não existem garantias associadas aos procedimentos demonstrados;
+<strong>o autor não será responsabilizado</strong> por qualquer dano originado deles.</li>
+</ul>
+
+<h3 id="escondido-à-vista-de-todos">Escondido à vista de todos</h3>
+
+<p>Ao tentar descompactar o arquivo <code class="language-plaintext highlighter-rouge">ctf.zip</code>, vemos:</p>
+<ul>
+  <li>Um arquivo de texto <code class="language-plaintext highlighter-rouge">flag.txt</code>, supostamente contendo nossa primeira flag</li>
+  <li>Um arquivo <code class="language-plaintext highlighter-rouge">snapshot.dd</code> com cerca de 90 MB</li>
+  <li>Uma página da web salva para visualização offline, <code class="language-plaintext highlighter-rouge">noticias-ufsc.html</code> e <code class="language-plaintext highlighter-rouge">noticias-ufsc_files/</code></li>
+</ul>
+
+<p>Extrair os arquivos não é tão simples, pois o pacote zip foi protegido com senha:</p>
+<figure class=""><a href="/assets/images/seccom-ctf/zip-password.png" class="image-popup"><img src="/assets/images/seccom-ctf/zip-password.png" alt="zip-password" /></a></figure>
+
+<p>A ferramenta <code class="language-plaintext highlighter-rouge">unzip</code> pode nos fornecer mais informações sobre o pacote, incluindo algoritmos e taxas de compressão, bem como <strong>comentários associados ao pacote e a cada arquivo individual</strong>.
+Nenhuma dessas informações é protegida.
+Logo de cara, vemos um comentário associado ao arquivo <code class="language-plaintext highlighter-rouge">noticias-ufsc.html</code>:</p>
+<figure class=""><a href="/assets/images/seccom-ctf/fake-news-btw.png" class="image-popup"><img src="/assets/images/seccom-ctf/fake-news-btw.png" alt="fake-news-btw" /></a></figure>
+
+<p>Mais adiante na lista de arquivos, vemos um comentário suspeito associado ao arquivo <code class="language-plaintext highlighter-rouge">jquery.js</code>:</p>
+<figure class=""><a href="/assets/images/seccom-ctf/zip-file-comment.png" class="image-popup"><img src="/assets/images/seccom-ctf/zip-file-comment.png" alt="zip-file-comment" /></a></figure>
+
+<p>Com a senha “<code class="language-plaintext highlighter-rouge">5up4h 57r0nk p455wD</code>”, conseguimos extrair o pacote e obter a 1a flag do desafio:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cat </span>flag.txt
+<span class="o">=&gt;</span>
+cco<span class="o">{</span>pr3P4r3_t0_CRy<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="criptografia-quase-perfeita">Criptografia quase perfeita</h3>
+
+<p>Analisando a página web, vemos que é um rascunho de artigo para o “Notícias UFSC”.
+O artigo noticia um ataque cibernético sofrido pela SeTIC/UFSC, durante o qual um atacante invadiu a rede da instituição, roubou informações do computador de um dos professores da UFSC e ativou um ransomware para cifrar dados da SeTIC.</p>
+
+<figure class=""><a href="/assets/images/seccom-ctf/noticias-ufsc.png" class="image-popup"><img src="/assets/images/seccom-ctf/noticias-ufsc.png" alt="noticias-ufsc" /></a></figure>
+
+<p>Sem encontrar nada de interessante na página web, passamos ao arquivo <code class="language-plaintext highlighter-rouge">snapshot.dd</code>.
+Embora o <code class="language-plaintext highlighter-rouge">exiftool</code> não consiga identificar o tipo do arquivo, o <code class="language-plaintext highlighter-rouge">file</code> reporta uma tabela de partições do tipo DOS/MBR, juntamente de pelo menos uma partição iniciando no setor 2048:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>exiftool snapshot.dd
+<span class="o">=&gt;</span>
+ExifTool Version Number         : 12.65
+File Name                       : snapshot.dd
+Directory                       : <span class="nb">.</span>
+File Size                       : 94 MB
+File Modification Date/Time     : 2023:11:06 00:31:27-05:00
+File Access Date/Time           : 2023:11:15 14:41:26-05:00
+File Inode Change Date/Time     : 2023:11:15 14:18:32-05:00
+File Permissions                : <span class="nt">-rw-r--r--</span>
+Error                           : Unknown file <span class="nb">type</span>
+
+<span class="nv">$ </span>file snapshot.dd
+<span class="o">=&gt;</span>
+snapshot.dd: DOS/MBR boot sector<span class="p">;</span> partition 1 : <span class="nv">ID</span><span class="o">=</span>0xb, start-CHS <span class="o">(</span>0x4,4,1<span class="o">)</span>, end-CHS <span class="o">(</span>0x169,104,2<span class="o">)</span>, startsector 2048, 182272 sectors
+</code></pre></div></div>
+
+<p>Sabendo que o arquivo é uma imagem de disco (supostamente criado pelo <code class="language-plaintext highlighter-rouge">dd</code>, como indica a extensão), podemos utilizar algumas <a href="https://wiki.sleuthkit.org/index.php?title=TSK_Tool_Overview">ferramentas do Sleuth Kit</a> para obter mais detalhes sobre o volume:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>mmls snapshot.dd
+<span class="o">=&gt;</span>
+DOS Partition Table
+Offset Sector: 0
+Units are <span class="k">in </span>512-byte sectors
+
+      Slot      Start        End          Length       Description
+000:  Meta      0000000000   0000000000   0000000001   Primary Table <span class="o">(</span><span class="c">#0)</span>
+001:  <span class="nt">-------</span>   0000000000   0000002047   0000002048   Unallocated
+002:  000:000   0000002048   0000184319   0000182272   Win95 FAT32 <span class="o">(</span>0x0b<span class="o">)</span>
+</code></pre></div></div>
+
+<p>Vemos então uma partição FAT32 allocada a partir do setor 2048.
+Para montar essa partição diretamente no nosso sistema, basta informar ao <code class="language-plaintext highlighter-rouge">mount</code> o offset correto:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">mkdir </span>mnt
+
+<span class="nv">$ </span><span class="nb">sudo </span>mount <span class="nt">-o</span> <span class="nv">offset</span><span class="o">=</span><span class="k">$((</span><span class="m">512</span><span class="o">*</span><span class="m">2048</span><span class="k">))</span> snapshot.dd mnt/
+
+<span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-lh</span> mnt/
+<span class="o">=&gt;</span>
+total 512
+<span class="nt">-rwxr-xr-x</span> 1 root root 17 Nov  6 00:28 flag.otp
+
+<span class="nv">$ </span><span class="nb">cat </span>mnt/flag.otp
+<span class="o">=&gt;</span>
+▒�������<span class="sb">`</span>7qEJ��
+
+<span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-lah</span> mnt/
+<span class="o">=&gt;</span>
+total 5.5K
+drwxr-xr-x 2 root root  512 Dec 31  1969 <span class="nb">.</span>
+drwxr-xr-x 4 kali kali 4.0K Nov 15 14:55 ..
+<span class="nt">-rwxr-xr-x</span> 1 root root  177 Nov  6 00:30 .bash_history
+<span class="nt">-rwxr-xr-x</span> 1 root root   17 Nov  6 00:28 flag.otp
+</code></pre></div></div>
+
+<p>A princípio, vemos apenas um arquivo <code class="language-plaintext highlighter-rouge">flag.otp</code> na partição montada.
+Infelizmente, o conteúdo deste arquivo não é legível no momento.</p>
+
+<p>Em seguida, listamos os arquivos novamente, mas desta vez com a flag <code class="language-plaintext highlighter-rouge">-a</code> passada ao programa <code class="language-plaintext highlighter-rouge">ls</code>, que faz com que ele liste arquivos escondidos.
+Percebemos então um arquivo <code class="language-plaintext highlighter-rouge">.bash_history</code>, com o seguinte conteúdo:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">whoami
+ls</span> <span class="nt">-lh</span>
+<span class="nb">echo</span> <span class="s1">'Lorem ipsum dolor sit amet'</span> | /tmp/one_time_pad <span class="o">&gt;</span> test.otp
+hexdump <span class="nt">-C</span> test.otp
+<span class="nb">rm </span>test.otp
+/tmp/one_time_pad <span class="o">&gt;</span> flag.otp
+<span class="nb">ls</span> <span class="nt">-la</span>
+<span class="nb">rm</span> /tmp/one_time_pad
+poweroff
+</code></pre></div></div>
+
+<p>O arquivo <code class="language-plaintext highlighter-rouge">.bash_history</code> contém, como seu nome indica, o histórico de comandos executados em uma shell do <code class="language-plaintext highlighter-rouge">bash</code>.
+Neste caso, vemos que o arquivo <code class="language-plaintext highlighter-rouge">flag.otp</code> foi gerado com um certo programa <code class="language-plaintext highlighter-rouge">one_time_pad</code>.
+Um pouco antes, o mesmo programa é testado, supostamente lendo a entrada “<code class="language-plaintext highlighter-rouge">Lorem ipsum dolor sit amet</code>” e gerando o arquivo <code class="language-plaintext highlighter-rouge">test.otp</code>.
+Outra coisa importante que podemos ver é que <strong>o programa <code class="language-plaintext highlighter-rouge">one_time_pad</code> foi deletado</strong> logo depois da criação da flag e antes do desligamento do sistema.</p>
+
+<p>Mesmo sem conhecer o One-Time Pad (OTP), podemos consultar a <a href="https://en.wikipedia.org/wiki/One-time_pad">Wikipedia</a> e entender que é um algoritmo de criptografia que, quando utilizado corretamente, é teoricamente impossível de quebrar.
+O algoritmo em si é bem simples, com uma única operação XOR (\(\oplus\)) entre os bits da mensagem a ser cifrada (\(M\)) e uma chave (\(K\)) de uso único:
+\(C = K \oplus M\)</p>
+
+<p>Na prática, utilizar o OTP corretamente é difícil, e a Wikipedia lista alguns erros comuns:</p>
+<figure class=""><a href="/assets/images/seccom-ctf/one-time-pad.png" class="image-popup"><img src="/assets/images/seccom-ctf/one-time-pad.png" alt="one-time-pad" /></a></figure>
+
+<p>Não sabemos como a chave foi gerada, mas com base no histórico podemos ver que foi destruída imediatamente (supostamente ela está contida no programa <code class="language-plaintext highlighter-rouge">one_time_pad</code>) depois de cifrar a flag.
+Todavia, vemos também que a chave parece ter sido reutilizada, já que foi primeiro usada para realizar um teste.
+Com base no histórico, sabemos a string de teste do OTP, mas o <em>cyphertext</em> do teste parece ter sido deletado.</p>
+
+<p>Como temos uma imagem de disco, podemos utilizar outras ferramentas de forense digital do Sleuth Kit para buscar mais informações.
+Em especial, o <code class="language-plaintext highlighter-rouge">fls</code> pode ser usado para listar arquivos na partição, <strong>inclusive se foram deletados</strong>:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>fls <span class="nt">-r</span> <span class="nt">-o</span> 2048 snapshot.dd
+<span class="o">=&gt;</span>
+r/r 3:  TEMP        <span class="o">(</span>Volume Label Entry<span class="o">)</span>
+r/r 5:  .bash_history
+r/r <span class="k">*</span> 8:        .incidente.tar
+r/r <span class="k">*</span> 10:       test.otp
+r/r 12: flag.otp
+r/r <span class="k">*</span> 15:       ..bash_history.swp
+v/v 2870771:    <span class="nv">$MBR</span>
+v/v 2870772:    <span class="nv">$FAT1</span>
+v/v 2870773:    <span class="nv">$FAT2</span>
+V/V 2870774:    <span class="nv">$OrphanFiles</span>
+</code></pre></div></div>
+
+<p>Em seguida, o <code class="language-plaintext highlighter-rouge">icat</code> permite recuperar esses arquivos, bastando infomar o número de inode de cada um deles.
+Assim, conseguimos extrair dois arquivos adicionais que haviam sido deletados, <code class="language-plaintext highlighter-rouge">.incidente.tar</code> e <code class="language-plaintext highlighter-rouge">test.otp</code>:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>icat <span class="nt">-o</span> 2048 snapshot.dd 8 <span class="o">&gt;</span> snapshot/incidente.tar
+
+<span class="nv">$ </span>icat <span class="nt">-o</span> 2048 snapshot.dd 10 <span class="o">&gt;</span> snapshot/test.otp
+
+<span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-lah</span> snapshot/
+<span class="o">=&gt;</span>
+total 70M
+drwxr-xr-x 2 kali kali 4.0K Nov 15 15:37 <span class="nb">.</span>
+drwxr-xr-x 4 kali kali 4.0K Nov 15 15:36 ..
+<span class="nt">-rw-r--r--</span> 1 kali kali  177 Nov 15 15:36 bash_history
+<span class="nt">-rw-r--r--</span> 1 kali kali   17 Nov 15 15:37 flag.otp
+<span class="nt">-rw-r--r--</span> 1 kali kali  70M Nov 15 15:36 incidente.tar
+<span class="nt">-rw-r--r--</span> 1 kali kali   27 Nov 15 15:36 test.otp
+</code></pre></div></div>
+
+<p>Entendendo o algoritmo One-Time Pad e sabendo que, na operação XOR:</p>
+<ul>
+  <li>\(0\) é o elemento identidade, ou seja, para todo \(X\) temos \(X \oplus 0 = X\)</li>
+  <li>O inverso de todo elemento é ele mesmo, ou seja, \(X \oplus X = 0\)</li>
+  <li>A operação é associativa e comutativa</li>
+</ul>
+
+<p>Então, para recuperar a chave OTP e decifrar a flag, basta seguir a lógica:</p>
+
+\[C_{test} = K \oplus M_{test}
+\\
+\implies K = M_{test} \oplus C_{test}\]
+
+\[C_{flag} = K \oplus M_{flag}
+\\
+\implies M_{flag} = K \oplus C_{flag}\]
+
+<p>Primeiramente, utilizei o <code class="language-plaintext highlighter-rouge">xxd</code> (infelizmente, não vem instalado por padrão no Kali Linux) para codificar os cyphertexts em hexadecimal / base16:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>xxd <span class="nt">-p</span> flag.otp
+<span class="o">=&gt;</span>
+188cb3abd011f6b5db60377115454a8b95
+
+<span class="nv">$ </span>xxd <span class="nt">-p</span> test.otp
+<span class="o">=&gt;</span>
+3780aeb58f6ecbf4c5266f0e011e6299ed7bb046eeab85a219f44e
+</code></pre></div></div>
+
+<p>Em seguida, podemos utilizar o Python para decodificar o hexadecimal e reverter o One-Time Pad, capturando então a nossa segunda flag:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">flag</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">.</span><span class="nf">fromhex</span><span class="p">(</span><span class="sh">'</span><span class="s">188cb3abd011f6b5db60377115454a8b95</span><span class="sh">'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">test</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">.</span><span class="nf">fromhex</span><span class="p">(</span><span class="sh">'</span><span class="s">3780aeb58f6ecbf4c5266f0e011e6299ed7bb046eeab85a219f44e</span><span class="sh">'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">plain</span> <span class="o">=</span> <span class="sh">'</span><span class="s">Lorem ipsum dolor sit amet</span><span class="sh">'</span><span class="p">.</span><span class="nf">encode</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">xor</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">):</span>
+<span class="p">...</span>     <span class="k">return</span> <span class="nf">bytearray</span><span class="p">(</span><span class="n">a</span> <span class="o">^</span> <span class="n">b</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nf">zip</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">))</span>
+<span class="bp">...</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">key</span> <span class="o">=</span> <span class="nf">xor</span><span class="p">(</span><span class="n">plain</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="nf">xor</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">flag</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nf">print</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">decode</span><span class="p">())</span>
+
+<span class="n">cco</span><span class="p">{</span><span class="mi">2</span><span class="n">_T1m35_p4D</span><span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="engenharia-reversa">Engenharia reversa</h3>
+
+<p>Agora, voltamos nossa atenção ao arquivo <code class="language-plaintext highlighter-rouge">incidente.tar</code>, que também havia sido deletado mas que conseguimos recuperar com o Sleuth Kit.
+Depois de confirmar que o arquivo é, de fato, um pacote TAR, vamos analisar seu conteúdo:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">tar</span> <span class="nt">-tvf</span> incidente.tar
+<span class="o">=&gt;</span>
+<span class="nt">-rwxr-xr-x</span> kali/kali     16472 2023-11-05 23:54 incidente/encrypt
+<span class="nt">-rw-r--r--</span> kali/kali       731 2023-11-04 17:45 incidente/email.txt
+<span class="nt">-rw-r--r--</span> kali/kali  72755795 2023-11-05 23:55 incidente/rec.pdf
+drwxr-xr-x kali/kali         0 2023-11-05 23:55 incidente/
+
+<span class="nv">$ </span><span class="nb">tar</span> <span class="nt">-xf</span> incidente.tar
+
+<span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-lah</span> incidente
+<span class="o">=&gt;</span>
+total 70M
+drwxr-xr-x 2 kali kali 4.0K Nov  5 23:55 <span class="nb">.</span>
+drwxr-xr-x 3 kali kali 4.0K Nov 15 16:11 ..
+<span class="nt">-rw-r--r--</span> 1 kali kali  731 Nov  4 17:45 email.txt
+<span class="nt">-rwxr-xr-x</span> 1 kali kali  17K Nov  5 23:54 encrypt
+<span class="nt">-rw-r--r--</span> 1 kali kali  70M Nov  5 23:55 rec.pdf
+
+<span class="nv">$ </span>file incidente/<span class="k">*</span>
+<span class="o">=&gt;</span>
+incidente/email.txt: Unicode text, UTF-8 text
+incidente/encrypt:   ELF 64-bit LSB pie executable, x86-64, version 1 <span class="o">(</span>SYSV<span class="o">)</span>, dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]<span class="o">=</span>b7c6568f2470f831dfaf12c44a8ef45185f8283e, <span class="k">for </span>GNU/Linux 3.2.0, not stripped
+incidente/rec.pdf:   PDF document, version <span class="se">\2</span>35.<span class="se">\2</span>21
+</code></pre></div></div>
+
+<p>O conteúdo do arquivo <code class="language-plaintext highlighter-rouge">email.txt</code> parece ser um rascunho de mensagem endereçada ao prof. Jean, do Laboratório de Segurança da UFSC (LabSEC):</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Boa noite Prof. Jean,
+
+
+Acho que conseguimos uma pista sobre o ataque.
+Mesmo assim, vamos precisar da sua ajuda.
+
+Como você já sabe, os hackers ativaram o ransomware depois da exfiltração de dados.
+A SeTIC nos informou que chegou a capturar o trafego na rede comprometida,
+mas esses registros foram cifrados também.
+
+Conseguimos identificar 2 arquivos criados na maquina intermediária usada pelos hackers.
+A hora de criação coincide com a do vazamento, então estamos esperançosos.
+Um dos arquivos parece ser um PDF, mas não conseguimos visualizar.
+O outro é um executável que achamos que pode ter sido usado para cifrar os registros da SeTIC.
+
+Estou enviando ambos os arquivos em anexo.
+
+
+Contamos com sua ajuda.
+Att,
+</code></pre></div></div>
+
+<p>Bem como indicado na mensagem, parece ter algo de errado com o arquivo <code class="language-plaintext highlighter-rouge">rec.pdf</code>, pois não conseguimos visualizá-lo:</p>
+
+<figure class=""><a href="/assets/images/seccom-ctf/pdf-corrupted.png" class="image-popup"><img src="/assets/images/seccom-ctf/pdf-corrupted.png" alt="pdf-corrupted" /></a></figure>
+
+<p>Note também que o PDF pesa aproximadamente 70 MB.
+Livros inteiros em PDF não costumam passar muito de 20 MB, então o tamanho do arquivo é suspeito.</p>
+
+<p>Segundo o email, o executável <code class="language-plaintext highlighter-rouge">encrypt</code> pode ter sido usado pelos hackers para cifrar registros da SeTIC.
+Por questões óbvias de segurança, não pretendemos executar o programa; afinal, não temos a mínima ideia do dano que ele pode causar no nosso sistema.</p>
+
+<p>Felizmente, podemos contar com a ajuda do <a href="https://ghidra-sre.org/">Ghidra</a> (também não vem instalado por padrão no Kali) para tentar entender o que esse executável fez.
+Depois de criar um novo projeto e importar o executável <code class="language-plaintext highlighter-rouge">encrypt</code> no Ghidra, vemos a <strong>decompilação</strong> do programa, ou seja, uma reconstrução estimada do código original (supondo que foi escrito em C):</p>
+
+<figure class=""><a href="/assets/images/seccom-ctf/ghidra-decompile.png" class="image-popup"><img src="/assets/images/seccom-ctf/ghidra-decompile.png" alt="ghidra-decompile" /></a></figure>
+
+<p>Mesmo com nomes de variáveis feios e formatação duvidosa, conseguimos ter uma ideia do que o programa faz (e as mensagens de log são especialmente descritivas):</p>
+<ul>
+  <li>O programa precisa ser executado com pelo menos 2 argumentos.
+    <ol>
+      <li>O primeiro argumento é convertido para um número, e printado como um byte.
+        <ul>
+          <li>A mensagem de log indica que <strong>esse byte é uma chave de criptografia</strong>.</li>
+        </ul>
+      </li>
+      <li>O segundo argumento parece ser um <strong>path para um arquivo a ser criptografado</strong>.</li>
+    </ol>
+  </li>
+  <li>O programa le uma <strong>flag da entrada padrão</strong>.</li>
+  <li>O programa chama uma função chamada <code class="language-plaintext highlighter-rouge">encrypt</code>, que recebe pelo menos 2 argumentos.
+    <ul>
+      <li>É possível que existam mais argumentos, mas o Ghidra não detectou automaticamente.</li>
+    </ul>
+  </li>
+  <li>Por fim, o programa fecha o arquivo original e é finalizado</li>
+</ul>
+
+<p>Os logs da função <code class="language-plaintext highlighter-rouge">encrypt</code> indicam que:</p>
+<ul>
+  <li>Será emitido um <strong><em>magic number</em> enganoso</strong></li>
+  <li>A <strong>flag crifrada</strong> será escrita em seguida</li>
+  <li>Por fim, os <strong>conteúdos cifrados do arquivo</strong> serão emitidos</li>
+</ul>
+
+<p>Segue uma listagem completa do código decompilado pelo Ghidra (alterei apenas a assinatura do <code class="language-plaintext highlighter-rouge">main</code>):</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span><span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="kt">int</span> <span class="n">iVar1</span><span class="p">;</span>
+  <span class="kt">char</span> <span class="o">*</span><span class="n">pcVar2</span><span class="p">;</span>
+  <span class="kt">size_t</span> <span class="n">sVar3</span><span class="p">;</span>
+  <span class="kt">char</span> <span class="n">local_138</span> <span class="p">[</span><span class="mi">272</span><span class="p">];</span>
+  <span class="kt">long</span> <span class="n">local_28</span><span class="p">;</span>
+  <span class="kt">FILE</span> <span class="o">*</span><span class="n">local_20</span><span class="p">;</span>
+  <span class="kt">char</span> <span class="o">*</span><span class="n">local_18</span><span class="p">;</span>
+  <span class="n">byte</span> <span class="n">local_9</span><span class="p">;</span>
+
+  <span class="n">fwrite</span><span class="p">(</span><span class="s">"*** encRIPt0r ***</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mh">0x12</span><span class="p">,</span><span class="n">stderr</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">argc</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+     <span class="n">fwrite</span><span class="p">(</span><span class="s">"Not enough args!</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mh">0x11</span><span class="p">,</span><span class="n">stderr</span><span class="p">);</span>
+     <span class="n">iVar1</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">else</span> <span class="p">{</span>
+     <span class="n">iVar1</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+     <span class="n">local_9</span> <span class="o">=</span> <span class="p">(</span><span class="n">byte</span><span class="p">)</span><span class="n">iVar1</span><span class="p">;</span>
+     <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="s">"Using encryption key 0x%02X ...</span><span class="se">\n</span><span class="s">"</span><span class="p">,(</span><span class="n">ulong</span><span class="p">)</span><span class="n">local_9</span><span class="p">);</span>
+     <span class="n">local_18</span> <span class="o">=</span> <span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+     <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="s">"... to encrypt file </span><span class="se">\'</span><span class="s">%s</span><span class="se">\'</span><span class="s"> (remember to shred the original)</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="n">local_18</span><span class="p">);</span>
+     <span class="n">local_20</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="n">local_18</span><span class="p">,</span><span class="s">"rb"</span><span class="p">);</span>
+     <span class="k">if</span> <span class="p">(</span><span class="n">local_20</span> <span class="o">==</span> <span class="p">(</span><span class="kt">FILE</span> <span class="o">*</span><span class="p">)</span><span class="mh">0x0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">fwrite</span><span class="p">(</span><span class="s">"File does not exist!</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mh">0x15</span><span class="p">,</span><span class="n">stderr</span><span class="p">);</span>
+        <span class="n">iVar1</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+     <span class="p">}</span>
+     <span class="k">else</span> <span class="p">{</span>
+        <span class="n">fwrite</span><span class="p">(</span><span class="s">"Reading flag from stdin ...</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mh">0x1c</span><span class="p">,</span><span class="n">stderr</span><span class="p">);</span>
+        <span class="n">pcVar2</span> <span class="o">=</span> <span class="n">fgets</span><span class="p">(</span><span class="n">local_138</span><span class="p">,</span><span class="mh">0x100</span><span class="p">,</span><span class="n">stdin</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">pcVar2</span> <span class="o">==</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="mh">0x0</span><span class="p">)</span> <span class="p">{</span>
+           <span class="n">fwrite</span><span class="p">(</span><span class="s">"Invalid flag!</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mh">0xe</span><span class="p">,</span><span class="n">stderr</span><span class="p">);</span>
+           <span class="n">iVar1</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="p">{</span>
+           <span class="n">sVar3</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">local_138</span><span class="p">);</span>
+           <span class="n">local_28</span> <span class="o">=</span> <span class="n">sVar3</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+           <span class="n">encrypt</span><span class="p">((</span><span class="kt">char</span> <span class="o">*</span><span class="p">)(</span><span class="n">ulong</span><span class="p">)</span><span class="n">local_9</span><span class="p">,(</span><span class="kt">int</span><span class="p">)</span><span class="n">local_138</span><span class="p">);</span>
+           <span class="n">fclose</span><span class="p">(</span><span class="n">local_20</span><span class="p">);</span>
+           <span class="n">iVar1</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="p">}</span>
+     <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="n">iVar1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">encrypt</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">__block</span><span class="p">,</span><span class="kt">int</span> <span class="n">__edflag</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="kt">FILE</span> <span class="o">*</span><span class="n">in_RCX</span><span class="p">;</span>
+  <span class="n">ulong</span> <span class="n">in_RDX</span><span class="p">;</span>
+  <span class="n">undefined4</span> <span class="n">in_register_00000034</span><span class="p">;</span>
+  <span class="kt">void</span> <span class="o">*</span><span class="n">__ptr</span><span class="p">;</span>
+  <span class="kt">FILE</span> <span class="o">*</span><span class="n">in_R8</span><span class="p">;</span>
+  <span class="n">byte</span> <span class="n">local_1028</span> <span class="p">[</span><span class="mi">4096</span><span class="p">];</span>
+  <span class="kt">size_t</span> <span class="n">local_28</span><span class="p">;</span>
+  <span class="n">uint</span> <span class="n">local_1c</span><span class="p">;</span>
+  <span class="kt">long</span> <span class="n">local_18</span><span class="p">;</span>
+  <span class="n">ulong</span> <span class="n">local_10</span><span class="p">;</span>
+
+  <span class="n">__ptr</span> <span class="o">=</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="n">CONCAT44</span><span class="p">(</span><span class="n">in_register_00000034</span><span class="p">,</span><span class="n">__edflag</span><span class="p">);</span>
+  <span class="n">fwrite</span><span class="p">(</span><span class="s">"Emitting misleading magic number ...</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mh">0x25</span><span class="p">,</span><span class="n">stderr</span><span class="p">);</span>
+  <span class="n">fwrite</span><span class="p">(</span><span class="s">"%PDF-"</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">in_R8</span><span class="p">);</span>
+  <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="s">"Writing %lu encrypted flag bytes ...</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="n">in_RDX</span><span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">local_10</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">local_10</span> <span class="o">&lt;</span> <span class="n">in_RDX</span><span class="p">;</span> <span class="n">local_10</span> <span class="o">=</span> <span class="n">local_10</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+     <span class="o">*</span><span class="p">(</span><span class="n">byte</span> <span class="o">*</span><span class="p">)((</span><span class="kt">long</span><span class="p">)</span><span class="n">__ptr</span> <span class="o">+</span> <span class="n">local_10</span><span class="p">)</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">byte</span> <span class="o">*</span><span class="p">)((</span><span class="kt">long</span><span class="p">)</span><span class="n">__ptr</span> <span class="o">+</span> <span class="n">local_10</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="n">byte</span><span class="p">)</span><span class="n">__block</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="n">fwrite</span><span class="p">(</span><span class="n">__ptr</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">in_RDX</span><span class="p">,</span><span class="n">in_R8</span><span class="p">);</span>
+  <span class="n">fwrite</span><span class="p">(</span><span class="s">"Writing encrypted file contents ...</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mh">0x24</span><span class="p">,</span><span class="n">stderr</span><span class="p">);</span>
+  <span class="n">local_18</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">while</span><span class="p">(</span> <span class="nb">true</span> <span class="p">)</span> <span class="p">{</span>
+     <span class="n">local_28</span> <span class="o">=</span> <span class="n">fread</span><span class="p">(</span><span class="n">local_1028</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mh">0x1000</span><span class="p">,</span><span class="n">in_RCX</span><span class="p">);</span>
+     <span class="k">if</span> <span class="p">(</span><span class="n">local_28</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+     <span class="k">for</span> <span class="p">(</span><span class="n">local_1c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">local_1c</span> <span class="o">&lt;</span> <span class="mh">0x1000</span><span class="p">;</span> <span class="n">local_1c</span> <span class="o">=</span> <span class="n">local_1c</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">local_1028</span><span class="p">[(</span><span class="kt">int</span><span class="p">)</span><span class="n">local_1c</span><span class="p">]</span> <span class="o">=</span> <span class="n">local_1028</span><span class="p">[(</span><span class="kt">int</span><span class="p">)</span><span class="n">local_1c</span><span class="p">]</span> <span class="o">^</span> <span class="p">(</span><span class="n">byte</span><span class="p">)</span><span class="n">__block</span><span class="p">;</span>
+     <span class="p">}</span>
+     <span class="n">fwrite</span><span class="p">(</span><span class="n">local_1028</span><span class="p">,</span><span class="n">local_28</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">in_R8</span><span class="p">);</span>
+     <span class="n">local_18</span> <span class="o">=</span> <span class="n">local_18</span> <span class="o">+</span> <span class="n">local_28</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="s">"Done! Encrypted &amp; wrote %lu bytes from original file</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="n">local_18</span><span class="p">);</span>
+  <span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Podemos utilizar o Ghidra para gradualmente melhorar nosso entendimento do programa, renomeando e re-tipando variáveis com base na nossa experiência com a linguagem C.
+Mesmo sem saber C muito bem, poderíamos pedir para o ChatGPT (ou <a href="https://talkai.info/chat/">similares</a>) resumir o que o programa faz:</p>
+
+<figure class=""><a href="/assets/images/seccom-ctf/gpt-explain.png" class="image-popup"><img src="/assets/images/seccom-ctf/gpt-explain.png" alt="gpt-explain" /></a></figure>
+
+<p>Segue uma cópia da resposta que obti da IA, onde ela explica a função <code class="language-plaintext highlighter-rouge">encrypt</code>:</p>
+<div class="language-md highlighter-rouge"><div class="highlight"><pre class="highlight"><code>The <span class="sb">`encrypt`</span> function takes the encryption key and the flag as arguments and performs the actual encryption process. Here's how it works:
+<span class="p">
+1.</span> It writes a message to indicate that it's starting the encryption process.
+<span class="p">2.</span> It writes a PDF header to the output file.
+<span class="p">3.</span> It performs a bitwise XOR operation on each byte of the flag with the encryption key byte.
+<span class="p">4.</span> It writes the encrypted flag to the output file.
+<span class="p">5.</span> It writes a message to indicate that it's starting to encrypt the file contents.
+<span class="p">6.</span> It reads blocks of 4096 bytes from the input file and performs a bitwise XOR operation on each byte with the encryption key byte.
+<span class="p">7.</span> It writes the encrypted file contents to the output file.
+<span class="p">8.</span> It keeps track of the total number of bytes written to the output file.
+<span class="p">9.</span> Once it finishes reading the input file, it writes a message indicating that the encryption process is done and the total number of bytes written.
+<span class="p">10.</span> The function returns, and the execution continues in the main function.
+</code></pre></div></div>
+
+<p>Vemos que o ChatGPT chegou à mesma conclusão quanto ao magic number de PDF e quanto à ordem de escrita da flag cifrada e do arquivo cifrado.
+Ele também inferiou o processo de criptografia (e podemos verificar que está correto): o programa utiliza uma chave de 1 byte, e escreve na saída o <strong>resultado do XOR entre essa chave e cada um dos bytes sendo cifrados</strong>.
+Assim, podemos inferir que o arquivo <code class="language-plaintext highlighter-rouge">rec.pdf</code> teria sido gerado como a saída desse programa.</p>
+
+<p>Não sabemos nada sobre a geração da chave que foi usada, mas como ela tem apenas 1 byte podemos facilmente <strong>testar todas as 256 possibilidades</strong>.
+Como sabemos o formato esperado das nossas flags, e que a chave correta vai decifrar uma flag no início do arquivo, podemos reverter a criptografia com o seguinte script:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">CFILE</span> <span class="o">=</span> <span class="sh">'</span><span class="s">rec.pdf</span><span class="sh">'</span>
+<span class="n">PFILE</span> <span class="o">=</span> <span class="sh">'</span><span class="s">original.flagged</span><span class="sh">'</span>
+
+<span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="n">CFILE</span><span class="p">,</span> <span class="sh">'</span><span class="s">rb</span><span class="sh">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">ct</span><span class="p">:</span>
+    <span class="n">buf</span> <span class="o">=</span> <span class="n">ct</span><span class="p">.</span><span class="nf">read</span><span class="p">(</span><span class="mi">256</span><span class="p">)</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">256</span><span class="p">):</span>
+        <span class="n">dec</span> <span class="o">=</span> <span class="nf">bytearray</span><span class="p">([</span> <span class="n">k</span> <span class="o">^</span> <span class="n">b</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">buf</span> <span class="p">])</span>
+        <span class="k">if</span> <span class="sa">b</span><span class="sh">'</span><span class="s">cco{</span><span class="sh">'</span> <span class="ow">in</span> <span class="n">dec</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">k</span>
+            <span class="k">break</span>
+
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">key = </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="n">buf</span> <span class="o">=</span> <span class="n">buf</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span> <span class="c1"># remove false '%PDF-' header
+</span>
+    <span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="n">PFILE</span><span class="p">,</span> <span class="sh">'</span><span class="s">wb+</span><span class="sh">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">pt</span><span class="p">:</span>
+        <span class="k">while</span> <span class="n">buf</span> <span class="o">!=</span> <span class="sa">b</span><span class="sh">''</span><span class="p">:</span>
+            <span class="n">buf</span> <span class="o">=</span> <span class="nf">bytearray</span><span class="p">([</span> <span class="n">key</span> <span class="o">^</span> <span class="n">b</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">buf</span> <span class="p">])</span>
+            <span class="n">pt</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+            <span class="n">buf</span> <span class="o">=</span> <span class="n">ct</span><span class="p">.</span><span class="nf">read</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Com um <code class="language-plaintext highlighter-rouge">hexdump</code>, podemos observar que os primeiros bytes do arquivo <code class="language-plaintext highlighter-rouge">original.flagged</code> (gerado pelo script acima) contêm nossa terceira flag:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>python decrypt.py
+<span class="o">=&gt;</span>
+key <span class="o">=</span> 254
+
+<span class="nv">$ </span>hexdump <span class="nt">-C</span> original.flagged | <span class="nb">head</span> <span class="nt">-n</span> 3
+<span class="o">=&gt;</span>
+00000000  63 63 6f 7b 6b 52 49 50  74 30 6e 31 74 33 7d 42  |cco<span class="o">{</span>kRIPt0n1t3<span class="o">}</span>B|
+00000010  5a 68 39 31 41 59 26 53  59 b8 a8 39 b3 05 b6 ae  |Zh91AY&amp;SY..9....|
+00000020  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  |................|
+</code></pre></div></div>
+
+<h3 id="deeper-and-deeper"><em>Deeper and deeper</em></h3>
+
+<p>Ao continuar, precisamos nos lembrar que, se o email que encontramos estiver correto, o arquivo que acabamos de decifrar contém registros da SeTIC obtidos no momento do ataque hacker.
+Então, para obter esses dados, basta remover a flag do início do arquivo decifrado:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">tail</span> <span class="nt">-c</span> +16 original.flagged <span class="o">&gt;</span> original.bin
+
+<span class="nv">$ </span>file original.bin
+<span class="o">=&gt;</span>
+original.bin: bzip2 compressed data, block size <span class="o">=</span> 900k
+</code></pre></div></div>
+
+<p>Após descomprimir o <code class="language-plaintext highlighter-rouge">bzip2</code>, identificamos um arquivo apontado pelo <code class="language-plaintext highlighter-rouge">file</code> como um “pcap capture file”:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bzip2 <span class="nt">-tv</span> original.bin
+<span class="o">=&gt;</span>
+original.bin: ok
+
+<span class="nv">$ </span>bzip <span class="nt">-dk</span> original.bin
+<span class="o">=&gt;</span>
+<span class="c"># bzip2: Can't guess original name for original.bin -- using original.bin.out</span>
+
+<span class="nv">$ </span>file original.bin.out
+<span class="o">=&gt;</span>
+original.bin.out: pcap capture file, microsecond ts <span class="o">(</span>little-endian<span class="o">)</span> - version 2.4 <span class="o">(</span>Ethernet, capture length 262144<span class="o">)</span>
+</code></pre></div></div>
+
+<p>O Kali imediatamente reconhece este tipo de arquivo e vai utilizar, por padrão, o <a href="https://www.wireshark.org/">Wireshark</a> para abrí-lo:</p>
+<figure class=""><a href="/assets/images/seccom-ctf/wireshark.png" class="image-popup"><img src="/assets/images/seccom-ctf/wireshark.png" alt="wireshark" /></a></figure>
+
+<p>Temos então o trafego da rede, supostamente capturado pela SeTIC durante o ataque.
+Para começar a análise, podemos observar estatísticas dos protocolos de comunicação em uso (opção <em>Statistics -&gt; Protocol Hierarchy</em>):</p>
+<figure class=""><a href="/assets/images/seccom-ctf/protocols.png" class="image-popup"><img src="/assets/images/seccom-ctf/protocols.png" alt="protocols" /></a></figure>
+
+<p>Como foi utilizado o IPv4, analisamos também as estatísticas de portas e endereços de IP utilizados na comunicação (opção <em>Statistics -&gt; IPv4 Statistics -&gt; Destinations and Ports</em>):</p>
+<figure class=""><a href="/assets/images/seccom-ctf/hosts.png" class="image-popup"><img src="/assets/images/seccom-ctf/hosts.png" alt="hosts" /></a></figure>
+
+<p>Resumindo: temos dois hosts se comunicando, com endereços de IP <code class="language-plaintext highlighter-rouge">192.168.56.126</code> e <code class="language-plaintext highlighter-rouge">192.168.56.1</code>.
+O primeiro deles (abreviado <code class="language-plaintext highlighter-rouge">.126</code>) utilizou portas TCP altas, normalmente atribuídas pelo sistema operacional quando estabelece uma conexão com um servidor externo.
+O segundo host (sufixo de IP <code class="language-plaintext highlighter-rouge">.1</code>) utilizou as portas TCP 23 (telnet) e 1337, que são portas baixas normalmente abertas por servidores.</p>
+
+<p>A tela padrão do Wireshark nos permite analisar cada pacote individual que foi capturado, mas também podemos utilizar a opção <em>Analyze -&gt; Follow -&gt; TCP Stream</em> para observar toda a conversa em uma conexão TCP:</p>
+<figure class=""><a href="/assets/images/seccom-ctf/follow-tcp-stream.png" class="image-popup"><img src="/assets/images/seccom-ctf/follow-tcp-stream.png" alt="follow-tcp-stream" /></a></figure>
+
+<p>A stream <code class="language-plaintext highlighter-rouge">0</code> contém uma conversa em plaintext, supostamente conduzida entre hackers que participaram do ataque à SeTIC/UFSC:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>testando
+ok
+enviando imagem
+recebido
+enviando script
+recebido
+enviando senha
+recebido
+ok
+</code></pre></div></div>
+
+<p>A stream <code class="language-plaintext highlighter-rouge">1</code> é bem maior, e não conseguimos identificar de imediato do que se trata.
+Já as streams <code class="language-plaintext highlighter-rouge">2</code> e <code class="language-plaintext highlighter-rouge">3</code> parecem conter, respectivamente, um script de Python e algumas linhas em hexadecimal:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">os</span> <span class="kn">import</span> <span class="n">urandom</span>
+<span class="kn">from</span> <span class="n">sys</span> <span class="kn">import</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span>
+
+<span class="c1"># pip install pycryptodome
+</span><span class="kn">from</span> <span class="n">Crypto.Cipher</span> <span class="kn">import</span> <span class="n">AES</span>
+<span class="kn">from</span> <span class="n">Crypto.Util</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">from</span> <span class="n">Crypto.Util.Padding</span> <span class="kn">import</span> <span class="n">pad</span>
+
+
+<span class="k">class</span> <span class="nc">Cypher</span><span class="p">:</span>
+    <span class="n">bits</span> <span class="o">=</span> <span class="mi">128</span>
+    <span class="n">block_size</span> <span class="o">=</span> <span class="n">bits</span> <span class="o">//</span> <span class="mi">8</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">keys</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">Cypher</span><span class="p">.</span><span class="n">block_size</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">ctrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Counter</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">Cypher</span><span class="p">.</span><span class="n">bits</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="n">Cypher</span><span class="p">.</span><span class="n">block_size</span><span class="p">):</span>
+                <span class="n">self</span><span class="p">.</span><span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nf">urandom</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">encrypt</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="sa">b</span><span class="sh">''</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">keys</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+        <span class="n">ctr</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">ctrs</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="n">cipher</span> <span class="o">=</span> <span class="n">AES</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">AES</span><span class="p">.</span><span class="n">MODE_CTR</span><span class="p">,</span> <span class="n">counter</span><span class="o">=</span><span class="n">ctr</span><span class="p">)</span>
+        <span class="n">plain_bytes</span> <span class="o">=</span> <span class="n">msg</span><span class="p">.</span><span class="nf">encode</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">cipher</span><span class="p">.</span><span class="nf">encrypt</span><span class="p">(</span><span class="nf">pad</span><span class="p">(</span><span class="n">plain_bytes</span><span class="p">,</span> <span class="n">Cypher</span><span class="p">.</span><span class="n">block_size</span><span class="p">))</span>
+
+
+<span class="n">msgs</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sh">"</span><span class="s">consegui clonar dados confidenciais do PC dele</span><span class="sh">"</span><span class="p">,</span>
+    <span class="sh">"</span><span class="s">vou proteger a imagem com uma senha randomica:</span><span class="sh">"</span><span class="p">,</span>
+    <span class="sh">"</span><span class="s">??????????????????????</span><span class="sh">"</span><span class="p">,</span>
+    <span class="sh">"</span><span class="s">nao se preocupe, essas msgs vao ser cifradas com AES-CTR</span><span class="sh">"</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">cypher</span> <span class="o">=</span> <span class="nc">Cypher</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">msgs</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">msg</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">msgs</span><span class="p">):</span>
+    <span class="n">enc</span> <span class="o">=</span> <span class="n">cypher</span><span class="p">.</span><span class="nf">encrypt</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+    <span class="n">stdout</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">enc</span><span class="p">.</span><span class="nf">hex</span><span class="p">()</span> <span class="o">+</span> <span class="sh">'</span><span class="se">\n</span><span class="sh">'</span><span class="p">)</span>
+
+<span class="c1"># NOTE: lembrar de anotar essa chave pq sem ela vai ser impossivel de lembrar minha senha
+#for key in cypher.keys: stderr.write(b''.join(key).hex())
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>9f1ee383dc37b0bcfd2c6c5c9a16030bbc72a38ab4ca2064c3675ec87315e897f22b6fe6940c399a33218d8de7153a57
+ae7cb2c5b7982c7fc86652de361aab97fe237ba39d437aa51d219c85ea504b300890953abee39ed65cf19d57fb9eb193
+b3623ce6d04339ea13628693f2354b1b05bd893aeca2fab83996fe3e90aeb99b
+08999b3abfe7d0c241f99b57efd4d6bdc49382d2c82f27515c265ae5d54796eaf4f2c132de2e41beb482fbd603db0d4805eea2ecfc74a95a648b8ac84a1fdd58
+</code></pre></div></div>
+
+<p>Com base na conversa da stream <code class="language-plaintext highlighter-rouge">0</code>, podemos tentar identificar as outras como “a imagem”, “o script” e “a senha”, respectivamente.</p>
+
+<p>Infelizmente, uma decodificação simples do hexadecimal não nos dá algo reconhecível.
+Todavia, podemos perceber que o formato da “senha” parece condizer com o que o script está gerando (trecho destacado a seguir): 4 mensagens cifradas, codificadas em hexadecimal e separadas por uma quebra de linha:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">msgs</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sh">"</span><span class="s">consegui clonar dados confidenciais do PC dele</span><span class="sh">"</span><span class="p">,</span>
+    <span class="sh">"</span><span class="s">vou proteger a imagem com uma senha randomica:</span><span class="sh">"</span><span class="p">,</span>
+    <span class="sh">"</span><span class="s">??????????????????????</span><span class="sh">"</span><span class="p">,</span>
+    <span class="sh">"</span><span class="s">nao se preocupe, essas msgs vao ser cifradas com AES-CTR</span><span class="sh">"</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">cypher</span> <span class="o">=</span> <span class="nc">Cypher</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">msgs</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">msg</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">msgs</span><span class="p">):</span>
+    <span class="n">enc</span> <span class="o">=</span> <span class="n">cypher</span><span class="p">.</span><span class="nf">encrypt</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+    <span class="n">stdout</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">enc</span><span class="p">.</span><span class="nf">hex</span><span class="p">()</span> <span class="o">+</span> <span class="sh">'</span><span class="se">\n</span><span class="sh">'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>A última mensagem parece não estar mentindo, pois o método <code class="language-plaintext highlighter-rouge">Cypher.encrypt</code> de fato utiliza a biblioteca <code class="language-plaintext highlighter-rouge">pycryptodome</code> para implementar uma cifra AES-CTR (com chaves de 128 bits) sobre cada mensagem.
+Ao pesquisar “AES CTR” na web, podemos acabar novamente na <a href="https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Counter_(CTR)">Wikipedia</a>, que explica que “CTR” é um “modo” para cifras de bloco.</p>
+
+<figure class=""><a href="/assets/images/seccom-ctf/aes-ctr-wikipedia.png" class="image-popup"><img src="/assets/images/seccom-ctf/aes-ctr-wikipedia.png" alt="aes-ctr-wikipedia" /></a></figure>
+
+<p>O modo CTR de certa forma simula um One-Time Pad: a operação final da cifra ainda é \(C_i = X_i \oplus M_i\) (e \(M_i = X_i \oplus C_i\) para decifrar).
+A diferença é que isso é feito em blocos (neste caso, de 128 bits), e cada bloco gera um \(X_i\) diferente a partir de:</p>
+<ul>
+  <li>Uma chave \(K\) (pode ser reutilizada em todos os blocos)</li>
+  <li>Um <em>initialization vector</em> (\(IV_i\)) composto por:
+    <ul>
+      <li>Um contador, normalmente incrementado a cada bloco</li>
+      <li>Um <strong><em>nonce</em>, que jamais deve ser reutilizado com o mesmo contador e chave</strong></li>
+    </ul>
+  </li>
+</ul>
+
+<p>A cifra de bloco propriamente dita (no caso do AES, seria o algoritmo de Rijndael) “mistura” a chave e o IV para gerar o “one-time pad” de cada bloco:
+\(X_i = AES(K, IV_i)\)</p>
+
+<p>O script, no entanto, não faz menção a nenhum IV ou nonce.
+Como a <code class="language-plaintext highlighter-rouge">pycryptodome</code> é uma biblioteca open-source, podemos analisar a implementação da classe <code class="language-plaintext highlighter-rouge">Crypto.Util.Counter</code>, onde vemos que, se o contador for construído sem os parâmetros <code class="language-plaintext highlighter-rouge">suffix</code> e <code class="language-plaintext highlighter-rouge">prefix</code>, <strong>o nonce vai ser sempre igual</strong> (a uma string vazia):</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">new</span><span class="p">(</span><span class="n">nbits</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="sa">b</span><span class="sh">""</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="sa">b</span><span class="sh">""</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">little_endian</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">allow_wraparound</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sh">"""</span><span class="s">Create a stateful counter block function suitable for CTR encryption modes.
+
+    Each call to the function returns the next counter block.
+    Each counter block is made up by three parts:
+
+    +------+--------------+-------+
+    |prefix| counter value|postfix|
+    +------+--------------+-------+
+
+    The counter value is incremented by 1 at each call.</span><span class="sh">"""</span>
+
+    <span class="c1"># implementation...
+</span></code></pre></div></div>
+
+<p><strong>Em outras palavras, \(IV_i = CTR_i\), o valor do contador.</strong></p>
+
+<p>Analisando o código com mais atenção, percebemos também um erro comum de programação em Python relacionado à criação de arrays:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">self</span><span class="p">.</span><span class="n">keys</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">Cypher</span><span class="p">.</span><span class="n">block_size</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span>
+</code></pre></div></div>
+
+<p>A expressão <code class="language-plaintext highlighter-rouge">[None] * Cypher.block_size</code> cria um array onde cada elemento é igual ao valor entre chaves: <code class="language-plaintext highlighter-rouge">None</code>.
+Em seguida, esse array é replicado <code class="language-plaintext highlighter-rouge">n</code> vezes na expressão de fora.
+Embora a intenção provavelmente não seja essa, o resultado é que cada elemento em <code class="language-plaintext highlighter-rouge">keys</code> aponta para o mesmo array de tamanho <code class="language-plaintext highlighter-rouge">Cypher.block_size</code>.
+Assim, alterar o elemento <code class="language-plaintext highlighter-rouge">keys[k][0]</code> causa alterações em <code class="language-plaintext highlighter-rouge">key[i][0]</code>, para todo <code class="language-plaintext highlighter-rouge">i</code>.</p>
+
+<p>De fato, se instalarmos o <code class="language-plaintext highlighter-rouge">pycryptodome</code> e rodarmos o programa depois de descomentar as últimas linhas do script, vamos observar que as chaves de 128 bits geradas para cada mensagem são iguais ao longo de uma execução:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>python s2.py <span class="o">&gt;</span> /dev/null
+<span class="o">=&gt;</span>
+f29deafeabf31c6c2eb5f2f5b9442969
+f29deafeabf31c6c2eb5f2f5b9442969
+f29deafeabf31c6c2eb5f2f5b9442969
+f29deafeabf31c6c2eb5f2f5b9442969
+
+<span class="nv">$ </span>python s2.py <span class="o">&gt;</span> /dev/null
+<span class="o">=&gt;</span>
+cb7944c5dcbf9b8d402dcc3694069908
+cb7944c5dcbf9b8d402dcc3694069908
+cb7944c5dcbf9b8d402dcc3694069908
+cb7944c5dcbf9b8d402dcc3694069908
+</code></pre></div></div>
+
+<p>Ou seja, não sabemos qual chave de 128 bits foi usada originalmente, mas <strong>sabemos que a mesma chave foi usada para cifrar cada mensagem</strong>.
+Além disso, sabemos que os IVs são iguais aos contadores de cada bloco, e temos um contador inicializado para cada mensagem:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">self</span><span class="p">.</span><span class="n">ctrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Counter</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">Cypher</span><span class="p">.</span><span class="n">bits</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span>
+</code></pre></div></div>
+<p>Note que <strong>o valor inicial do contador depende do indice da mensagem</strong>.</p>
+
+<p>Juntando tudo isso, sabemos que, para cada bloco <code class="language-plaintext highlighter-rouge">j</code> na mensagem <code class="language-plaintext highlighter-rouge">i</code>:
+\(C_{ij} = M_{ij} \oplus AES(K_i, i+j)\)</p>
+
+<p>Além disso, devido ao bug na inicialização das chaves, sabemos que todos os \(K_i\) são iguais.
+Isso implica que cada expressão na forma \(AES(K_i, j)\) pode ser expressada simplesmente como \(X_j\).</p>
+
+<p>Voltando, então, à mensagem 1:
+\(C_{10} = M_{10} \oplus X_1
+\\
+C_{11} = M_{11} \oplus X_2
+\\
+C_{12} = M_{12} \oplus X_3\)</p>
+
+<p>E à mensagem 2, que contém a senha de nosso interesse:
+\(C_{20} = M_{20} \oplus X_2
+\\
+C_{21} = M_{21} \oplus X_3\)</p>
+
+<p>Aqui vemos claramente que, devido aos problemas no uso do AES-CTR (em especial a falta de um nonce), o script acaba reutilizando \(X_2\) e \(X_3\) para cifrar blocos das mensagens 1 e 2.
+Vamos começar a reverter a criptografia separando os blocos de cada mensagem:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">msgs</span> <span class="o">=</span> <span class="p">[</span>
+<span class="p">...</span>     <span class="sh">"</span><span class="s">consegui clonar dados confidenciais do PC dele</span><span class="sh">"</span><span class="p">,</span>
+<span class="p">...</span>     <span class="sh">"</span><span class="s">vou proteger a imagem com uma senha randomica:</span><span class="sh">"</span><span class="p">,</span>
+<span class="p">...</span>     <span class="sh">"</span><span class="s">??????????????????????</span><span class="sh">"</span><span class="p">,</span>
+<span class="p">...</span>     <span class="sh">"</span><span class="s">nao se preocupe, essas msgs vao ser cifradas com AES-CTR</span><span class="sh">"</span><span class="p">,</span>
+<span class="p">...</span> <span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">encs</span> <span class="o">=</span> <span class="p">[</span>
+<span class="p">...</span>     <span class="sh">'</span><span class="s">9f1ee383dc37b0bcfd2c6c5c9a16030bbc72a38ab4ca2064c3675ec87315e897f22b6fe6940c399a33218d8de7153a57</span><span class="sh">'</span><span class="p">,</span>
+<span class="p">...</span>     <span class="sh">'</span><span class="s">ae7cb2c5b7982c7fc86652de361aab97fe237ba39d437aa51d219c85ea504b300890953abee39ed65cf19d57fb9eb193</span><span class="sh">'</span><span class="p">,</span>
+<span class="p">...</span>     <span class="sh">'</span><span class="s">b3623ce6d04339ea13628693f2354b1b05bd893aeca2fab83996fe3e90aeb99b</span><span class="sh">'</span><span class="p">,</span>
+<span class="p">...</span>     <span class="sh">'</span><span class="s">08999b3abfe7d0c241f99b57efd4d6bdc49382d2c82f27515c265ae5d54796eaf4f2c132de2e41beb482fbd603db0d4805eea2ecfc74a95a648b8ac84a1fdd58</span><span class="sh">'</span><span class="p">,</span>
+<span class="p">...</span> <span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="n">Crypto.Util.Padding</span> <span class="kn">import</span> <span class="n">pad</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">encode_and_pad</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span> <span class="k">return</span> <span class="nf">pad</span><span class="p">(</span><span class="n">msg</span><span class="p">.</span><span class="nf">encode</span><span class="p">(),</span> <span class="mi">16</span><span class="p">)</span>
+<span class="bp">...</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">M</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="n">m</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="mi">16</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nf">len</span><span class="p">(</span><span class="n">m</span><span class="p">),</span> <span class="mi">16</span><span class="p">)]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nf">map</span><span class="p">(</span><span class="n">encode_and_pad</span><span class="p">,</span> <span class="n">msgs</span><span class="p">)</span> <span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">C</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="mi">16</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nf">len</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="mi">16</span><span class="p">)]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nf">map</span><span class="p">(</span><span class="nb">bytes</span><span class="p">.</span><span class="n">fromhex</span><span class="p">,</span> <span class="n">encs</span><span class="p">)</span> <span class="p">]</span>
+</code></pre></div></div>
+
+<p>No caso da mensagem 1, temos todos os plaintexts e ciphertexts, então podemos recuperar \(X_1\) a \(X_3\):</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">xor</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">):</span> <span class="k">return</span> <span class="nf">bytearray</span><span class="p">(</span><span class="n">a</span> <span class="o">^</span> <span class="n">b</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nf">zip</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">))</span>
+<span class="bp">...</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">X</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">])):</span>
+<span class="p">...</span>     <span class="n">X</span><span class="p">[</span><span class="mi">1</span> <span class="o">+</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nf">xor</span><span class="p">(</span><span class="n">C</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+</code></pre></div></div>
+
+<p>Utilizando \(X_2\) e \(X_3\), conseguimos recuperar a mensagem 2, revelando a quarta flag do desafio:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">decrypted</span> <span class="o">=</span> <span class="nf">xor</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">C</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="nf">xor</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">C</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">decrypted</span><span class="p">.</span><span class="nf">decode</span><span class="p">()</span>
+<span class="sh">'</span><span class="s">        cco{yEsNcE}   </span><span class="se">\n\n\n\n\n\n\n\n\n\n</span><span class="sh">'</span>
+</code></pre></div></div>
+
+<h3 id="let-it-rip"><em>Let it rip!</em></h3>
+
+<p>Acabamos de utilizar o conteúdo das streams TCP 0, 2 e 3 para conseguir a penúltima flag do CTF.
+O script capturado também dos dá mais informações sobre a stream 1, “a imagem”:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="sh">"</span><span class="s">consegui clonar dados confidenciais do PC dele</span><span class="sh">"</span>
+<span class="sh">"</span><span class="s">vou proteger a imagem com uma senha randomica:</span><span class="sh">"</span>
+</code></pre></div></div>
+
+<p>Os dados transferidos na stream 1 totalizam cerca de 70 MB.
+Infelizmente, o Wireshark não parece ser eficiente o bastante para permitir a exportação de um hexdump desse payload.
+Sendo assim, podemos recorrer à ferramenta CLI <code class="language-plaintext highlighter-rouge">tshark</code> para extrair a imagem em um arquivo:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>tshark <span class="nt">-r</span> original.bin.out <span class="nt">-Q</span> <span class="nt">-z</span> <span class="s1">'follow,tcp,raw,1'</span> <span class="se">\</span>
+| <span class="nb">head</span> <span class="nt">-n</span> <span class="nt">-1</span> | <span class="nb">tail</span> <span class="nt">-n</span> +7 <span class="se">\</span>
+| <span class="nb">sed</span> <span class="s1">'s/^\s\+//g'</span> <span class="se">\</span>
+| xxd <span class="nt">-r</span> <span class="nt">-p</span> <span class="o">&gt;</span> s1.enc
+
+<span class="nv">$ </span>file s1.enc
+s1.enc: GPG symmetrically encrypted data <span class="o">(</span>AES256 cipher<span class="o">)</span>
+</code></pre></div></div>
+
+<p>Como esperado, a imagem está protegida.
+Segundo a mensagem no script, a senha dela é exatamente a quarta flag, capturada anteriormente.
+Com isso, podemos decifrar o arquivo com o GnuPG:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gpg <span class="nt">-d</span> s1.enc <span class="o">&gt;</span> s1.dec
+<span class="o">=&gt;</span>
+gpg: AES256.CFB encrypted data
+gpg: encrypted with 1 passphrase
+
+<span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-lh</span> s1.dec
+<span class="o">=&gt;</span>
+<span class="nt">-rw-r--r--</span> 1 kali kali 72M Nov 15 22:45 s1.dec
+
+<span class="nv">$ </span>file s1.dec
+<span class="o">=&gt;</span>
+s1.dec: DOS/MBR boot sector
+    MS-MBR Windows 7 english at offset 0x163
+    <span class="s2">"Invalid partition table"</span> at offset 0x17b
+    <span class="s2">"Error loading operating system"</span> at offset 0x19a
+    <span class="s2">"Missing operating system"</span>, disk signature 0x7b3b5028<span class="p">;</span>
+    partition 1 : <span class="nv">ID</span><span class="o">=</span>0x7, start-CHS <span class="o">(</span>0x0,2,3<span class="o">)</span>, end-CHS <span class="o">(</span>0x8,205,5<span class="o">)</span>, startsector 128, 141312 sectors
+</code></pre></div></div>
+
+<p>Parece que temos, mais uma vez, uma imagem de disco.
+A <em>partition table</em> é do tipo DOS/MBR e o disco tem ao menos uma partição iniciando no setor 128.
+Desta vez, entretanto, nos deparamos com erros ao tentar listar os arquivos ou montar a partição:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>mmls s1.dec
+<span class="o">=&gt;</span>
+DOS Partition Table
+Offset Sector: 0
+Units are <span class="k">in </span>512-byte sectors
+
+      Slot      Start        End          Length       Description
+000:  Meta      0000000000   0000000000   0000000001   Primary Table <span class="o">(</span><span class="c">#0)</span>
+001:  <span class="nt">-------</span>   0000000000   0000000127   0000000128   Unallocated
+002:  000:000   0000000128   0000141439   0000141312   NTFS / exFAT <span class="o">(</span>0x07<span class="o">)</span>
+003:  <span class="nt">-------</span>   0000141440   0000147455   0000006016   Unallocated
+
+<span class="nv">$ </span>fls <span class="nt">-r</span> <span class="nt">-o</span> 128 s1.dec
+<span class="o">=&gt;</span>
+Possible encryption detected <span class="o">(</span>High entropy <span class="o">(</span>8.00<span class="o">))</span>
+
+<span class="nv">$ </span><span class="nb">sudo </span>mount <span class="nt">-o</span> <span class="nv">offset</span><span class="o">=</span><span class="k">$((</span><span class="m">512</span><span class="o">*</span><span class="m">128</span><span class="k">))</span> s1.dec mnt/
+<span class="o">=&gt;</span>
+mount: /home/kali/seccom-ctf/snapshot/incidente/mnt: unknown filesystem <span class="nb">type</span> <span class="s1">'BitLocker'</span><span class="nb">.</span>
+       dmesg<span class="o">(</span>1<span class="o">)</span> may have more information after failed mount system call.
+</code></pre></div></div>
+
+<p>O <code class="language-plaintext highlighter-rouge">fls</code> indica “<em>Possible encryption detected</em>”, o que é confirmado pelo <code class="language-plaintext highlighter-rouge">mount</code>: parece que o volume foi protegido com <a href="https://en.wikipedia.org/wiki/BitLocker">BitLocker</a>, um sistema de criptografia de disco do Windows.</p>
+
+<p>Uma busca rápida por “<em>Kali tools BitLocker</em>” nos aponta para duas ferramentas que podem ser úteis:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">dislocker</code>: (não vem instalado por padrão) utilizado para montar partições do BitLocker, se você souber a senha</li>
+  <li><code class="language-plaintext highlighter-rouge">bitlocker2john</code>: extrai hashes de senhas de discos protegidos com o BitLocker</li>
+</ul>
+
+<p>Levando em conta que crackear senhas foi a única técnica ensinada no CTF de demonstração que ainda não utilizamos, podemos tentar essa ideia.
+Primeiramente, precisamos extrair os hashes das senhas que vamos crackear:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bitlocker2john <span class="nt">-i</span> s1.dec | egrep <span class="s1">'\$bitlocker\$'</span> <span class="o">&gt;</span> bitlocked.hash
+<span class="o">=&gt;</span>
+Signature found at 0x10003
+Version: 8
+Invalid version, looking <span class="k">for </span>a signature with valid version...
+
+Signature found at 0x2110000
+Version: 2 <span class="o">(</span>Windows 7 or later<span class="o">)</span>
+
+VMK entry found at 0x21100ad
+
+VMK encrypted with User Password found at 21100ce
+VMK encrypted with AES-CCM
+
+VMK entry found at 0x211018d
+
+VMK encrypted with Recovery Password found at 0x21101ae
+Searching AES-CCM from 0x21101ca
+Trying offset 0x211025d....
+VMK encrypted with AES-CCM!!
+
+Signature found at 0x28bb000
+Version: 2 <span class="o">(</span>Windows 7 or later<span class="o">)</span>
+
+VMK entry found at 0x28bb0ad
+
+VMK entry found at 0x28bb18d
+
+Signature found at 0x3066000
+Version: 2 <span class="o">(</span>Windows 7 or later<span class="o">)</span>
+
+VMK entry found at 0x30660ad
+
+VMK entry found at 0x306618d
+
+<span class="nv">$ </span><span class="nb">cat </span>bitlocked.hash
+<span class="o">=&gt;</span>
+<span class="nv">$bitlocker$0$16$f1e83bdb6ff56c685b2e9e2fd482bdeb$1048576$12$20579fb9ff0dda0103000000$60$5e224f5665f71821128e49950fb920ac7e64946c1ae1b44ac7abc2f521d92f4de6b39373ee59bd351576a12d55ea9eeb7db96e88753332df68d96407</span>
+<span class="nv">$bitlocker$1$16$f1e83bdb6ff56c685b2e9e2fd482bdeb$1048576$12$20579fb9ff0dda0103000000$60$5e224f5665f71821128e49950fb920ac7e64946c1ae1b44ac7abc2f521d92f4de6b39373ee59bd351576a12d55ea9eeb7db96e88753332df68d96407</span>
+<span class="nv">$bitlocker$2$16$3b4de4c80870c035dce829c8c4c5e212$1048576$12$20579fb9ff0dda0106000000$60$d79213c35271e26a75f76142fc9823b432500f9d780e0e0c8064eaf55b438884c3836e1bdcbbe8a5e5bcd1c64fde95ccb3a2a59a6b43a08486138606</span>
+<span class="nv">$bitlocker$3$16$3b4de4c80870c035dce829c8c4c5e212$1048576$12$20579fb9ff0dda0106000000$60$d79213c35271e26a75f76142fc9823b432500f9d780e0e0c8064eaf55b438884c3836e1bdcbbe8a5e5bcd1c64fde95ccb3a2a59a6b43a08486138606</span>
+</code></pre></div></div>
+
+<p>Em seguida, verificamos se o <a href="https://www.openwall.com/john/">John the Ripper</a> suporta esse formato.
+Como é o caso, podemos iniciar o processo de <em>bruteforcing</em> / <em>dictionary attack</em> com a wordlist <a href="https://en.wikipedia.org/wiki/RockYou#Data_breach">rockyou</a>:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>john <span class="nt">--list</span><span class="o">=</span>formats | <span class="nb">grep</span> <span class="nt">-i</span> <span class="s1">'bitlocker'</span>
+<span class="o">=&gt;</span>
+AxCrypt, AzureAD, BestCrypt, BestCryptVE4, bfegg, Bitcoin, BitLocker,
+416 formats <span class="o">(</span>149 dynamic formats shown as just <span class="s2">"dynamic_n"</span> here<span class="o">)</span>
+
+<span class="nv">$ </span>john <span class="nt">--wordlist</span><span class="o">=</span>/usr/share/wordlists/rockyou.txt <span class="nt">--format</span><span class="o">=</span>BitLocker bitlocked.hash
+<span class="o">=&gt;</span>
+Note: This format may emit <span class="nb">false </span>positives, so it will keep trying even after finding a possible candidate.
+Using default input encoding: UTF-8
+Loaded 2 password hashes with 2 different salts <span class="o">(</span>BitLocker, BitLocker <span class="o">[</span>SHA-256 AES 32/64]<span class="o">)</span>
+Cost 1 <span class="o">(</span>iteration count<span class="o">)</span> is 1048576 <span class="k">for </span>all loaded hashes
+Will run 4 OpenMP threads
+Press <span class="s1">'q'</span> or Ctrl-C to abort, almost any other key <span class="k">for </span>status
+0g 0:00:00:01 0.00% <span class="o">(</span>ETA: 2023-12-10 12:20<span class="o">)</span> 0g/s 3.252p/s 6.504c/s 6.504C/s iloveyou..rockyou
+0g 0:00:00:15 0.00% <span class="o">(</span>ETA: 2024-01-06 15:52<span class="o">)</span> 0g/s 3.718p/s 7.702c/s 7.702C/s tweety..hello
+0g 0:00:00:32 0.00% <span class="o">(</span>ETA: 2024-01-06 11:46<span class="o">)</span> 0g/s 3.840p/s 7.680c/s 7.680C/s 112233..diamond
+0g 0:00:00:59 0.00% <span class="o">(</span>ETA: 2024-01-10 09:34<span class="o">)</span> 0g/s 3.644p/s 7.288c/s 7.288C/s hellokitty..angelica
+0g 0:00:01:00 0.00% <span class="o">(</span>ETA: 2024-01-10 09:44<span class="o">)</span> 0g/s 3.639p/s 7.279c/s 7.279C/s austin..horses
+0g 0:00:02:03 0.00% <span class="o">(</span>ETA: 2024-01-14 10:04<span class="o">)</span> 0g/s 3.439p/s 6.878c/s 6.878C/s kitty..valeria
+0g 0:00:06:15 0.01% <span class="o">(</span>ETA: 2024-01-16 08:07<span class="o">)</span> 0g/s 3.366p/s 6.744c/s 6.744C/s iluvme..douglas
+0g 0:00:07:08 0.01% <span class="o">(</span>ETA: 2024-01-16 04:50<span class="o">)</span> 0g/s 3.371p/s 6.743c/s 6.743C/s missy..darius
+Session aborted
+</code></pre></div></div>
+
+<p>Depois de um tempo, decidimos parar o cracking e tentar tornar o processo um pouco mais rápido.</p>
+
+<p>Vamos começar filtrando um pouco a nossa wordlist / dicionário, já que estamos tentando várias senhas fracas.
+Para entender quais senhas manter, criamos uma VM com Windows 10 Pro e uma partição protegida com BitLocker.
+O BitLocker exigiu que a senha tivesse 8 ou mais caracteres, mas não foi preciso adicionar números, caracteres especiais ou misturar letras maiusculas e minusculas.</p>
+
+<p>Além disso, passamos a utilizar o <a href="https://hashcat.net/hashcat/"><code class="language-plaintext highlighter-rouge">hashcat</code></a>, que é geralmente mais rápido que o <code class="language-plaintext highlighter-rouge">john</code>.
+Por fim, vamos crackear apenas o hash/senha de usuário, que estimamos que seja muito mais fraca do que a chave de recuperação do BitLocker (48 digitos numéricos gerados aleatoriamente).</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">awk</span> <span class="s1">'length &gt;= 8'</span> /usr/share/wordlists/rockyou.txt <span class="o">&gt;</span> rockyou8.txt
+
+<span class="nv">$ </span><span class="nb">echo</span> <span class="s1">'$bitlocker$0$16$f1e83bdb6ff56c685b2e9e2fd482bdeb$1048576$12$20579fb9ff0dda0103000000$60$5e224f5665f71821128e49950fb920ac7e64946c1ae1b44ac7abc2f521d92f4de6b39373ee59bd351576a12d55ea9eeb7db96e88753332df68d96407'</span> <span class="o">&gt;</span> user.hash
+
+<span class="nv">$ </span>hashcat <span class="nt">--help</span> | <span class="nb">grep</span> <span class="nt">-i</span> bitlocker
+<span class="o">=&gt;</span>
+  22100 | BitLocker | Full-Disk Encryption <span class="o">(</span>FDE<span class="o">)</span>
+
+<span class="nv">$ </span>hashcat <span class="nt">-a</span> 0 <span class="nt">-m</span> 22100 user.hash rockyou8.txt
+<span class="o">=&gt;</span>
+hashcat <span class="o">(</span>v6.2.6<span class="o">)</span> starting
+
+OpenCL API <span class="o">(</span>OpenCL 3.0 PoCL 3.1+debian  Linux, None+Asserts, RELOC, SPIR, LLVM 15.0.6, SLEEF, DISTRO, POCL_DEBUG<span class="o">)</span> - Platform <span class="c">#1 [The pocl project]</span>
+<span class="o">==================================================================================================================================================</span>
+<span class="k">*</span> Device <span class="c">#1: pthread-sandybridge-Intel(R) Core(TM) i7-6700HQ CPU @ 2.60GHz, 1436/2936 MB (512 MB allocatable), 4MCU</span>
+
+Minimum password length supported by kernel: 4
+Maximum password length supported by kernel: 256
+
+Hashes: 1 digests<span class="p">;</span> 1 unique digests, 1 unique salts
+Bitmaps: 16 bits, 65536 entries, 0x0000ffff mask, 262144 bytes, 5/13 rotates
+Rules: 1
+
+Optimizers applied:
+<span class="k">*</span> Single-Hash
+<span class="k">*</span> Single-Salt
+<span class="k">*</span> Slow-Hash-SIMD-LOOP
+
+Watchdog: Temperature abort trigger <span class="nb">set </span>to 90c
+
+Host memory required <span class="k">for </span>this attack: 0 MB
+
+
+Dictionary cache hit:
+<span class="k">*</span> Filename..: rockyou8.txt
+<span class="k">*</span> Passwords.: 9607178
+<span class="k">*</span> Bytes.....: 104537834
+<span class="k">*</span> Keyspace..: 9607178
+
+Cracking performance lower than expected?
+
+<span class="k">*</span> Append <span class="nt">-w</span> 3 to the commandline.
+  This can cause your screen to lag.
+
+<span class="k">*</span> Append <span class="nt">-S</span> to the commandline.
+  This has a drastic speed impact but can be better <span class="k">for </span>specific attacks.
+  Typical scenarios are a small wordlist but a large ruleset.
+
+<span class="k">*</span> Update your backend API runtime / driver the right way:
+  https://hashcat.net/faq/wrongdriver
+
+<span class="k">*</span> Create more work items to make use of your parallelization power:
+  https://hashcat.net/faq/morework
+
+<span class="o">[</span>s]tatus <span class="o">[</span>p]ause <span class="o">[</span>b]ypass <span class="o">[</span>c]heckpoint <span class="o">[</span>f]inish <span class="o">[</span>q]uit <span class="o">=&gt;</span>
+
+<span class="nv">$bitlocker$0$16$f1e83bdb6ff56c685b2e9e2fd482bdeb$1048576$12$20579fb9ff0dda0103000000$60$5e224f5665f71821128e49950fb920ac7e64946c1ae1b44ac7abc2f521d92f4de6b39373ee59bd351576a12d55ea9eeb7db96e88753332df68d96407</span>:genesis1
+
+Session..........: hashcat
+Status...........: Cracked
+Hash.Mode........: 22100 <span class="o">(</span>BitLocker<span class="o">)</span>
+Hash.Target......: <span class="nv">$bitlocker$0$16$f1e83bdb6ff56c685b2e9e2fd482bdeb$10</span>...d96407
+Time.Started.....: Wed Nov 15 23:50:53 2023 <span class="o">(</span>2 mins, 20 secs<span class="o">)</span>
+Time.Estimated...: Wed Nov 15 23:53:13 2023 <span class="o">(</span>0 secs<span class="o">)</span>
+Kernel.Feature...: Pure Kernel
+Guess.Base.......: File <span class="o">(</span>rockyou8.txt<span class="o">)</span>
+Guess.Queue......: 1/1 <span class="o">(</span>100.00%<span class="o">)</span>
+Speed.#1.........:       14 H/s <span class="o">(</span>9.98ms<span class="o">)</span> @ Accel:32 Loops:4096 Thr:1 Vec:8
+Recovered........: 1/1 <span class="o">(</span>100.00%<span class="o">)</span> Digests <span class="o">(</span>total<span class="o">)</span>, 1/1 <span class="o">(</span>100.00%<span class="o">)</span> Digests <span class="o">(</span>new<span class="o">)</span>
+Progress.........: 2016/9607178 <span class="o">(</span>0.02%<span class="o">)</span>
+Rejected.........: 0/2016 <span class="o">(</span>0.00%<span class="o">)</span>
+Restore.Point....: 1984/9607178 <span class="o">(</span>0.02%<span class="o">)</span>
+Restore.Sub.#1...: Salt:0 Amplifier:0-1 Iteration:1044480-1048576
+Candidate.Engine.: Device Generator
+Candidates.#1....: princess07 -&gt; spoiled1
+Hardware.Mon.#1..: Util: 84%
+
+Started: Wed Nov 15 23:50:44 2023
+Stopped: Wed Nov 15 23:53:15 2023
+</code></pre></div></div>
+
+<p>Em cerca de 2 minutos e meio, conseguimos encontrar a senha do disco: <code class="language-plaintext highlighter-rouge">genesis1</code>.
+Com a senha, o <code class="language-plaintext highlighter-rouge">dislocker</code> consegue decifrar o disco.
+Basta então montarmos a partição para obter a quinta e última flag do CTF:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>dislocker-file <span class="nt">-v</span> <span class="nt">-O</span> <span class="k">$((</span><span class="m">512</span> <span class="o">*</span> <span class="m">128</span><span class="k">))</span> <span class="nt">-V</span> s1.dec <span class="nt">-u</span> unlocked.p1
+<span class="o">=&gt;</span>
+Enter the user password: <span class="k">********</span>
+
+<span class="nv">$ </span><span class="nb">sudo </span>mount unlocked.p1 mnt
+
+<span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-lah</span> mnt
+<span class="o">=&gt;</span>
+total 13K
+drwxrwxrwx 1 root root 4.0K Nov  2 22:44  <span class="nb">.</span>
+drwxr-xr-x 3 kali kali 4.0K Nov 16 00:00  ..
+drwxrwxrwx 1 root root    0 Nov  2 22:44 <span class="s1">'$RECYCLE.BIN'</span>
+<span class="nt">-rwxrwxrwx</span> 1 root root   14 Nov  2 22:24  flag.txt
+drwxrwxrwx 1 root root 4.0K Nov  2 22:46 <span class="s1">'System Volume Information'</span>
+
+<span class="nv">$ </span><span class="nb">cat </span>mnt/flag.txt
+<span class="o">=&gt;</span>
+cco<span class="o">{</span>C4nc14n<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="comentários">Comentários</h2>
+
+<div id="disqus_thread"></div>
+<script>
+    /** https://disqus.com/admin/universalcode/#configuration-variables */
+    var disqus_config = function () {
+        this.page.url = ''; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = ''; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://baioc.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2023-11-15">November 15, 2023</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/portfolio/s4pu/" class="pagination--pager" title="S4PU - Simple Forth Processing Unit
+">Previous</a>
+    
+    
+      <a href="/portfolio/seccom-scheme/" class="pagination--pager" title="Matemática Funcional em Scheme
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+      
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 <a href="https://www.baioc.dev">Gabriel B. Sant'Anna</a></div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+  </body>
+</html>

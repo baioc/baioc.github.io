@@ -1,0 +1,904 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.26.2 by Michael Rose
+  Copyright 2013-2024 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>How to install Arch on Btrfs with LUKS encryption and software RAID1 | baioc</title>
+<meta name="description" content="Advanced dual-boot setup - Part 2: I use Arch, btw">
+
+
+  <meta name="author" content="Gabriel B. Sant'Anna">
+  
+  <meta property="article:author" content="Gabriel B. Sant'Anna">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="baioc">
+<meta property="og:title" content="How to install Arch on Btrfs with LUKS encryption and software RAID1">
+<meta property="og:url" content="https://www.baioc.dev/tutorial/arch-btrfs-luks-raid/">
+
+
+  <meta property="og:description" content="Advanced dual-boot setup - Part 2: I use Arch, btw">
+
+
+
+  <meta property="og:image" content="https://www.baioc.dev/assets/images/dual-boot/refind.png">
+
+
+
+
+
+  <meta property="article:published_time" content="2024-05-17T00:00:00+00:00">
+
+
+
+  <meta property="article:modified_time" content="2024-07-27T00:00:00+00:00">
+
+
+
+
+<link rel="canonical" href="https://www.baioc.dev/tutorial/arch-btrfs-luks-raid/">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="baioc Feed">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script type="text/javascript">
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+
+  
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single long">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Home
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a
+                href="/portfolio/"
+                
+                
+              >Portfolio</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/resume/"
+                
+                
+              >Resume</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/blog/"
+                
+                
+              >Blog</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="How to install Arch on Btrfs with LUKS encryption and software RAID1">
+    <meta itemprop="description" content="Advanced dual-boot setup - Part 2: I use Arch, btw">
+    <meta itemprop="datePublished" content="2024-05-17T00:00:00+00:00">
+    <meta itemprop="dateModified" content="2024-07-27T00:00:00+00:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="https://www.baioc.dev/tutorial/arch-btrfs-luks-raid/" itemprop="url">How to install Arch on Btrfs with LUKS encryption and software RAID1
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-05-17T00:00:00+00:00">May 17, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right sticky">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-bars"></i> Contents</h4></header>
+              <ul class="toc__menu"><li><a href="#0-overview">0. Overview</a></li><li><a href="#1-pre-installation">1. Pre-installation</a><ul><li><a href="#11-acquire-an-installation-image">1.1. Acquire an installation image</a></li><li><a href="#12-verify-image-hashes">1.2. Verify image hashes</a></li><li><a href="#13-prepare-installation-medium">1.3. Prepare installation medium</a></li><li><a href="#14-boot-the-live-environment">1.4. Boot the live environment</a></li><li><a href="#15-set-the-console-keyboard">1.5. Set the console keyboard</a></li><li><a href="#16-verify-the-boot-mode">1.6. Verify the boot mode</a></li><li><a href="#17-connect-to-the-internet">1.7. Connect to the internet</a></li><li><a href="#18-update-the-system-clock">1.8. Update the system clock</a></li><li><a href="#19-partition-the-disks">1.9. Partition the disks</a><ul><li><a href="#191-securely-erasing-a-drive">1.9.1. Securely erasing a drive</a></li><li><a href="#192-physical-partitioning">1.9.2. Physical partitioning</a></li><li><a href="#193-raid-on-hybrid-storage">1.9.3. RAID on hybrid storage</a></li><li><a href="#194-luks-encryption">1.9.4. LUKS encryption</a></li></ul></li><li><a href="#110-format-the-partitions">1.10. Format the partitions</a></li><li><a href="#111-mount-the-file-systems">1.11. Mount the file systems</a></li></ul></li><li><a href="#2-installation">2. Installation</a><ul><li><a href="#21-select-the-mirrors">2.1. Select the mirrors</a></li><li><a href="#22-install-essential-packages">2.2. Install essential packages</a></li></ul></li><li><a href="#3-configure-the-system">3. Configure the system</a><ul><li><a href="#30-update-raid-config-file">3.0. Update RAID config file</a></li><li><a href="#31-fstab">3.1. Fstab</a></li><li><a href="#32-chroot">3.2. Chroot</a></li><li><a href="#33-time">3.3. Time</a></li><li><a href="#34-localization">3.4. Localization</a></li><li><a href="#35-network-configuration">3.5. Network configuration</a></li><li><a href="#36-initramfs">3.6. Initramfs</a></li><li><a href="#37-root-password">3.7. Root password</a></li><li><a href="#38-boot-loader">3.8. Boot loader</a></li></ul></li><li><a href="#4-reboot">4. Reboot</a></li><li><a href="#5-post-installation">5. Post-installation</a></li></ul>
+            </nav>
+          </aside>
+        
+        <p>This tutorial is written for my own future reference, but I’m also posting it online in case it helps someone else looking for a similar setup.
+While the <a href="../dual-boot-linux-encrypted-hybrid-storage">first post on this series</a> already laid out my specs, motivations and technological choices, this one will focus on implementing the core parts of my personal subsystem: an encrypted Arch Linux installation on top of Btrfs, with RAID1.</p>
+
+<h2 id="0-overview">0. Overview</h2>
+
+<p>Here’s a sketch of what I’m aiming for:</p>
+
+<p><img src="/assets/images/dual-boot/os-arch.png" alt="sketch-arch" /></p>
+
+<p>During <a href="../ubuntu-24.04-encrypted">the previous part of this series</a>, I’ve used the Ubuntu 24.04 LTS guided installer to create an ESP partition (<code class="language-plaintext highlighter-rouge">sda1</code>, in green) and the core parts of my work subsystem (<code class="language-plaintext highlighter-rouge">sda4</code> and <code class="language-plaintext highlighter-rouge">sda5</code>, in orange).
+This post will set up the remaining SSD partitions, as well as the HDD RAID1 mirror.</p>
+
+<p>I’ll follow the general structure of <a href="https://wiki.archlinux.org/title/Installation_guide">the Arch wiki’s installation guide</a>, with a few added comments and highlighting deviations from the standard route for my customizations.</p>
+
+<h2 id="1-pre-installation">1. Pre-installation</h2>
+
+<h3 id="11-acquire-an-installation-image">1.1. Acquire an installation image</h3>
+
+<p>Just download the latest ISO image from the <a href="https://archlinux.org/download/">official Arch download page</a>.</p>
+
+<h3 id="12-verify-image-hashes">1.2. Verify image hashes</h3>
+
+<p>Make sure the ISO’s <code class="language-plaintext highlighter-rouge">sha256sum</code> matches the expected hash (<code class="language-plaintext highlighter-rouge">1b4a04ef8a7350852a13070ee498442b087a607a18840b4dd7d99867eb5f6a4c</code> for 2024.05.01).</p>
+
+<h3 id="13-prepare-installation-medium">1.3. Prepare installation medium</h3>
+
+<p><a href="https://wiki.archlinux.org/title/USB_flash_installation_medium">Flash the image on a USB stick</a>.</p>
+
+<h3 id="14-boot-the-live-environment">1.4. Boot the live environment</h3>
+
+<p>You’ll find yourself logged as root in a Zsh shell.
+<a href="https://geo.mirror.pkgbuild.com/iso/latest/arch/pkglist.x86_64.txt">These pacakges</a> come pre-installed.</p>
+
+<figure class=""><a href="/assets/images/dual-boot/arch-tty.png" class="image-popup" title="Arch install live environment, after a few sanity checks.
+"><img src="/assets/images/dual-boot/arch-tty.png" alt="arch-tty" /></a><figcaption>
+      Arch install live environment, after a few sanity checks.
+
+    </figcaption></figure>
+
+<h3 id="15-set-the-console-keyboard">1.5. Set the console keyboard</h3>
+
+<p>Nothing to do here, since I use a US keyboard layout.</p>
+
+<h3 id="16-verify-the-boot-mode">1.6. Verify the boot mode</h3>
+
+<p><code class="language-plaintext highlighter-rouge">cat /sys/firmware/efi/fw_platform_size</code> should read <code class="language-plaintext highlighter-rouge">64</code>.</p>
+
+<h3 id="17-connect-to-the-internet">1.7. Connect to the internet</h3>
+
+<p>Just use ethernet.
+The live system connects automatically using DHCP.
+<br />
+Make sure your connection is actually working by <code class="language-plaintext highlighter-rouge">ping</code>ing an external server.</p>
+
+<h3 id="18-update-the-system-clock">1.8. Update the system clock</h3>
+
+<p>Check if the output of <code class="language-plaintext highlighter-rouge">timedatectl</code> looks sane (in UTC+0).</p>
+
+<h3 id="19-partition-the-disks">1.9. Partition the disks</h3>
+
+<p>This is where it gets interesting.
+I already know how I want to partition my disks, but here are a few highlights copied straight from the Arch wiki:</p>
+
+<blockquote>
+  <ul>
+    <li>Take time to plan a long-term partitioning scheme to avoid risky and complicated conversion or re-partitioning procedures in the future.</li>
+  </ul>
+</blockquote>
+
+<p><a href="../dual-boot-linux-encrypted-hybrid-storage">Done</a>.</p>
+
+<blockquote>
+  <ul>
+    <li>The following partitions are required for a chosen device: one partition for the root directory <code class="language-plaintext highlighter-rouge">/</code>; for booting in UEFI mode: an EFI system partition.</li>
+    <li>If the disk from which you want to boot already has an EFI system partition, do not create another one, but use the existing partition instead.</li>
+    <li>Swap space can be set on a swap file for file systems supporting it.</li>
+  </ul>
+</blockquote>
+
+<p>We already have an EFI partition created by the Ubuntu installer, so we’ll keep using that.
+Then, instead of a single root partition mounted at <code class="language-plaintext highlighter-rouge">/</code>, we’ll create separate root (<code class="language-plaintext highlighter-rouge">/</code>) and boot (<code class="language-plaintext highlighter-rouge">/boot/</code>) partitions, since we want the former to be encrypted (and the latter can’t be, depending on the <a href="https://en.wikipedia.org/wiki/Bootloader#Second-stage_boot_loader">second-stage boot loader</a> we end up using).
+Finally, if swap is needed at all I’ll just use a swap file, since that’s supported on our filesystem of choice, Btrfs.</p>
+
+<blockquote>
+  <p>Aligning partitions correctly avoids excessive read-modify-write cycles.
+A typical practice for personal computers is to have each partition’s start and size aligned to 1 MiB (1 048 576 bytes) marks.
+This covers all common page and block size scenarios, as it is divisible by all commonly used sizes - 1 MiB, 512 KiB, 128 KiB, 4 KiB, and 512 B.
+Warning: Misaligned partitions will prevent being able to use 4096 B sectors with LUKS.</p>
+</blockquote>
+
+<p>This important disk performance tip was hidden away in the <a href="https://wiki.archlinux.org/title/Advanced_Format#Partition_alignment">Advanced Format page</a>.
+Even though most disk partitioning tools default to MiB alignment, I think this should be highlighted in the partitioning step of the installation guide.</p>
+
+<blockquote>
+  <p>If you want to create any stacked block devices for LVM, encryption or RAID, do it now.</p>
+</blockquote>
+
+<h4 id="191-securely-erasing-a-drive">1.9.1. Securely erasing a drive</h4>
+
+<p>I’m going to err on the side of caution and <a href="https://wiki.archlinux.org/title/Dm-crypt/Drive_preparation#dm-crypt_wipe_on_an_empty_device_or_partition">securely erase my entire HDD</a>:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wipefs <span class="nt">-a</span> /dev/sdb
+cryptsetup open <span class="nt">--type</span> plain <span class="nt">-d</span> /dev/urandom <span class="nt">--sector-size</span> 4096 <span class="nt">--cipher</span> aes-xts-plain64:sha256 <span class="nt">--key-size</span> 256 /dev/sdb to_be_wiped
+<span class="nb">dd </span><span class="k">if</span><span class="o">=</span>/dev/zero <span class="nv">of</span><span class="o">=</span>/dev/mapper/to_be_wiped <span class="nv">status</span><span class="o">=</span>progress <span class="nv">bs</span><span class="o">=</span>1M
+cryptsetup close to_be_wiped
+</code></pre></div></div>
+
+<p>Here I’ve manually specified the fastest (according to a <code class="language-plaintext highlighter-rouge">cryptsetup benchmark</code>) combination of cipher and key size, as well as the physical sector size of my HDD (obtained with <code class="language-plaintext highlighter-rouge">lsblk -t</code>).</p>
+
+<h4 id="192-physical-partitioning">1.9.2. Physical partitioning</h4>
+
+<p>This is what our disks looked like after our encrypted Ubuntu 24.04 installation:</p>
+
+<figure class=""><a href="/assets/images/dual-boot/ubuntu-partition-layout.png" class="image-popup" title="Disk layout after the Ubuntu install. sda is an SSD and sdb a bigger HDD.
+"><img src="/assets/images/dual-boot/ubuntu-partition-layout.png" alt="ubuntu-partition-layout" /></a><figcaption>
+      Disk layout after the Ubuntu install. sda is an SSD and sdb a bigger HDD.
+
+    </figcaption></figure>
+
+<p>Everything on the SSD is already MiB aligned.
+You can check that manually by running <code class="language-plaintext highlighter-rouge">fdisk -l</code> and making sure the start sector and total sectors assigned to each partition are divisible by 8.
+Then, I’ll just wipe the placeholder ext2 file systems which I used to “hide” available disk space from the Ubuntu installer:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wipefs <span class="nt">-a</span> /dev/sda2
+wipefs <span class="nt">-a</span> /dev/sda3
+</code></pre></div></div>
+
+<p>As for the just-erased HDD, I’ll use <code class="language-plaintext highlighter-rouge">fdisk</code>’s interactive shell to:</p>
+<ul>
+  <li>Set up a fresh GPT partition table (<code class="language-plaintext highlighter-rouge">g</code>)</li>
+  <li>Create a new partition the exact same size of <code class="language-plaintext highlighter-rouge">/dev/sda3</code> (<code class="language-plaintext highlighter-rouge">n</code>)</li>
+  <li>Commit my changes (<code class="language-plaintext highlighter-rouge">w</code>)</li>
+</ul>
+
+<h4 id="193-raid-on-hybrid-storage">1.9.3. RAID on hybrid storage</h4>
+
+<p>We’ll now set up software RAID1 using mdadm.
+In my particular case, I’ll have a <a href="https://www.tansi.org/hybrid/">hybrid RAID1 setup</a>: one of the mirrors is in an SSD, while the other is in an HDD.
+Thankfully, mdadm has a <a href="https://raid.wiki.kernel.org/index.php/Write-mostly">“write-mostly” flag</a> which can mark expected-to-be-slower devices (<code class="language-plaintext highlighter-rouge">/dev/sdb</code>) in the array in order to make most reads come from the faster device (<code class="language-plaintext highlighter-rouge">/dev/sda</code>).
+Setting it up is as simple as:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mdadm <span class="nt">--verbose</span> <span class="nt">--create</span> <span class="nt">--metadata</span><span class="o">=</span>0.90 /dev/md0 <span class="nt">--level</span><span class="o">=</span>1 <span class="nt">--raid-devices</span><span class="o">=</span>2 /dev/sda3 <span class="nt">--write-mostly</span> /dev/sdb1
+</code></pre></div></div>
+
+<p>Before continuing, <code class="language-plaintext highlighter-rouge">watch /proc/mdstat</code> to make sure the array had enough time to resync.</p>
+
+<figure class=""><a href="/assets/images/dual-boot/arch-mdadm.png" class="image-popup" title="Setting up software RAID on Linux is easier than I imagined.
+"><img src="/assets/images/dual-boot/arch-mdadm.png" alt="arch-mdadm" /></a><figcaption>
+      Setting up software RAID on Linux is easier than I imagined.
+
+    </figcaption></figure>
+
+<h4 id="194-luks-encryption">1.9.4. LUKS encryption</h4>
+
+<p>Setting up dm-crypt / LUKS encryption on top of a RAID1 array is also quite simple:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cryptsetup <span class="nt">-v</span> luksFormat /dev/md0
+cryptsetup open <span class="nt">--allow-discards</span> /dev/md0 arch-root
+</code></pre></div></div>
+
+<figure class=""><a href="/assets/images/dual-boot/arch-cryptsetup.png" class="image-popup" title="Save for discards, the default LUKS settings in this version of cryptsetup are exactly what I want for this particular system.
+"><img src="/assets/images/dual-boot/arch-cryptsetup.png" alt="arch-cryptsetup" /></a><figcaption>
+      Save for discards, the default LUKS settings in this version of cryptsetup are exactly what I want for this particular system.
+
+    </figcaption></figure>
+
+<h3 id="110-format-the-partitions">1.10. Format the partitions</h3>
+
+<p>As planned, I’ll use ext4 for my boot partition and Btrfs (on LUKS, on RAID) for the rest:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mkfs.ext4 /dev/sda2
+mkfs.btrfs /dev/mapper/arch-root
+</code></pre></div></div>
+
+<h3 id="111-mount-the-file-systems">1.11. Mount the file systems</h3>
+
+<p>I’ll start by temporarily mounting my Btrfs root at <code class="language-plaintext highlighter-rouge">/mnt</code>.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mount <span class="nt">-o</span> defaults,compress<span class="o">=</span>zstd:1,ssd,discard<span class="o">=</span>async,noatime /dev/mapper/arch-root /mnt
+</code></pre></div></div>
+
+<ul>
+  <li>Compression is one of the reasons I chose Btrfs, and after looking at <a href="https://www.phoronix.com/review/btrfs-zstd-compress/2">a few</a> <a href="https://www.reddit.com/r/btrfs/comments/bpphbz/my_benchmarks_of_the_new_zstd_levels_in_51/">benchmarks</a>, it seems that <code class="language-plaintext highlighter-rouge">zstd:1</code> is the best compromise on compression ratio and CPU usage.</li>
+  <li>Apparently, Btrfs does not add <code class="language-plaintext highlighter-rouge">ssd</code> or <code class="language-plaintext highlighter-rouge">discard</code> options by default when it is mounted on top of LUKS/RAID, so I’ll add those manually.</li>
+  <li>Finally, I use <code class="language-plaintext highlighter-rouge">noatime</code> in order to avoid unnecessary writes on the hybrid RAID1 setup, since they’ll have HDD speeds and I want to preserve SSD read performance.</li>
+</ul>
+
+<p>Now, since the filesystem is empty, this is probably the most convenient moment to set up other Btrfs subvolumes.
+I’ll follow the <a href="https://wiki.archlinux.org/title/snapper#Suggested_filesystem_layout">suggested filesystem layout for Snapper</a>, with separate subvolumes <code class="language-plaintext highlighter-rouge">@</code> and <code class="language-plaintext highlighter-rouge">@home</code> for <code class="language-plaintext highlighter-rouge">/</code> and <code class="language-plaintext highlighter-rouge">/home</code> respectively, then <code class="language-plaintext highlighter-rouge">@var_log</code> to exclude <code class="language-plaintext highlighter-rouge">/var/log</code> from root snapshots (note: I may have to create more subvolumes in the future in order to have separately-snapshottable containers, databases, and the like).</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>btrfs subvolume create /mnt/@
+btrfs subvolume create /mnt/@home
+btrfs subvolume create /mnt/@var_log
+</code></pre></div></div>
+
+<p>Now, in order to actually use the <code class="language-plaintext highlighter-rouge">@</code> subvolume as our <code class="language-plaintext highlighter-rouge">/</code> mountpoint (as opposed to mounting <code class="language-plaintext highlighter-rouge">/</code> directly on the root subvolume a.k.a. <code class="language-plaintext highlighter-rouge">subvolid=5</code>), we’ll unmount the current root:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>umount /mnt
+</code></pre></div></div>
+
+<p>And then set up mountpoints (subvolumes and normal partitions alike) in the way they’re actually going to be used in the installed system, in hierarchical order:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mount <span class="nt">-o</span> <span class="nv">subvol</span><span class="o">=</span>@,defaults,compress<span class="o">=</span>zstd:1,ssd,discard<span class="o">=</span>async,noatime /dev/mapper/arch-root /mnt/
+
+<span class="nb">mkdir</span> <span class="nt">-p</span> /mnt/home
+mount <span class="nt">-o</span> <span class="nv">subvol</span><span class="o">=</span>@home,defaults,compress-force<span class="o">=</span>zstd:1,ssd,discard<span class="o">=</span>async,noatime /dev/mapper/arch-root /mnt/home
+
+<span class="nb">mkdir</span> <span class="nt">-p</span> /mnt/var/log
+mount <span class="nt">-o</span> <span class="nv">subvol</span><span class="o">=</span>@var_log,defaults,compress<span class="o">=</span>zstd:1,ssd,discard<span class="o">=</span>async /dev/mapper/arch-root /mnt/var/log
+
+<span class="nb">mkdir</span> <span class="nt">-p</span> /mnt/boot
+mount /dev/sda2 /mnt/boot
+
+<span class="nb">mkdir</span> <span class="nt">-p</span> /mnt/boot/efi
+mount /dev/sda1 /mnt/boot/efi
+</code></pre></div></div>
+
+<figure class=""><a href="/assets/images/dual-boot/arch-btrfs.png" class="image-popup" title="Setting up mount points for subvolumes and partitions alike.
+"><img src="/assets/images/dual-boot/arch-btrfs.png" alt="arch-btrfs" /></a><figcaption>
+      Setting up mount points for subvolumes and partitions alike.
+
+    </figcaption></figure>
+
+<h2 id="2-installation">2. Installation</h2>
+
+<h3 id="21-select-the-mirrors">2.1. Select the mirrors</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>reflector <span class="nt">-p</span> https <span class="nt">-l</span> 100 <span class="nt">--sort</span> rate <span class="nt">-n</span> 20 <span class="nt">--save</span> /etc/pacman.d/mirrorlist
+</code></pre></div></div>
+
+<h3 id="22-install-essential-packages">2.2. Install essential packages</h3>
+
+<p>This is where we decide what packages we want in our initial install:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pacstrap <span class="nt">-K</span> /mnt <span class="se">\</span>
+  base <span class="nb">sudo </span>systemd less which lsof <span class="se">\</span>
+  linux-zen linux linux-firmware <span class="se">\</span>
+  intel-ucode <span class="se">\</span>
+  e2fsprogs dosfstools cryptsetup lvm2 mdadm btrfs-progs <span class="se">\</span>
+  networkmanager <span class="nb">bind </span>whois wget curl <span class="se">\</span>
+  nano vim <span class="se">\</span>
+  man-db man-pages <span class="se">\</span>
+  refind efibootmgr mkinitcpio <span class="se">\</span>
+  base-devel cmake git python gnupg openssh diffutils <span class="se">\</span>
+  bash-completion htop tree xxd dmidecode usbutils perl-image-exiftool sysstat bat inxi
+</code></pre></div></div>
+
+<h2 id="3-configure-the-system">3. Configure the system</h2>
+
+<h3 id="30-update-raid-config-file">3.0. Update RAID config file</h3>
+
+<p>Since we’re using RAID, we need to update the default mdadm configuration file:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mdadm <span class="nt">--detail</span> <span class="nt">--scan</span> <span class="o">&gt;&gt;</span> /mnt/etc/mdadm.conf
+</code></pre></div></div>
+
+<p>Then open it on a text editor to make sure it looks OK.</p>
+
+<h3 id="31-fstab">3.1. Fstab</h3>
+
+<p>Similarly, for the fstab file:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>genfstab <span class="nt">-U</span> /mnt <span class="o">&gt;&gt;</span> /mnt/etc/fstab
+</code></pre></div></div>
+
+<h3 id="32-chroot">3.2. Chroot</h3>
+
+<p>Now, we’ll be chrooting into the new system:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>arch-chroot /mnt
+</code></pre></div></div>
+
+<h3 id="33-time">3.3. Time</h3>
+
+<p>If you want the system’s local time to be in your own timezone instead of UTC:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ln</span> <span class="nt">-sf</span> /usr/share/zoneinfo/<span class="nv">$REGION</span>/<span class="nv">$CITY</span> /etc/localtime
+hwclock <span class="nt">--systohc</span>
+</code></pre></div></div>
+
+<h3 id="34-localization">3.4. Localization</h3>
+
+<p>Edit <code class="language-plaintext highlighter-rouge">/etc/locale.gen</code> and uncomment <code class="language-plaintext highlighter-rouge">en_US.UTF-8 UTF-8</code>, as well as any other needed UTF-8 locales.
+Then, generate the locales and set the system locale with:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>locale-gen
+<span class="nb">echo</span> <span class="s1">'LANG=en_US.UTF-8'</span> <span class="o">&gt;</span> /etc/locale.conf
+</code></pre></div></div>
+
+<h3 id="35-network-configuration">3.5. Network configuration</h3>
+
+<p>Create a hostname file:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="s1">'my-cool-hostname'</span> <span class="o">&gt;</span> /etc/hostname
+</code></pre></div></div>
+
+<p>And, in my case, I’ll manually enable the NetworkManager systemd unit:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ln</span> <span class="nt">-s</span> /usr/lib/systemd/system/NetworkManager.service /etc/systemd/system/multi-user.target.wants/
+</code></pre></div></div>
+
+<h3 id="36-initramfs">3.6. Initramfs</h3>
+
+<p>In this setup, where I’m using LUKS encryption and software RAID, I needed to add <code class="language-plaintext highlighter-rouge">mdadm_udev</code> and <code class="language-plaintext highlighter-rouge">encrypt</code> to my initramfs hooks in <code class="language-plaintext highlighter-rouge">/etc/mkinitcpio.conf</code>:</p>
+
+<div class="language-conf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">HOOKS</span>=(<span class="n">base</span> <span class="n">udev</span> <span class="n">autodetect</span> <span class="n">microcode</span> <span class="n">modconf</span> <span class="n">kms</span> <span class="n">keyboard</span> <span class="n">keymap</span> <span class="n">consolefont</span> <span class="n">block</span> <span class="n">mdadm_udev</span> <span class="n">encrypt</span> <span class="n">filesystems</span> <span class="n">fsck</span>)
+</code></pre></div></div>
+
+<p>Then, in order to actually apply these changes and recreate the initramfs image:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mkinitcpio <span class="nt">-P</span>
+</code></pre></div></div>
+
+<figure class=""><a href="/assets/images/dual-boot/arch-chroot.png" class="image-popup" title="Note: the mkinitcpio command may issue some warnings while generating the initramfs; I just ignored the ones I got.
+"><img src="/assets/images/dual-boot/arch-chroot.png" alt="arch-chroot" /></a><figcaption>
+      Note: the mkinitcpio command may issue some warnings while generating the initramfs; I just ignored the ones I got.
+
+    </figcaption></figure>
+
+<h3 id="37-root-password">3.7. Root password</h3>
+
+<p>We can then set the root password with <code class="language-plaintext highlighter-rouge">passwd</code>.</p>
+
+<h3 id="38-boot-loader">3.8. Boot loader</h3>
+
+<p>In my case, I’ll use <a href="https://www.rodsbooks.com/refind/configfile.html">rEFInd</a> (which I already installed in the <code class="language-plaintext highlighter-rouge">pacstrap</code> command):</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>refind-install
+<span class="nb">rm</span> /boot/refind_linux.conf
+<span class="nb">cp</span> /boot/efi/EFI/refind/refind.conf /boot/efi/EFI/refind/refind.conf.bak
+</code></pre></div></div>
+
+<p>After creating a backup of the original config, I edited <code class="language-plaintext highlighter-rouge">/boot/efi/EFI/refind/refind.conf</code> to reduce the boot timeout, to <a href="https://wiki.archlinux.org/title/REFInd#For_kernels_automatically_detected_by_rEFInd">add support for the naming scheme of Arch Linux kernels</a> and to enable the inclusion of a separate <code class="language-plaintext highlighter-rouge">manual.conf</code> config file.</p>
+
+<div class="language-conf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># refind.conf
+</span>...
+<span class="n">timeout</span> <span class="m">5</span>
+...
+<span class="n">extra_kernel_version_strings</span> <span class="s2">"linux-hardened,linux-rt-lts,linux-zen,linux-lts,linux-rt,linux"</span>
+...
+<span class="n">include</span> <span class="n">manual</span>.<span class="n">conf</span>
+</code></pre></div></div>
+
+<p>Then, I like to set up a manual boot stanza in <code class="language-plaintext highlighter-rouge">/boot/efi/EFI/refind/manual.conf</code>, which reads:</p>
+
+<div class="language-conf highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># manual.conf
+</span><span class="n">menuentry</span> <span class="s2">"Arch Linux"</span> {
+	<span class="n">icon</span>    /<span class="n">EFI</span>/<span class="n">refind</span>/<span class="n">icons</span>/<span class="n">os_arch</span>.<span class="n">png</span>
+	<span class="n">volume</span>  <span class="s2">"8B2310D6-C36B-4FB9-929B-F2FF5D5B120D"</span>
+	<span class="n">loader</span>  /<span class="n">vmlinuz</span>-<span class="n">linux</span>-<span class="n">zen</span>
+	<span class="n">initrd</span>  /<span class="n">initramfs</span>-<span class="n">linux</span>-<span class="n">zen</span>.<span class="n">img</span>
+	<span class="n">options</span> <span class="s2">"cryptdevice=UUID=6fd4672b-5745-404d-a4f2-5cf3984c0ae5:arch-root:allow-discards root=UUID=07a47b01-b163-4e7f-99ab-4c6310c4e4a1 rootflags=subvol=@ rw"</span>
+	<span class="n">submenuentry</span> <span class="s2">"Boot using fallback initramfs"</span> {
+		<span class="n">initrd</span> /<span class="n">initramfs</span>-<span class="n">linux</span>-<span class="n">zen</span>-<span class="n">fallback</span>.<span class="n">img</span>
+	}
+}
+</code></pre></div></div>
+
+<ul>
+  <li>We need to specify the <code class="language-plaintext highlighter-rouge">icon</code> token before choosing a boot <code class="language-plaintext highlighter-rouge">volume</code>.</li>
+  <li>The <code class="language-plaintext highlighter-rouge">volume</code> token is set to the PARTUUID of my <code class="language-plaintext highlighter-rouge">/boot</code> partition (<code class="language-plaintext highlighter-rouge">/dev/sda2</code>).</li>
+  <li><code class="language-plaintext highlighter-rouge">loader</code> and <code class="language-plaintext highlighter-rouge">initrd</code> paths are set using the specified <code class="language-plaintext highlighter-rouge">volume</code> as a root, so we don’t need to prefix those with <code class="language-plaintext highlighter-rouge">/boot</code>.</li>
+  <li>The <code class="language-plaintext highlighter-rouge">cryptdevice</code> kernel option must be set with the UUID of a block device of <code class="language-plaintext highlighter-rouge">TYPE="crypto_LUKS"</code>, which corresponds to my software RAID block device.</li>
+  <li>The UUID in the <code class="language-plaintext highlighter-rouge">root</code> kernel option should match the <code class="language-plaintext highlighter-rouge">/</code> entry in my <code class="language-plaintext highlighter-rouge">fstab</code>.</li>
+  <li>Since my root filesystem is mounted in a non-default Btrfs subvolume, I need to specify <code class="language-plaintext highlighter-rouge">rootflags=subvol=@</code> as well.</li>
+</ul>
+
+<figure class=""><a href="/assets/images/dual-boot/arch-bootloader.png" class="image-popup" title="Configuring the second-stage bootloader has always been the hardest part of installing Linux for me.
+"><img src="/assets/images/dual-boot/arch-bootloader.png" alt="arch-bootloader" /></a><figcaption>
+      Configuring the second-stage bootloader has always been the hardest part of installing Linux for me.
+
+    </figcaption></figure>
+
+<h2 id="4-reboot">4. Reboot</h2>
+
+<p>If everything was set up correctly, we should be able to reboot into our freshly-installed system:</p>
+
+<ul>
+  <li>Leave the chroot environment by exiting the current shell</li>
+  <li>(Optionally) unmount partitions with <code class="language-plaintext highlighter-rouge">umount -R /mnt</code></li>
+  <li><code class="language-plaintext highlighter-rouge">reboot</code></li>
+  <li>Choose the correct option in our boot loader of choice</li>
+</ul>
+
+<figure class=""><a href="/assets/images/dual-boot/refind.png" class="image-popup" title="rEFInd has already detected my existing Ubuntu install and has correctly set up a corresponding chain-load entry.
+"><img src="/assets/images/dual-boot/refind.png" alt="refind" /></a><figcaption>
+      rEFInd has already detected my existing Ubuntu install and has correctly set up a corresponding chain-load entry.
+
+    </figcaption></figure>
+
+<p>You’ll then be prompted for your disk encryption password before fully booting:</p>
+
+<figure class=""><a href="/assets/images/dual-boot/arch-boot-encrypted.png" class="image-popup"><img src="/assets/images/dual-boot/arch-boot-encrypted.png" alt="arch-boot-encrypted" /></a></figure>
+
+<h2 id="5-post-installation">5. Post-installation</h2>
+
+<p>All done!
+I’ll leave any further post-installation steps to <a href="../arch-awesomewm">another post</a>.</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/#linux" class="page__taxonomy-item p-category" rel="tag">linux</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/categories/#tutorial" class="page__taxonomy-item p-category" rel="tag">tutorial</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2024-07-27">July 27, 2024</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/tutorial/ubuntu-24.04-encrypted/" class="pagination--pager" title="How to install Ubuntu 24.04 LTS with Full Disk Encryption
+">Previous</a>
+    
+    
+      <a href="/tutorial/ubuntu-lvmcache/" class="pagination--pager" title="How to set up lvmcache across LUKS-encrypted partitions
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    
+<div class="page__related">
+  
+  <h2 class="page__related-title">You may also enjoy</h2>
+  <div class="grid__wrapper">
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/htb-cyber-apocalypse-2025/cave-expedition-decrypt.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/writeup/htb-cyber-apocalypse-2025/" rel="permalink">HTB Cyber Apocalypse CTF 2025
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-03-26T00:00:00+00:00">March 26, 2025</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Writeups for 3 challenges, each in a different category
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/arch-rice.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/arch-awesomewm/" rel="permalink">How to set up an X-based desktop from scratch
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-07-27T00:00:00+00:00">July 27, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 4: From TTY to graphical desktop
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/os-ubuntu.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/ubuntu-lvmcache/" rel="permalink">How to set up lvmcache across LUKS-encrypted partitions
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-07-14T00:00:00+00:00">July 14, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 3: Encrypted hybrid storage
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/ubuntu-boot-encrypted.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/ubuntu-24.04-encrypted/" rel="permalink">How to install Ubuntu 24.04 LTS with Full Disk Encryption
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-05-16T00:00:00+00:00">May 16, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 1: Ubuntu guided installation
+</p>
+  </article>
+</div>
+
+    
+  </div>
+</div>
+
+  
+  
+</div>
+
+      
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 <a href="https://www.baioc.dev">Gabriel B. Sant'Anna</a></div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+  </body>
+</html>

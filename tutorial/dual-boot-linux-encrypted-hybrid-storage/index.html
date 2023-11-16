@@ -1,0 +1,746 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.26.2 by Michael Rose
+  Copyright 2013-2024 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>How to set up separately-encrypted dual-booting Linux systems on hybrid storage | baioc</title>
+<meta name="description" content="Advanced dual-boot setup - Part 0: Motivation and design">
+
+
+  <meta name="author" content="Gabriel B. Sant'Anna">
+  
+  <meta property="article:author" content="Gabriel B. Sant'Anna">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="baioc">
+<meta property="og:title" content="How to set up separately-encrypted dual-booting Linux systems on hybrid storage">
+<meta property="og:url" content="https://www.baioc.dev/tutorial/dual-boot-linux-encrypted-hybrid-storage/">
+
+
+  <meta property="og:description" content="Advanced dual-boot setup - Part 0: Motivation and design">
+
+
+
+  <meta property="og:image" content="https://www.baioc.dev/assets/images/dual-boot/drives.png">
+
+
+
+
+
+  <meta property="article:published_time" content="2024-05-05T00:00:00+00:00">
+
+
+
+  <meta property="article:modified_time" content="2024-06-29T00:00:00+00:00">
+
+
+
+
+<link rel="canonical" href="https://www.baioc.dev/tutorial/dual-boot-linux-encrypted-hybrid-storage/">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="baioc Feed">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script type="text/javascript">
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+
+  
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single long">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Home
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a
+                href="/portfolio/"
+                
+                
+              >Portfolio</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/resume/"
+                
+                
+              >Resume</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/blog/"
+                
+                
+              >Blog</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="How to set up separately-encrypted dual-booting Linux systems on hybrid storage">
+    <meta itemprop="description" content="Advanced dual-boot setup - Part 0: Motivation and design">
+    <meta itemprop="datePublished" content="2024-05-05T00:00:00+00:00">
+    <meta itemprop="dateModified" content="2024-06-29T00:00:00+00:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="https://www.baioc.dev/tutorial/dual-boot-linux-encrypted-hybrid-storage/" itemprop="url">How to set up separately-encrypted dual-booting Linux systems on hybrid storage
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-05-05T00:00:00+00:00">May 5, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right sticky">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-bars"></i> Contents</h4></header>
+              <ul class="toc__menu"><li><a href="#some-context">Some context</a></li><li><a href="#a-first-sketch">A first sketch</a></li><li><a href="#btrfs-vs-lvm-ext4">Btrfs vs LVM-ext4</a></li><li><a href="#lvmcache-vs-bcache">lvmcache vs bcache</a></li><li><a href="#next-steps">Next steps</a></li><li><a href="#appendix-a---ssd-vs-hdd-speeds">Appendix A - SSD vs HDD speeds</a></li><li><a href="#appendix-b---mdadm-vs-btrfs-for-hybrid-ssdhdd-raid1">Appendix B - mdadm vs Btrfs for hybrid (SSD+HDD) RAID1</a></li></ul>
+            </nav>
+          </aside>
+        
+        <p>It’s time to rebuild my computer setup.
+This series of blog posts will document how I did it, mainly as documentation for my own reference in case I need to re-build anything in the future, but hopefully it helps someone else out there with similar needs.</p>
+
+<h2 id="some-context">Some context</h2>
+
+<p>I’ve been using the same Dell laptop for the past ~7 years and have gone through:</p>
+<ul>
+  <li>Multiple update-revert cycles on top of the original Windows-only setup</li>
+  <li>Resizing Windows partitions in order to dual-boot <a href="https://manjaro.org/">Manjaro Linux</a></li>
+  <li>Upgrades in phyiscal memory, a battery swap and a new SSD</li>
+  <li>Deleting Manjaro from the HDD while distro-hopping to <a href="https://pop.system76.com/">System76’s Pop!_OS Linux</a></li>
+  <li>Corrupting data in the older HDD because of a power loss while moving partitions</li>
+  <li>Restoring said data (<em>phew!</em>) from my <a href="https://www.borgbackup.org/">Borg backups</a></li>
+  <li>Fully abandoning Windows, yet keeping it installed in the HDD “just in case”</li>
+</ul>
+
+<figure class=""><a href="https://imgs.xkcd.com/comics/old_files.png" class="image-popup" title="xkcd #1360
+"><img src="https://imgs.xkcd.com/comics/old_files.png" alt="xkcd-1360" /></a><figcaption>
+      xkcd #1360
+
+    </figcaption></figure>
+
+<p>Since my new job requires me to use a specific OS, I figured that this would be a good opportunity to start from scratch in order to make better use of the hardware I have.
+I’ll keep using the same laptop, of course, since it still works well and is powerful enough for all my needs (including gaming from time to time).</p>
+
+<p>My hardware specs. are:</p>
+<ul>
+  <li>A Dell motherboard/firmware with support for UEFI boot</li>
+  <li>An Intel x86-64 processor with integrated graphics</li>
+  <li>A discrete Nvidia GPU with 4 GiB VRAM</li>
+  <li>16 GiB DDR3 phyiscal memory</li>
+  <li>An old 5400 RPM HDD with ~1 TB capacity</li>
+  <li>A newer M.2 2280 SSD with ~480 GB capacity</li>
+</ul>
+
+<p>What I need/want from the resulting system is:</p>
+<ol>
+  <li>A standard <a href="https://ubuntu.com/">Ubuntu</a> 24.04 LTS install (+encryption), for work</li>
+  <li>A fully-custom <a href="https://wiki.archlinux.org/">Arch Linux</a> system, for personal use</li>
+  <li>Be able to quickly (re)boot and choose an(other) OS for the occasion</li>
+  <li>Security for both personal and work-related data</li>
+  <li>Make good use of my hardware, especially the SSD and GPU</li>
+  <li>Get the most out of my laptop’s battery life, when unplugged</li>
+</ol>
+
+<p>Additionally:</p>
+<ul>
+  <li>My HDD is pretty old at this point (in use for 7+ years!), so I have to assume that it may start failing at any moment.</li>
+  <li>On the other hand, I’ve heard some horror stories about SSD sudden death, so I want to be prepared for failures there as well.</li>
+  <li>I’m not worried about cutomizing my work OS that much, so a fresh reinstall shouldn’t be much of an issue.</li>
+  <li>Furthermore, I expect work-related storage to be mostly build artifacts and caches, which can always be recovered through a clean build from the (version-controlled, cloud-backed) sources.</li>
+  <li>I probably don’t need more than 400 GiB for my personal data + OS, at least based on usage in my current setup.</li>
+</ul>
+
+<h2 id="a-first-sketch">A first sketch</h2>
+
+<p>After doing some research and a few VM tests, here’s what I want the system to look like, at a high level:
+<img src="/assets/images/dual-boot/drives.png" alt="sketch-drives" /></p>
+
+<p>A few things to note:</p>
+<ol>
+  <li>There’s a single ESP partition on the system.
+    <ul>
+      <li>According to <a href="https://askubuntu.com/questions/963282/i-have-2-efi-partitions-on-2-separate-drives-how-do-i-combine-them/1437126#1437126">this</a>, the UEFI specification does not require support for multiple ESPs.</li>
+      <li>This partiton has to formatted as FAT32.</li>
+    </ul>
+  </li>
+  <li>Each OS gets its own unencrypted <code class="language-plaintext highlighter-rouge">/boot</code> partition.
+    <ul>
+      <li>They are unencrypted because <a href="https://superuser.com/questions/522971/is-a-boot-partition-always-necessary/522998#522998">most bootloaders don’t support encryption</a>. GRUB is a bit of an exception, but it <a href="https://wiki.archlinux.org/title/GRUB#LUKS2">still doesn’t support default LUKS2 encryption</a>.</li>
+      <li>Each OS gets to manage its own boot partition, <a href="https://superuser.com/questions/940782/do-i-need-two-boot-partitions-for-a-dual-boot-system/941881#941881">reducing the chances that they’ll mess up each other’s boot</a>.</li>
+      <li>Both boot partitions will be formatted using ext4. This is how Ubuntu’s 24.04 installer does it, and how I chose to do it (as opposed to using ext2) after reading <a href="https://askubuntu.com/questions/958989/refind-very-slow-boot-when-using-efi-stub-loader/962873#962873">this</a>.</li>
+    </ul>
+  </li>
+  <li>Personal stuff, work stuff and backups are all separately encrypted.
+    <ul>
+      <li>This is for added security: a compromised user/service in the work OS won’t be able to steal my personal data and vice-versa.</li>
+    </ul>
+  </li>
+  <li>Most of the SSD is filled with personal stuff
+    <ul>
+      <li>This is needed in order for me to fit everything I have in the SSD. I don’t want to lose my files if/when the HDD fails.</li>
+      <li>Even if the SSD fails, the <a href="https://en.wikipedia.org/wiki/Standard_RAID_levels#RAID_1">RAID1</a> mirror ensures that I’ll be able to reboot and continue working on my own personal stuff on a short notice (NOTE: this does NOT substitue external backups).
+        <ul>
+          <li>If that happens, it should be pretty straightforward to <a href="https://nicolas.busseneau.fr/en/blog/2021/08/remove-mdadm-raid1-keep-data">disable RAID1</a>.</li>
+        </ul>
+      </li>
+      <li>Booting from the HDD mirror in case of an SSD failure will require me to have (a) ESP and <code class="language-plaintext highlighter-rouge">/boot</code> backups in the last HDD partition and (b) a <a href="https://en.wikipedia.org/wiki/Live_CD">live ISO</a> which I can boot from and restore those partitions.</li>
+    </ul>
+  </li>
+  <li>The work installation will be split between SSD and HDD.
+    <ul>
+      <li>This is because most of the SSD storage is taken by personal stuff.</li>
+      <li>If the HDD fails, I’ll lose some build artifacts / caches but will still be able to keep working in the storage-constrained environment of the SSD.</li>
+      <li>If the SSD fails, I can just reinstall the OS from scratch in the reserved HDD space.</li>
+    </ul>
+  </li>
+  <li>Lack of any swap partitions.
+    <ul>
+      <li>On a fully-encrypted system, it seems that <a href="https://wiki.archlinux.org/title/swap#Swap_file">swap files</a> will be easier to manage than swap partitions.</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="btrfs-vs-lvm-ext4">Btrfs vs LVM-ext4</h2>
+
+<p><a href="https://en.wikipedia.org/wiki/Linux_Unified_Key_Setup">LUKS</a> appears to be the current standard for disk encryption on Linux <a href="https://wiki.archlinux.org/title/Dm-crypt">dm-crypt</a>.
+It works by creating a “virtual” block device over an existing one and transparently translating reads and writes to read+decrypt and encrypt+write operations.</p>
+
+<p>By default, each encrypted device must be unlocked separately, which can be annoying for multi-partition systems.
+Therefore, most people recommend setting up a flexible filesystem on top of LUKS in order to have a single unlock for all logical partitions needed by the system.
+Ubuntu’s 24.04 installer uses ext4 partitions on top of <a href="https://wiki.archlinux.org/title/LVM">LVM</a> on top of LUKS, whereas my current Pop!_OS system was set up with <a href="https://mutschler.dev/linux/pop-os-btrfs-22-04">Btrfs on top of LVM on top of LUKS</a>.</p>
+
+<figure class=""><a href="https://fedoramagazine.org/wp-content/uploads/2020/12/ext4-on-LVM.jpg" class="image-popup" title="LVM diagram, by Troy Curtis Jr from the Fedora Magazine.
+"><img src="https://fedoramagazine.org/wp-content/uploads/2020/12/ext4-on-LVM.jpg" alt="lvm-ext4" /></a><figcaption>
+      LVM diagram, by Troy Curtis Jr from the Fedora Magazine.
+
+    </figcaption></figure>
+
+<p>While LVM and <a href="https://wiki.archlinux.org/title/Btrfs">Btrfs</a> are not mutually exclusive, they have similar features:</p>
+<ul>
+  <li>Volume management: both can distribute storage across multiple devices, but in LVM you have to manually resize logical volumes.</li>
+  <li>Snapshots: both can create (sub)volume snapshots for backups, but I think Btrfs’s are faster because of CoW.</li>
+  <li>RAID: both provide support for RAID, but <a href="https://btrfs.readthedocs.io/en/latest/Status.html#raid1-raid10">Btrfs’ is less mature</a>.</li>
+  <li>Compression: Btrfs has transparent compression and deduplication.</li>
+  <li>Caching: Btrfs does not have an equivalent of LVM’s <code class="language-plaintext highlighter-rouge">lvmcache</code> for hybrid storage, unless you count hybrid RAID1 (but that requires equal-sized block devices).</li>
+</ul>
+
+<p>While I’ll keep the default LUKS -&gt; LVM -&gt; ext4 used in Ubuntu 24.04, I’ll set up Btrfs on Arch because:</p>
+<ol>
+  <li>I don’t want to explicitly resize subvolumes.</li>
+  <li>Arch is a rolling release distro, so I’ll want fast snapshots on every update.</li>
+  <li>I want a RAID1 solution that works under LUKS (such as <a href="https://en.wikipedia.org/wiki/Mdadm"><code class="language-plaintext highlighter-rouge">mdadm</code></a>), not on top of it, so I wouldn’t be using LVM or Btrfs for their RAID features anyway.</li>
+  <li>Btrfs’s compression and deduplication should help reduce SSD disk usage.</li>
+  <li>I don’t need a hybrid storage cache for the Arch system, since it will fit entirely in the SSD.</li>
+</ol>
+
+<p>Since I’ll have my personal stuff on top of Btrfs, I might as well use it in the HDD backup partition.
+That will allow me to use <a href="https://wiki.archlinux.org/title/Btrfs#Send/receive">Btrfs’s send/receive operations</a> in order to easily move local snapshots to the HDD, and then later from the HDD to an external backup device.</p>
+
+<p>With that in mind, here’s how I expect my personal OS to look like after booting:</p>
+
+<p><img src="/assets/images/dual-boot/os-arch.png" alt="sketch-arch" /></p>
+
+<h2 id="lvmcache-vs-bcache">lvmcache vs bcache</h2>
+
+<p>I’m going to reserve 100 GiB in the SSD for my work system.
+Depending on the development tools I use, I know that’s not going to be enough storage, in which case I’ll need to store data in the (<a href="#appendix-a---ssd-vs-hdd-speeds">5x slower</a>) HDD as well.</p>
+
+<p>Setups like this are pretty common nowadays: just keep your base OS installed in the SSD, while large(r) files go in the slower HDD.
+Since frequent access to large files could also benefit from SSD speed ups, some people will go the extra mile and move hot data to the SSD, then place them back on the HDD when they’re no longer being used that often.</p>
+
+<p>The thing is: I don’t want to do that kind of optimization manually, transferring files back and forth between disks.
+This is precisely why I’m interested in setting up a <a href="https://en.wikipedia.org/wiki/Hybrid_drive">hybrid storage solution</a>, in which the SSD acts as a cache to the HDD.</p>
+
+<p>It seems that the standard options for doing this on Linux are <a href="https://www.man7.org/linux/man-pages/man7/lvmcache.7.html">lvmcache</a> and <a href="https://www.kernel.org/doc/Documentation/bcache.txt">bcache</a>.
+Here’s a few points I gathered while researching those technologies:</p>
+<ul>
+  <li>lvmcache runs on top of LVM, which I’ll already be using in the Ubuntu install.</li>
+  <li>LVM snapshots are not possible on a cached volume; that’s OK for me but could be a deal breaker for others.</li>
+  <li>In an encrypted system, bcache should sit between LUKS and the file system, and I don’t see how to do that without deviating from the standard Ubuntu 24.04 encrypted install.</li>
+  <li>A <a href="https://www.reddit.com/r/linux/comments/r3qe32/bcache_vs_lvmcache_in_2021_whats_the_general/">few comments on Reddit</a> and a <a href="https://omattos.com/2020/01/02/bcache.html">specific blog post</a> convinced me that bcache had many issues back in 2020-2021; I’m not sure if those were fixed since then.</li>
+  <li>On the other hand, I see <a href="https://blog.patshead.com/2022/05/using-lvmcache-for-gaming-and-video-editing-what-i-have-learned-so-far.html">people happily using lvmcache</a> in 2022.</li>
+</ul>
+
+<p>In case it wasn’t obvious, I’ll be going with lvmcache for my work OS:</p>
+
+<p><img src="/assets/images/dual-boot/os-ubuntu.png" alt="sketch-ubuntu" /></p>
+
+<h2 id="next-steps">Next steps</h2>
+
+<p>Of course, the next step is actually implementing these designs.</p>
+
+<p>I’ll set up everything in a VM first and document how I did it in the next few blog posts.
+Then, if everything works, I’ll apply it to my actual machine.</p>
+
+<p>See you in the <a href="../ubuntu-24.04-encrypted">next part!</a></p>
+
+<h2 id="appendix-a---ssd-vs-hdd-speeds">Appendix A - SSD vs HDD speeds</h2>
+
+<p>I wanted to understand just how faster my M.2 2280 SSD was over my old 5400 RPM HDD, so I ran a few tests using <code class="language-plaintext highlighter-rouge">hdparm</code> and <code class="language-plaintext highlighter-rouge">gnome-disk-utility</code>.</p>
+
+<p>I started by carving out 2 GiB partitions from the free space on each drive:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">/dev/sda2</code> is on the SSD</li>
+  <li><code class="language-plaintext highlighter-rouge">/dev/sdb7</code> is on the HDD</li>
+</ul>
+
+<p>Running the default GNOME Disks R/W benchmark on the unformatted partitions yields the following results (read rates can be confirmed by a few runs of <code class="language-plaintext highlighter-rouge">hdparm -t</code>):</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Device</th>
+      <th style="text-align: right">Average Read Rate</th>
+      <th style="text-align: right">Average Write Rate</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>SSD</td>
+      <td style="text-align: right">540.8 MB/s</td>
+      <td style="text-align: right">457.8 MB/s</td>
+    </tr>
+    <tr>
+      <td>HDD</td>
+      <td style="text-align: right">112.1 MB/s</td>
+      <td style="text-align: right">93.2 MB/s</td>
+    </tr>
+  </tbody>
+</table>
+
+<p align="center">
+  <img alt="raw-ssd-benchmark" src="/assets/images/dual-boot/raw-ssd.png" width="49%" />
+  <img alt="raw-hdd-benchmark" src="/assets/images/dual-boot/raw-hdd.png" width="48.5%" />
+</p>
+
+<h2 id="appendix-b---mdadm-vs-btrfs-for-hybrid-ssdhdd-raid1">Appendix B - mdadm vs Btrfs for hybrid (SSD+HDD) RAID1</h2>
+
+<p>While mdadm is the <a href="https://raid.wiki.kernel.org/">default option for software RAID on Linux</a>, I found out that Btrfs supports RAID1 natively.
+Therefore, I could choose between the following stacks for my personal OS:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  mdadm RAID1 -&gt; LUKS -&gt; Btrfs  |   LUKS -&gt; Btrfs with RAID1
+                                |
+SSD: [ mdadm | LUKS | Btrfs ]   |  SSD: [  LUKS  |  Btrfs  ]
+         |                      |                     |
+         | RAID1 mirroring      |                     | RAID1 mirroring
+         v                      |                     v
+HHD: [ mdadm | LUKS | Btrfs ]   |  HDD: [  LUKS  |  Btrfs  ]
+</code></pre></div></div>
+
+<p>If I wasn’t using disk encryption, I might have gone with the simpler Btrfs-only stack.
+However, since Btrfs sits on top of LUKS, RAID1 would only kick in after both partitions were decrypted.</p>
+
+<p>Another issue is performance on a hybrid storage setup: according to <a href="https://superuser.com/questions/874673/btrfs-raid1-ssd-non-ssd/875655#875655">this answer</a>, “the btrfs raid 1 disk access algorithms work by reading from one disk for even-numbered PIDs, and the other for odd-numbered PIDs”.
+In other words: disk access speed will suck for half of your processes.
+Online discussions pointed me to <a href="https://github.com/torvalds/linux/blob/master/fs/btrfs/volumes.c#L6045">the source code</a>, which does appear to be distributing reads based on PIDs as per a <code class="language-plaintext highlighter-rouge">BTRFS_READ_POLICY_PID</code>.</p>
+
+<p>In conclusion: I’ll forget about Btrfs RAID1 for now.
+Maybe in the future, when it provides a better RAID1 access distribution policy (and maybe native encryption, I’ve heard that’s on the roadmap), I’ll consider it again for a setup like mine.</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/#linux" class="page__taxonomy-item p-category" rel="tag">linux</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/categories/#tutorial" class="page__taxonomy-item p-category" rel="tag">tutorial</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2024-06-29">June 29, 2024</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/rant/time-is-a-lie/" class="pagination--pager" title="Time is a Lie
+">Previous</a>
+    
+    
+      <a href="/tutorial/ubuntu-24.04-encrypted/" class="pagination--pager" title="How to install Ubuntu 24.04 LTS with Full Disk Encryption
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    
+<div class="page__related">
+  
+  <h2 class="page__related-title">You may also enjoy</h2>
+  <div class="grid__wrapper">
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/htb-cyber-apocalypse-2025/cave-expedition-decrypt.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/writeup/htb-cyber-apocalypse-2025/" rel="permalink">HTB Cyber Apocalypse CTF 2025
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-03-26T00:00:00+00:00">March 26, 2025</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Writeups for 3 challenges, each in a different category
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/arch-rice.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/arch-awesomewm/" rel="permalink">How to set up an X-based desktop from scratch
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-07-27T00:00:00+00:00">July 27, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 4: From TTY to graphical desktop
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/os-ubuntu.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/ubuntu-lvmcache/" rel="permalink">How to set up lvmcache across LUKS-encrypted partitions
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-07-14T00:00:00+00:00">July 14, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 3: Encrypted hybrid storage
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/refind.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/arch-btrfs-luks-raid/" rel="permalink">How to install Arch on Btrfs with LUKS encryption and software RAID1
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-05-17T00:00:00+00:00">May 17, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 2: I use Arch, btw
+</p>
+  </article>
+</div>
+
+    
+  </div>
+</div>
+
+  
+  
+</div>
+
+      
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 <a href="https://www.baioc.dev">Gabriel B. Sant'Anna</a></div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+  </body>
+</html>

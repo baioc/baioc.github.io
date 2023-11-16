@@ -1,0 +1,910 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.26.2 by Michael Rose
+  Copyright 2013-2024 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Fibonacci numbers: from zero to hero | baioc</title>
+<meta name="description" content="One problem, multiple algorithms">
+
+
+  <meta name="author" content="Gabriel B. Sant'Anna">
+  
+  <meta property="article:author" content="Gabriel B. Sant'Anna">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="baioc">
+<meta property="og:title" content="Fibonacci numbers: from zero to hero">
+<meta property="og:url" content="https://www.baioc.dev/tutorial/fibonacci/">
+
+
+  <meta property="og:description" content="One problem, multiple algorithms">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2020-01-15T00:00:00+00:00">
+
+
+
+
+
+
+<link rel="canonical" href="https://www.baioc.dev/tutorial/fibonacci/">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="baioc Feed">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script type="text/javascript">
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+
+  
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single long">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Home
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a
+                href="/portfolio/"
+                
+                
+              >Portfolio</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/resume/"
+                
+                
+              >Resume</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/blog/"
+                
+                
+              >Blog</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Fibonacci numbers: from zero to hero">
+    <meta itemprop="description" content="One problem, multiple algorithms">
+    <meta itemprop="datePublished" content="2020-01-15T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="https://www.baioc.dev/tutorial/fibonacci/" itemprop="url">Fibonacci numbers: from zero to hero
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2020-01-15T00:00:00+00:00">January 15, 2020</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right sticky">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-bars"></i> Contents</h4></header>
+              <ul class="toc__menu"><li><a href="#a-golden-sequence">A golden sequence</a></li><li><a href="#going-down-the-rabbit-hole">Going down the rabbit hole</a></li><li><a href="#fft-the-fast-fibonacci-transform">FFT: the Fast Fibonacci Transform</a></li><li><a href="#memoization-and-streams">Memoization and Streams</a></li><li><a href="#negafibonacci">Negafibonacci</a></li><li><a href="#tldr">TL;DR</a></li></ul>
+            </nav>
+          </aside>
+        
+        <p>Fibonacci numbers appear unexpectedly often in Mathematics and in Computer Science.
+They are related to the <a href="https://en.wikipedia.org/wiki/Golden_ratio">golden ratio</a> and just like the magical number, have a very extensive <a href="https://en.wikipedia.org/wiki/Fibonacci_number">Wikipedia entry</a>.
+The Fibonacci sequence is defined by a <a href="https://en.wikipedia.org/wiki/Recurrence_relation">recurrence relation</a> and is used as a canonical example of recursion in introductory programming and/or discrete math courses for computer science.
+This means that pretty much every programmer has implemented an algorithm to find Fibonacci numbers.
+Here we explore some possible approaches.</p>
+
+<p class="notice--info">For a TLDR, jump to the bottom of the page.</p>
+
+<h2 id="a-golden-sequence">A golden sequence</h2>
+
+<p>The Fibonacci numbers can be defined as</p>
+
+<p>\(F_0 = 0, F_1 = 1\) and</p>
+
+<p>\(F_n = F_{n-1} + F_{n-2}\) for \(n &gt; 1\)</p>
+
+<p>Most programmers think of a function when reading the previous definition, where the subscript number is its single argument.
+Others see it as some data structure being indexed; this idea will be useful later.
+The naive approach then translates math directly into some programming language, for instance C.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">fib</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+	<span class="k">else</span> <span class="k">return</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>That definition has some obvious practical issues.
+For any negative input, the procedure launches into an infinite loop and eventually crashes the program.
+Secondly, it is extremely inefficient: on my machine it takes around 15 seconds to compute and print <code class="language-plaintext highlighter-rouge">fib(47)</code> (gcc 9.2.0 with <code class="language-plaintext highlighter-rouge">-O3</code>).
+At last, we will quickly run into <a href="https://wiki.sei.cmu.edu/confluence/display/c/INT32-C.+Ensure+that+operations+on+signed+integers+do+not+result+in+overflow">undefined behaviour as we overflow</a> through the limits of our signed integer representation.
+In fact, with 32-bit signed ints we can only correctly calculate the sequence for values of <code class="language-plaintext highlighter-rouge">n</code> from zero to 46.
+That limit goes up to 93 when using longer 64-bit numbers and making them <code class="language-plaintext highlighter-rouge">unsigned</code> allows us to find a single extra number of the sequence.</p>
+
+<p>There are two easy ways to remove the danger of an infinite loop: we can assert against negative values and crash the program (or throw an exception) intentionally or we can change the conditional to avoid the loop and return a technically incorrect result.
+Another option is to extend the sequence for negative integers, this shall be done latter on.
+We also solve the numeric representation issue by using a programming language which supports arbitrary-precision arithmetic (aka <a href="https://en.wikipedia.org/wiki/Arbitrary-precision_arithmetic">bignums</a>) by default, so let’s <code class="language-plaintext highlighter-rouge">goto</code> Python.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">fib</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">n</span><span class="p">;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nf">fib</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="nf">fib</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>While we could theoretically compute bigger Fibonacci numbers now, it would take ages to do so using this implementation.
+While Python made the performance worse by a factor of ~50x in relation to C, the problem is the underlying algorithm being used.
+By substituting each call to <code class="language-plaintext highlighter-rouge">fib</code> by the subsequent multiple-recursive calls it generates, we find out that there is lots of redundant computation being done.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                         <span class="nf">fib</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+             <span class="nf">fib</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>        <span class="o">+</span>        <span class="nf">fib</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+     <span class="nf">fib</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>     <span class="o">+</span>  <span class="nf">fib</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>       <span class="nf">fib</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="nf">fib</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="nf">fib</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="nf">fib</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Notice that an invocation of <code class="language-plaintext highlighter-rouge">fib(n)</code> reaches the base cases (<code class="language-plaintext highlighter-rouge">fib(0)</code> and <code class="language-plaintext highlighter-rouge">fib(1)</code>) \(F_{n+1}\) times.
+In fact, let \(C_n\) be the number of calls executed when computing <code class="language-plaintext highlighter-rouge">fib(n)</code>, then for all \(n &gt; 1\)</p>
+
+\[C_n = 1 + C_{n-1} + C_{n-2}\]
+
+<p>Meanwhile, for the base cases we have</p>
+
+\[C_0 + 1 = 2 = 2 F_1\\
+C_1 + 1 = 2 = 2 F_2\]
+
+<p>So we can try to conjecture that</p>
+
+\[C_n + 1 = 2 F_{n+1}\]
+
+<p>Supposing that holds for \(C_{n-1}\) and \(C_{n-2}\) the proof goes as follows:</p>
+
+\[C_n = 1 + C_{n-1} + C_{n-2}\\
+C_n + 1 = (C_{n-1} + 1) + (C_{n-2} + 1)\\
+C_n + 1 = 2 F_n + 2 F_{n-1}\\
+C_n + 1 = 2 (F_n + F_{n-1})\\
+C_n + 1 = 2 F_{n+1}\\\]
+
+<p>Thus we have proved that for all \(n \ge 0\)</p>
+
+\[C_n = 2 F_{n+1} - 1\]
+
+<p>With this we have proved that the naive implementation presented earlier has exponential time complexity (the Fibonacci sequence grows exponentially), more specifically \(\Theta(\phi^{n})\), where \(\phi\) is the golden ratio.
+The previous theorem is also the sole reason this binary-recursive procedure is useful in <a href="https://github.com/drujensen/fib">benchmarks</a>, as we may easily calculate the exact number of function calls performed and find the average invocation time.</p>
+
+<h2 id="going-down-the-rabbit-hole">Going down the rabbit hole</h2>
+
+<p>Looking back upon the recurrence relation \(F_k = F_{k-1} + F_{k-2}\) one may intuitively deduce that it should be possible to compute \(F_{k+n}\) in linear time if values of \(F_{k+n-1}\) and \(F_{k+n-2}\) are known.
+For instance when \(n=0\) only a single addition is needed; for \(n=1\) we need two: the first to compute \(F_{k}\) and another to find \(F_{k+1}\); and so son.
+The most common “efficient” procedure to compute Fibonacci numbers leverages this notion in order to reach \(\Theta(n)\) time complexity and looks something like this:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">fib</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">previous</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">current</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">previous</span><span class="p">,</span> <span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="p">,</span> <span class="n">previous</span> <span class="o">+</span> <span class="n">current</span>
+    <span class="k">return</span> <span class="n">current</span>
+</code></pre></div></div>
+
+<p>A Python program that simply prints the result of <code class="language-plaintext highlighter-rouge">fib(47)</code> now takes about 0.04 seconds to complete on my machine (CPython v3.8.1).
+In fact, that time is mostly the Python environment starting up and it is approximately the same when computing the 10,000th Fibonacci number.
+We can even turn this function into a <a href="https://wiki.python.org/moin/Generators">generator</a> so as to compute Fibonacci numbers on demand as we iterate through them.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">fibs</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">previous</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">current</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">current</span>
+        <span class="n">previous</span><span class="p">,</span> <span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="p">,</span> <span class="n">previous</span> <span class="o">+</span> <span class="n">current</span>
+
+<span class="c1"># printing the first 100 numbers of the sequence
+</span><span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">fn</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="nf">fibs</span><span class="p">(</span><span class="mi">100</span><span class="p">)):</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">fib(%d) = %d</span><span class="sh">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">fn</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>Although the loop-based version is definitely more efficient than the previous one, its implementation is not as obvious and does not resemble the sequence’s mathematical definition.
+Perhaps we can improve this by sending <code class="language-plaintext highlighter-rouge">previous</code> and <code class="language-plaintext highlighter-rouge">current</code> as additional arguments to a recursive procedure:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">fib</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">previous</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">current</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">current</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nf">fib</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">current</span><span class="p">,</span> <span class="n">previous</span> <span class="o">+</span> <span class="n">current</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>While performance remains mostly the same and the procedure is a tad more versatile (by setting <code class="language-plaintext highlighter-rouge">previous</code> and <code class="language-plaintext highlighter-rouge">current</code> to another pair of consecutive Fibonacci numbers we can now compute the sequence from any starting point, as if with a different “seed”), calling this new routine with somewhat bigger values of <code class="language-plaintext highlighter-rouge">n</code> yields a crash with the message <code class="language-plaintext highlighter-rouge">RecursionError: maximum recursion depth exceeded ...</code>.</p>
+
+<p>This happens because Python does not optimize <a href="https://en.wikipedia.org/wiki/Tail_call">tail calls</a>, so each iteration takes some space in the call stack, eventually reaching its limit.
+In fact, our procedure now has a space complexity of \(\Theta(n)\) while the loop version was just \(\Theta(1)\).
+Most functional languages support proper tail recursion, but before we go there let’s see how C++ fares in this case (since C doesn’t have default argument values without <a href="https://modelingwithdata.org/arch/00000022.htm">macros</a>).</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">constexpr</span> <span class="kt">int</span> <span class="nf">fib</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">int</span> <span class="n">prev</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kt">int</span> <span class="n">curr</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">curr</span><span class="p">;</span>
+	<span class="k">else</span> <span class="p">[[</span><span class="n">likely</span><span class="p">]]</span>
+		<span class="k">return</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">curr</span><span class="p">,</span> <span class="n">prev</span> <span class="o">+</span> <span class="n">curr</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Modern compilers are able to recognize this pattern and perform Tail Call Optimization (TCO), so the procedure above is made equivalent to the constant-space <code class="language-plaintext highlighter-rouge">for</code> loop implementation.
+Making the function <code class="language-plaintext highlighter-rouge">constexpr</code> also signals to the compiler that it should try to optimize calls for values known at compile time.
+For instance, a <code class="language-plaintext highlighter-rouge">main</code> function that simply returns <code class="language-plaintext highlighter-rouge">fib(40)</code> gets compiled into</p>
+
+<pre><code class="language-asm">main:
+        mov     eax, 102334155
+        ret
+</code></pre>
+
+<p>Since we wish for proper tail recursion as well as infinite-precision arithmetic, I choose Scheme as our next programming language.
+In the example below, <code class="language-plaintext highlighter-rouge">iterate</code> is a tail-recursive function defined inside the body of <code class="language-plaintext highlighter-rouge">fib</code> that performs the computation in constant space and linear time.</p>
+
+<div class="language-scheme highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="k">define</span> <span class="p">(</span><span class="nf">fib</span> <span class="nv">n</span><span class="p">)</span>
+  <span class="p">(</span><span class="k">let</span> <span class="nv">iterate</span> <span class="p">((</span><span class="nf">n</span> <span class="nv">n</span><span class="p">)</span> <span class="p">(</span><span class="nf">previous</span> <span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="nf">current</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">&lt;=</span> <span class="nv">n</span> <span class="mi">0</span><span class="p">)</span> <span class="nv">current</span>
+        <span class="p">(</span><span class="nf">iterate</span> <span class="p">(</span><span class="nb">-</span> <span class="nv">n</span> <span class="mi">1</span><span class="p">)</span> <span class="nv">current</span> <span class="p">(</span><span class="nb">+</span> <span class="nv">previous</span> <span class="nv">current</span><span class="p">)))))</span>
+</code></pre></div></div>
+
+<h2 id="fft-the-fast-fibonacci-transform">FFT: the Fast Fibonacci Transform</h2>
+
+<p>One may realize that each call to <code class="language-plaintext highlighter-rouge">iterate</code> is basically a transformation applied to the last two parameters while <code class="language-plaintext highlighter-rouge">n</code> is simply a countdown controling how many times this is repeated.
+This can be represented as follows:</p>
+
+\[T(c, p) = (c + p, c)\]
+
+<p>If \(p\) and \(c\) are consecutive Fibonacci numbers, we can say that</p>
+
+\[T(F_k, F_{k-1}) = (F_k + F_{k-1}, F_k) = (F_{k+1}, F_k)\]
+
+<p>and thus</p>
+
+\[T^n(F_k, F_{k-1}) = (F_{k+n}, F_{k+n-1})\]
+
+<p>\(T\) happens to be a <a href="https://en.wikipedia.org/wiki/Linear_map">linear transformation</a> (proving that property is left as an exercise to the reader).
+Its transformation matrix, sometimes called the Fibonacci matrix, is easily found:</p>
+
+\[A \begin{bmatrix}c \\ p\end{bmatrix} = \begin{bmatrix}c + p \\ c\end{bmatrix}\\
+A = \begin{bmatrix}A \begin{bmatrix}1\\0\end{bmatrix} &amp; A\begin{bmatrix}0\\1\end{bmatrix}\end{bmatrix}\\
+A = \begin{bmatrix}1 &amp; 1\\ 1 &amp; 0\end{bmatrix}\]
+
+<p>After that, we can accomplish transformation composition through matrix multiplication, in other words:</p>
+
+\[A^n \begin{bmatrix}0 \\ 1\end{bmatrix} = \begin{bmatrix}F_n \\ F_{n-1}\end{bmatrix}\]
+
+<p>At this point we have found a method to compute Fibonacci numbers through matrix exponentiation, and since the latter can be achieved – through a <a href="https://en.wikipedia.org/wiki/Exponentiation_by_squaring">Successive Squaring</a> algorithm – in \(\Theta(\log_2 n)\) time, so can the former.
+The Octave code below does exactly that.</p>
+
+<pre><code class="language-octave">function F_n = fib(n)
+
+	A = [1, 1;
+	     1, 0];
+
+	x = [0;
+	     1];
+
+	y = A^n * x;
+
+	F_n = y(1);
+
+endfunction
+</code></pre>
+
+<p>If you are into linear algebra, you may remember that there is a special basis in which a linear transformation can be represented as a diagonal matrix.
+This makes it a little bit easier to perform matrix exponentiation: simply raise each diagonal element to the desired power and then go back to the canonical basis to find the end result.
+Using all this <a href="https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors">eigen-stuff</a> leads us to Binet’s formula, the closed-form solution for Fibonacci numbers:</p>
+
+\[F_n = {(\phi^n - \psi^n) \over (\phi - \psi)} = {(\phi^n - \psi^n) \over \sqrt{5}}\]
+
+<p>where \(\phi\) is the golden ratio and \(\psi\) its complement (these are the eigenvalues for the Fibonacci transform).</p>
+
+<p>So theoretically we could use that in our implementation:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
+
+<span class="n">PHI</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="nf">sqrt</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>  <span class="c1"># golden ratio number
+</span><span class="n">PSI</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">PHI</span>            <span class="c1"># and its complement
+</span>
+<span class="k">def</span> <span class="nf">fib</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nf">round</span><span class="p">((</span><span class="n">PHI</span><span class="o">**</span><span class="n">n</span> <span class="o">-</span> <span class="n">PSI</span><span class="o">**</span><span class="n">n</span><span class="p">)</span> <span class="o">/</span> <span class="nf">sqrt</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>However, for big values of <code class="language-plaintext highlighter-rouge">n</code> we still get an <code class="language-plaintext highlighter-rouge">OverflowError: (..., 'Numerical result out of range')</code>; in some languages instead of throwing an exception the program would return its representation of infinity.
+This happens because now we’re dealing with floating-point numbers, which are not big enough for our desired range of values.</p>
+
+<p>Going back to the Fibonacci matrix, we can assume that for some \(k\) (notice that it is true when \(k=1\))</p>
+
+\[\begin{bmatrix}1 &amp; 1\\ 1 &amp; 0\end{bmatrix}^k = \begin{bmatrix}F_{k+1} &amp; F_k\\ F_k &amp; F_{k-1}\end{bmatrix}\]
+
+<p>then</p>
+
+\[\begin{bmatrix}1 &amp; 1\\ 1 &amp; 0\end{bmatrix}^k \begin{bmatrix}1 &amp; 1\\ 1 &amp; 0\end{bmatrix} = \begin{bmatrix}F_{k+1} &amp; F_k\\ F_k &amp; F_{k-1}\end{bmatrix} \begin{bmatrix}1 &amp; 1\\ 1 &amp; 0\end{bmatrix}\\
+\begin{bmatrix}1 &amp; 1\\ 1 &amp; 0\end{bmatrix}^{k+1} = \begin{bmatrix}F_{k+1} + F_k &amp; F_k + F_{k-1}\\ F_{k+1} &amp; F_k\end{bmatrix}\\
+\begin{bmatrix}1 &amp; 1\\ 1 &amp; 0\end{bmatrix}^{k+1} = \begin{bmatrix}F_{k+2} &amp; F_{k+1}\\ F_{k+1} &amp; F_k\end{bmatrix}\]
+
+<p>this means for all \(n \ge 1\)</p>
+
+\[\begin{bmatrix}1 &amp; 1\\ 1 &amp; 0\end{bmatrix}^n = \begin{bmatrix}F_{n+1} &amp; F_n\\ F_n &amp; F_{n-1}\end{bmatrix}\]
+
+<p>At this point, we can square both sides:</p>
+
+\[\begin{bmatrix}1 &amp; 1\\ 1 &amp; 0\end{bmatrix}^n \begin{bmatrix}1 &amp; 1\\ 1 &amp; 0\end{bmatrix}^n = \begin{bmatrix}F_{n+1} &amp; F_n\\ F_n &amp; F_{n-1}\end{bmatrix} \begin{bmatrix}F_{n+1} &amp; F_n\\ F_n &amp; F_{n-1}\end{bmatrix}\\
+\begin{bmatrix}1 &amp; 1\\ 1 &amp; 0\end{bmatrix}^{2n} = \begin{bmatrix}F_{n+1}^{2} + F_n^2 &amp; F_n (F_{n+1} + F_{n-1})\\ F_n (F_{n+1} + F_{n-1}) &amp; F_n^2 + F_{n-1}^{2}\end{bmatrix}\]
+
+<p>And since the general rule still applies, we have</p>
+
+\[F_{2n} = F_n (F_{n+1} + F_{n-1}) = F_n (F_{n+1} + F_{n+1} - F_n) = F_n (2F_{n+1} - F_n)\\
+F_{2n+1} = F_{n+1}^{2} + F_n^2\]
+
+<p>This means we can compute Fibonacci numbers through a successive squaring method, thus achieving \(\Theta(\log_2 n)\) bigint arithmetic operations.
+Evidently, this method has the same asymptotic time complexity as exponentating the Fibonacci matrix, but it may save a few operations.
+The fast recursive procedure is given below in Haskell.
+In case you’ve noticed, space complexity – the call stack – has risen from constant to \(\Theta(\log_2 n)\), but since logarithmic growth is so slow, most of the time there is no need to worry about stack overflows.</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fib_</span> <span class="o">::</span> <span class="kt">Int</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="kt">Integer</span><span class="p">,</span> <span class="kt">Integer</span><span class="p">)</span>
+<span class="n">fib_</span> <span class="mi">0</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">fib_</span> <span class="n">n</span> <span class="o">=</span> <span class="kr">let</span> <span class="p">(</span><span class="n">fk</span><span class="p">,</span> <span class="n">fk1</span><span class="p">)</span> <span class="o">=</span> <span class="n">fib_</span> <span class="p">(</span><span class="n">div</span> <span class="n">n</span> <span class="mi">2</span><span class="p">)</span>
+             <span class="n">fn</span>        <span class="o">=</span> <span class="n">fk</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">fk1</span> <span class="o">-</span> <span class="n">fk</span><span class="p">)</span>
+             <span class="n">fn1</span>       <span class="o">=</span> <span class="n">fk1</span><span class="o">^</span><span class="mi">2</span> <span class="o">+</span> <span class="n">fk</span><span class="o">^</span><span class="mi">2</span>
+         <span class="kr">in</span> <span class="kr">if</span> <span class="n">mod</span> <span class="n">n</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="kr">then</span> <span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">fn1</span><span class="p">)</span>
+            <span class="kr">else</span> <span class="p">(</span><span class="n">fn1</span><span class="p">,</span> <span class="n">fn</span> <span class="o">+</span> <span class="n">fn1</span><span class="p">)</span>
+
+<span class="n">fib</span> <span class="o">::</span> <span class="kt">Int</span> <span class="o">-&gt;</span> <span class="kt">Integer</span>
+<span class="n">fib</span> <span class="n">n</span> <span class="o">=</span> <span class="n">fn</span> <span class="kr">where</span> <span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="kr">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">fib_</span> <span class="n">n</span>
+</code></pre></div></div>
+
+<p>Another way to see this is to think of the previously mentioned transformation \(T\) as a special case of \(T_{pq}(a, b) = (a (q + p) + bq, aq + bp)\) when \(p = 0, q = 1\).
+It is then always possible to find \(p', q'\) such that \(T_{p'q'} = T_{pq}^2\): just let \(p' = q^2 + p^2\) and \(q' = q^2 + 2qp\).
+Let <code class="language-plaintext highlighter-rouge">n</code> be the number of transformations that need to be applied.
+Then for each step, if <code class="language-plaintext highlighter-rouge">n</code> is odd we simply apply the transformation and go to the next iteration; otherwise <code class="language-plaintext highlighter-rouge">n</code> is even and we change <code class="language-plaintext highlighter-rouge">p</code> and <code class="language-plaintext highlighter-rouge">q</code> such that only half the number of transformations is now needed.
+This is an exercise in Abelson &amp; Sussman’s classic, <a href="https://mitpress.mit.edu/sites/default/files/sicp/full-text/book/book-Z-H-11.html#footnote_Temp_70">Structure and Interpretation
+of Computer Programs</a> (a.k.a. “The Wizard Book”).</p>
+
+<div class="language-scheme highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="k">define</span> <span class="p">(</span><span class="nf">fib</span> <span class="nv">n</span><span class="p">)</span>
+  <span class="p">(</span><span class="k">let</span> <span class="nv">iter</span> <span class="p">([</span><span class="nf">p</span> <span class="mi">0</span><span class="p">]</span> <span class="p">[</span><span class="nf">q</span> <span class="mi">1</span><span class="p">]</span> <span class="p">[</span><span class="nf">n</span> <span class="nv">n</span><span class="p">]</span> <span class="p">[</span><span class="nf">a</span> <span class="mi">1</span><span class="p">]</span> <span class="p">[</span><span class="nf">b</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="p">(</span><span class="k">cond</span> <span class="p">[(</span><span class="nb">&lt;=</span> <span class="nv">n</span> <span class="mi">0</span><span class="p">)</span> <span class="nv">b</span><span class="p">]</span>
+          <span class="p">[(</span><span class="nb">even?</span> <span class="nv">n</span><span class="p">)</span>
+           <span class="p">(</span><span class="nf">iter</span> <span class="p">(</span><span class="nb">+</span> <span class="p">(</span><span class="nb">*</span> <span class="nv">q</span> <span class="nv">q</span><span class="p">)</span> <span class="p">(</span><span class="nb">*</span> <span class="nv">p</span> <span class="nv">p</span><span class="p">))</span>
+                 <span class="p">(</span><span class="nb">+</span> <span class="p">(</span><span class="nb">*</span> <span class="nv">q</span> <span class="nv">q</span><span class="p">)</span> <span class="p">(</span><span class="nb">*</span> <span class="mi">2</span> <span class="nv">p</span> <span class="nv">q</span><span class="p">))</span>
+                 <span class="p">(</span><span class="nb">/</span> <span class="nv">n</span> <span class="mi">2</span><span class="p">)</span> <span class="nv">a</span> <span class="nv">b</span><span class="p">)]</span>
+          <span class="p">[</span><span class="k">else</span>
+           <span class="p">(</span><span class="nf">iter</span> <span class="nv">p</span> <span class="nv">q</span> <span class="p">(</span><span class="nb">-</span> <span class="nv">n</span> <span class="mi">1</span><span class="p">)</span>
+                 <span class="p">(</span><span class="nb">+</span> <span class="p">(</span><span class="nb">*</span> <span class="nv">a</span> <span class="p">(</span><span class="nb">+</span> <span class="nv">q</span> <span class="nv">p</span><span class="p">))</span> <span class="p">(</span><span class="nb">*</span> <span class="nv">b</span> <span class="nv">q</span><span class="p">))</span>
+                 <span class="p">(</span><span class="nb">+</span> <span class="p">(</span><span class="nb">*</span> <span class="nv">a</span> <span class="nv">q</span><span class="p">)</span> <span class="p">(</span><span class="nb">*</span> <span class="nv">b</span> <span class="nv">p</span><span class="p">)))])))</span>
+</code></pre></div></div>
+
+<h2 id="memoization-and-streams">Memoization and Streams</h2>
+
+<p>Another common way to obtain Fibonacci numbers is to pre-compute them such that each input <code class="language-plaintext highlighter-rouge">n</code> maps to a memory location where \(F_n\) is stored.
+\(F_n\) can thus be thought of as a vector being indexed at its nth position.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fibs_</span> <span class="o">=</span> <span class="p">[</span><span class="n">fn</span> <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="nf">fibs</span><span class="p">(</span><span class="mi">1000</span><span class="p">)]</span> <span class="c1"># fibs is the generator
+</span>
+<span class="k">def</span> <span class="nf">memo_fib</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="nf">len</span><span class="p">(</span><span class="n">fibs_</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">fibs_</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">curr</span><span class="p">,</span> <span class="n">prev</span> <span class="o">=</span> <span class="n">fibs_</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">fibs_</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="nf">len</span><span class="p">(</span><span class="n">fibs_</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">prev</span><span class="p">,</span> <span class="n">curr</span> <span class="o">=</span> <span class="n">curr</span><span class="p">,</span> <span class="n">curr</span> <span class="o">+</span> <span class="n">prev</span>
+            <span class="n">fibs_</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">curr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">curr</span>
+</code></pre></div></div>
+
+<p>The Python code above allocates a chunk of memory and fills it sequentially with the Fibonacci sequence such that later accesses need no computation and could, theoretically, be made in \(\Theta(1)\) time.
+When the number is too far down the sequence and hasn’t been calculated yet, we start with the closest pair of Fibonacci numbers and continue to fill the vector until the desired number is reached.</p>
+
+<p>This approach may end up taking too much space, so there’s still some optimization to be done.
+Another issue is that memory is updated dynamically, requiring eventual reallocations and other such expensive operations.</p>
+
+<p>Using a language with better support for lambdas and first-class functions, we could turn this memoization / tabling technique into something a little more generic.
+In this case we use Guile’s hash-tables to map a procedure’s argument list to its cached results.</p>
+
+<div class="language-scheme highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">;; make a function that caches its past results</span>
+<span class="p">(</span><span class="k">define</span> <span class="p">(</span><span class="nf">memoize</span> <span class="nv">proc</span><span class="p">)</span>
+  <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nf">cache</span> <span class="p">(</span><span class="nf">make-table</span><span class="p">)))</span>
+    <span class="p">(</span><span class="k">define</span> <span class="p">(</span><span class="nf">delegate</span> <span class="o">.</span> <span class="nv">args</span><span class="p">)</span>
+      <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nf">hit</span> <span class="p">(</span><span class="nf">lookup</span> <span class="nv">cache</span> <span class="nv">args</span><span class="p">)))</span>
+        <span class="p">(</span><span class="k">or</span> <span class="nv">hit</span>
+            <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nf">result</span> <span class="p">(</span><span class="nb">apply</span> <span class="nv">proc</span> <span class="nv">args</span><span class="p">)))</span>
+              <span class="p">(</span><span class="nf">insert!</span> <span class="nv">cache</span> <span class="nv">args</span> <span class="nv">result</span><span class="p">)</span>
+              <span class="nv">result</span><span class="p">))))</span>
+    <span class="nv">delegate</span><span class="p">))</span>
+
+<span class="c1">;; GUILE specific</span>
+<span class="p">(</span><span class="k">define</span> <span class="nv">make-table</span> <span class="nv">make-hash-table</span><span class="p">)</span>
+<span class="p">(</span><span class="k">define</span> <span class="nv">lookup</span> <span class="nv">hash-ref</span><span class="p">)</span>
+<span class="p">(</span><span class="k">define</span> <span class="nv">insert!</span> <span class="nv">hash-set!</span><span class="p">)</span>
+
+<span class="c1">;; example</span>
+<span class="p">(</span><span class="k">define</span> <span class="nv">memo-fib</span>
+  <span class="p">(</span><span class="nf">memoize</span>
+    <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nf">n</span><span class="p">)</span>
+      <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">&lt;=</span> <span class="nv">n</span> <span class="mi">1</span><span class="p">)</span> <span class="nv">n</span>
+          <span class="p">(</span><span class="nb">+</span> <span class="p">(</span><span class="nf">memo-fib</span> <span class="p">(</span><span class="nb">-</span> <span class="nv">n</span> <span class="mi">1</span><span class="p">))</span> <span class="p">(</span><span class="nf">memo-fib</span> <span class="p">(</span><span class="nb">-</span> <span class="nv">n</span> <span class="mi">2</span><span class="p">)))))))</span>
+</code></pre></div></div>
+
+<p>This memoization process can be thought of as a data structure which contains past results and generates new ones on demand.
+The same thing happens with <a href="https://en.wikipedia.org/wiki/Lazy_evaluation">lazy</a> lists, which are potentially infinite data structures also known as streams.
+Haskell, being a lazy programming language, has this behaviour by default:</p>
+
+<div class="language-haskell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fibs</span> <span class="o">::</span> <span class="kt">Integer</span> <span class="o">-&gt;</span> <span class="kt">Integer</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="n">fibs</span> <span class="n">prev</span> <span class="n">curr</span> <span class="o">=</span> <span class="n">prev</span> <span class="o">:</span> <span class="n">fibs</span> <span class="n">curr</span> <span class="p">(</span><span class="n">prev</span> <span class="o">+</span> <span class="n">curr</span><span class="p">)</span>
+
+<span class="n">main</span> <span class="o">=</span> <span class="kr">do</span>
+    <span class="kr">let</span> <span class="n">fib</span> <span class="o">=</span> <span class="n">fibs</span> <span class="mi">0</span> <span class="mi">1</span> <span class="c1">-- fib contains the entire sequence</span>
+    <span class="n">print</span> <span class="p">(</span><span class="n">fib</span> <span class="o">!!</span> <span class="mi">47</span><span class="p">)</span>  <span class="c1">-- Fn = fib !! n</span>
+</code></pre></div></div>
+
+<p>The snippet above shows a possibly infinite list named <code class="language-plaintext highlighter-rouge">fib</code> which contains the whole Fibonacci sequence.
+It is returned by the function <code class="language-plaintext highlighter-rouge">fibs</code> in constant time and each indexing operation on it sequentially computes Fibonacci numbers while storing past results in the beggining of the list.</p>
+
+<h2 id="negafibonacci">Negafibonacci</h2>
+
+<p>All of the techniques and algorithms shown so far consider the Fibonacci sequence to be indexed by natural numbers.
+Most implementations seen in the wild also make this assumption, sometimes throwing an error when negative integers are used, others just blatantly ignoring these inputs.</p>
+
+<p>The sequence can be easily extended with the “Negafibonacci” numbers by following</p>
+
+\[F_n = F_{n-1} + F_{n-2}\\
+F_{n-2} = F_n - F_{n-1}\]
+
+<p>which leads us to</p>
+
+\[F_{-1} = F_{1} - F_{0} = 1 - 0 = 1\\
+F_{-2} = F_{0} - F_{-1} = 0 - 1 = -1\\
+F_{-3} = ... = 2\\
+F_{-4} = -3\\
+F_{-5} = 5\\
+...\]
+
+<p>It is then easy to notice that whenever \(n &lt; 0\)</p>
+
+<p>\(F(n) = F(-n)\) if \(n\) is odd, and</p>
+
+<p>\(F(n) = -F(-n)\) if \(n\) is instead even.</p>
+
+<p>Some may be tempted to write this in the mathematically equivalent form</p>
+
+\[F(n &lt; 0) = (-1)^{n-1} F(-n)\]
+
+<p>but I personally discourage doing this in actual code as it makes it much less evident what the property is and may lead to an expensive exponentiation process just to get the right sign when compared to a simple conditional:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fn</span> <span class="o">=</span> <span class="nf">fib</span><span class="p">(</span><span class="nf">abs</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+<span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">fn</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">fn</span>
+</code></pre></div></div>
+
+<h2 id="tldr">TL;DR</h2>
+
+<p>If you came here to see a code snippet with a final, optimal algorithm for Fibonacci numbers, then I’m sorry to disappoint you.
+Instead, the conclusion of this overly long post is that there will always be many ways to compute something, each with its own tradeoffs.</p>
+
+<p>In the end, though, I can say that:</p>
+
+<ul>
+  <li>Unless you’re benchmarking something, forget about the double-recursive procedure.</li>
+  <li>The sequence grows exponentially, so bignums are a must.</li>
+  <li>When Fibonacci numbers are only required sparsely, use some form of the fast transform to guarantee \(\Theta(\log_2 n)\) time and \(\Theta(1)\) space complexity.</li>
+  <li>A generator is a very clean way to iterate through Fibonacci numbers sequentially.</li>
+  <li>If the whole sequence – or perhaps some slice of it – is needed, streams are the way to go.</li>
+  <li>Dynamic memoization and/or static tabling is the approach people usually suggest to optimize Fibonacci numbers, but the memory overhead is hardly ever worth it: consider using the fast transform instead.
+Of course, if a value can be statically optimized (during compilation, for instance, with C++’s <code class="language-plaintext highlighter-rouge">constexpr</code>), then this is usually preferred.</li>
+  <li>Translating math directly into code usually turns out terribly inefficient (see the double-recursive procedure), but using it smartly gives you very useful properties (see the FFT).</li>
+  <li>Knowing different programming languages gives insight into useful techniques you wouldn’t normally consider.</li>
+</ul>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/#algorithms" class="page__taxonomy-item p-category" rel="tag">algorithms</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/categories/#tutorial" class="page__taxonomy-item p-category" rel="tag">tutorial</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2020-01-15T00:00:00+00:00">January 15, 2020</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/tutorial/quartus-linux/" class="pagination--pager" title="How to install Quartus II on Linux
+">Previous</a>
+    
+    
+      <a href="/rant/d-woes/" class="pagination--pager" title="Dlang Woes
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    
+<div class="page__related">
+  
+  <h2 class="page__related-title">You may also enjoy</h2>
+  <div class="grid__wrapper">
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/htb-cyber-apocalypse-2025/cave-expedition-decrypt.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/writeup/htb-cyber-apocalypse-2025/" rel="permalink">HTB Cyber Apocalypse CTF 2025
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-03-26T00:00:00+00:00">March 26, 2025</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Writeups for 3 challenges, each in a different category
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/arch-rice.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/arch-awesomewm/" rel="permalink">How to set up an X-based desktop from scratch
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-07-27T00:00:00+00:00">July 27, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 4: From TTY to graphical desktop
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/os-ubuntu.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/ubuntu-lvmcache/" rel="permalink">How to set up lvmcache across LUKS-encrypted partitions
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-07-14T00:00:00+00:00">July 14, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 3: Encrypted hybrid storage
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/refind.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/arch-btrfs-luks-raid/" rel="permalink">How to install Arch on Btrfs with LUKS encryption and software RAID1
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-05-17T00:00:00+00:00">May 17, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 2: I use Arch, btw
+</p>
+  </article>
+</div>
+
+    
+  </div>
+</div>
+
+  
+  
+</div>
+
+      
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 <a href="https://www.baioc.dev">Gabriel B. Sant'Anna</a></div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+  </body>
+</html>

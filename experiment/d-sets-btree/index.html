@@ -1,0 +1,873 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.26.2 by Michael Rose
+  Copyright 2013-2024 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>On the performance of D sets | baioc</title>
+<meta name="description" content="Better than C++, but we can still do betterC">
+
+
+  <meta name="author" content="Gabriel B. Sant'Anna">
+  
+  <meta property="article:author" content="Gabriel B. Sant'Anna">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="baioc">
+<meta property="og:title" content="On the performance of D sets">
+<meta property="og:url" content="https://www.baioc.dev/experiment/d-sets-btree/">
+
+
+  <meta property="og:description" content="Better than C++, but we can still do betterC">
+
+
+
+  <meta property="og:image" content="https://www.baioc.dev/assets/images/eris/sets-upsert-int.png">
+
+
+
+
+
+  <meta property="article:published_time" content="2023-07-04T00:00:00+00:00">
+
+
+
+  <meta property="article:modified_time" content="2023-07-11T00:00:00+00:00">
+
+
+
+
+<link rel="canonical" href="https://www.baioc.dev/experiment/d-sets-btree/">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="baioc Feed">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script type="text/javascript">
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+
+  
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single long">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Home
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a
+                href="/portfolio/"
+                
+                
+              >Portfolio</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/resume/"
+                
+                
+              >Resume</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/blog/"
+                
+                
+              >Blog</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="On the performance of D sets">
+    <meta itemprop="description" content="Better than C++, but we can still do betterC">
+    <meta itemprop="datePublished" content="2023-07-04T00:00:00+00:00">
+    <meta itemprop="dateModified" content="2023-07-11T00:00:00+00:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="https://www.baioc.dev/experiment/d-sets-btree/" itemprop="url">On the performance of D sets
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2023-07-04T00:00:00+00:00">July 4, 2023</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right sticky">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-bars"></i> Contents</h4></header>
+              <ul class="toc__menu"><li><a href="#experimental-setup">Experimental Setup</a></li><li><a href="#aa-as-set-vs-stdcontainerrbtree">AA-as-set vs std.container.rbtree</a></li><li><a href="#d-vs-c">D vs C++</a></li><li><a href="#b-tree-container">B-Tree Container</a></li><li><a href="#bigger-elements">Bigger Elements</a></li><li><a href="#checking-assumptions">Checking Assumptions</a></li><li><a href="#whats-next">What’s Next</a></li></ul>
+            </nav>
+          </aside>
+        
+        <p>If I google “dlang sets”, the first result is <a href="https://forum.dlang.org/post/pzrahdwnnphcmdaevaln@forum.dlang.org">this forum post, “How to use sets in D?”</a>.
+The main alternatives, brought up in the replies, consist of using <a href="https://dlang.org/phobos/std_container_rbtree.html">std.container.rbtree</a> or making a custom wrapper around the built-in associative arrays (AAs).
+I’ll explore and compare the performance of those options, then try to come up with something better and, more importantly, something that works in <a href="https://dlang.org/spec/betterc.html">DasBetterC</a> mode.</p>
+
+<h2 id="experimental-setup">Experimental Setup</h2>
+
+<p>I’ve written four small parameterized benchmarks, one for each relevant operation on a mutable set data type:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">upsert</code>: creates an empty set container and upserts \(n\) random elements (of a given element type), measuring elapsed CPU time of all \(n\) insertions.</li>
+  <li><code class="language-plaintext highlighter-rouge">lookupFind</code>: inserts \(n\) random elements, then looks up these same elements in the set (checking that they were found), while measuring only the lookups.</li>
+  <li><code class="language-plaintext highlighter-rouge">lookupFail</code>: inserts \(2n\) random elements, removes the first \(n\), then looks them up (checking that they were NOT found).</li>
+  <li><code class="language-plaintext highlighter-rouge">remove</code>: inserts \(n\) random elements, then removes them one by one, measuring only removals.</li>
+</ul>
+
+<p>In each of these, we measure elapsed CPU time (using <code class="language-plaintext highlighter-rouge">clock</code>) of performing all \(n\) operations.
+Then, we repeat that 30 times in order to eliminate some measurement noise.
+All elements are randomized once (using <code class="language-plaintext highlighter-rouge">rand</code>), in the very beginning of the test, with a fixed random seed, and the D garbage collector (GC) is executed before each of those repetitions.
+Finally, we vary \(n\) across powers of two, \(2^{4} \le n \le 2^{20}\).</p>
+
+<p>Since the payload does not change while repeating each experiment, we estimate performance using <a href="https://arxiv.org/abs/1608.04295">Chen and Revel’s</a> model: if \(measuredTime = realTime + randomDelay\), and \(randomDelay\) is always non-negative (the system can become slower at times due to other processes running, but not randomly faster), then the minimum value we can obtain of \(measureTime\) should be the best estimate of \(realTime\).
+Once we have the estimate of how long it takes to perform an operation \(n\) times, we’ll report that time normalized by the number of repetitions, that is, \(estimateTime(n) \div n\).</p>
+
+<p>AAs and <code class="language-plaintext highlighter-rouge">std.container.rbtree</code> both lack support for custom allocators, which makes it really hard to precisely measure their memory usage.
+I’m aware of <a href="https://dlang.org/phobos/core_memory.html#.GC">core.memory.GC</a>, but it didn’t work as expected when I tried it and it could never be as precise as a custom allocator anyhow.
+Since I’m lazy, I chose to use GNU <code class="language-plaintext highlighter-rouge">time</code>’s report of resident set size (RSS) as a single way to measure memory usage across D, C and C++ programs.</p>
+
+<p>GNU time can be used to report the maximum RSS of a program, and in each experiment that should correspond to the point in <code class="language-plaintext highlighter-rouge">lookupFail</code> after inserting \(2n\) elements.
+Then, we could get a (very rough) estimate of memory usage per element by dividing that value by the number of elements in each set.
+It should be noted, however, that these \(2n\) elements were generated at random and are being deduplicated by the set, so the <a href="https://en.wikipedia.org/wiki/Birthday_problem">birthday problem</a> applies more and more as \(n\) grows.
+Therefore, we also need to record the maximum number of elements stored in the set during a program run.
+We also note that, for small \(n\), we expect max RSS to be incredibly imprecise, since most of it is being used by the language runtime.</p>
+
+<p>For the sake of completeness, here’s more information about the system these micro-benchmarks ran on:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CPU: Intel i7-6700HQ (8) @ 3.500GHz
+Caches (L1d, L1i, L2, L3): 128 KiB, 128 KiB, 1 MiB, 6 MiB
+Memory: 16 GiB
+OS: Pop!_OS 22.04 LTS x86_64
+Kernel: Linux 6.2.6-76060206-generic
+D compiler: ldc2 1.32.2
+D flags: -O -release -inline -boundscheck=off
+C++ compiler: g++ (Ubuntu 11.3.0-1ubuntu1~22.04.1) 11.3.0
+C++ flags: -std=c++17 -O3
+time: time (GNU Time) UNKNOWN
+Shell: bash 5.1.16
+</code></pre></div></div>
+
+<p>And <a href="/assets/docs/sets-raw.csv">here’s</a> a table with raw experimental results.</p>
+
+<h2 id="aa-as-set-vs-stdcontainerrbtree">AA-as-set vs std.container.rbtree</h2>
+
+<p>If we limit ourselves to the D runtime and standard library, we’ll be comparing hash-tables (AAs) and red-black trees (<code class="language-plaintext highlighter-rouge">std.container.rbtree</code>).
+Since our inputs follow a uniform distribution, their hashes ought to be uniformly distributed as well, which is pretty much the ideal situation for hash tables.
+Therefore, I expect the AA-based set to have much faster (average \(\mathcal{O}(1)\)) lookups than the tree-based set (\(\Theta(log_2 n)\)), and for lookup time to dominate other operations as well.</p>
+
+<figure class=""><a href="/assets/images/eris/D-lookupFind-int.png" class="image-popup"><img src="/assets/images/eris/D-lookupFind-int.png" alt="D lookupFind - int" /></a></figure>
+
+<figure class=""><a href="/assets/images/eris/D-lookupFail-int.png" class="image-popup"><img src="/assets/images/eris/D-lookupFail-int.png" alt="D lookupFail - int" /></a></figure>
+
+<p>The two graphs above show results for <code class="language-plaintext highlighter-rouge">lookupFind</code> and <code class="language-plaintext highlighter-rouge">lookupFail</code>, respectively, using integer elements.
+As predicted, AAs exhibit near-constant time complexity.
+Meanwhile, lookups on the tree-based set become logarithmically slower as \(n\) increases – it only looks linear in our graphs because of the logarithmic scale on the horizontal axis.</p>
+
+<p>The graph of our tree-based set looks like two connected lines, with the second having a larger slope.
+I’m guessing this happens because, after a certain point, we’re hitting the next level of the memory hierarchy much more frequently.
+Why do I think this?
+Well, my CPU’s L1d, L2 and L3 sizes are 128 KiB, 1 MiB and 6 MiB, respectively.
+Therefore, if we were to completely fill my L2 cache with 4-byte integers, it would fit at most \(262,144\) elements.
+Since our data structures are never as memory-efficient as a giant array with contiguous elements, we start hitting L3 a little earlier than \(n = 262,144\), and we see that that’s approximately where the slope changes.</p>
+
+<p>I won’t bother showing graphs for the other operations, since their shapes are pretty much the same.
+In fact, I’m only showing both <code class="language-plaintext highlighter-rouge">lookupFind</code> and <code class="language-plaintext highlighter-rouge">lookupFail</code> (and in the same vertical scale) to note that the difference between a successful and a non-successful lookup is much more significant in a tree-based set (find is 1.56x faster than fail at \(n = 2^{20}\)) than in a hash-based set (resp. 1.18x).
+Here’s a table summarizing the relative perfomance of these sets at a few input sizes:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Operation</th>
+      <th style="text-align: right">AA speedup at \(n = 2^{7}\)</th>
+      <th style="text-align: right">\(n = 2^{10}\)</th>
+      <th style="text-align: right">\(n = 2^{20}\)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">upsert</code></td>
+      <td style="text-align: right"><span style="color:orange">0.92x</span></td>
+      <td style="text-align: right"><span style="color:green">1.74x</span></td>
+      <td style="text-align: right"><span style="color:green"> 3.53x</span></td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">lookupFind</code></td>
+      <td style="text-align: right"><span style="color:green">1.50x</span></td>
+      <td style="text-align: right"><span style="color:green">5.00x</span></td>
+      <td style="text-align: right"><span style="color:green">10.17x</span></td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">lookupFail</code></td>
+      <td style="text-align: right"><span style="color:green">2.50x</span></td>
+      <td style="text-align: right"><span style="color:green">3.94x</span></td>
+      <td style="text-align: right"><span style="color:green">13.43x</span></td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">remove</code></td>
+      <td style="text-align: right"><span style="color:green">1.67x</span></td>
+      <td style="text-align: right"><span style="color:green">4.60x</span></td>
+      <td style="text-align: right"><span style="color:green">11.60x</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>It’s pretty clear that using AAs instead of <code class="language-plaintext highlighter-rouge">std.container.rbtree</code> should be preferred whenever you don’t need in-order iteration over set elements, as the performance gains range from pretty small to an order of magnitude (on most operations).
+That is, of course, if you can get a uniform distribution of hashes.</p>
+
+<p>For memory results, see the next section.</p>
+
+<h2 id="d-vs-c">D vs C++</h2>
+
+<p>Some people consider D to be a successor to C++, so I’m also interested in comparing the set data structures in each language’s standard libraries.
+So, after some messing around with C++’s terrible templates and macros, I’ve ported our micro-benchmark program in order to add <code class="language-plaintext highlighter-rouge">std::set</code> and <code class="language-plaintext highlighter-rouge">std::unordered_set</code> to our comparison.</p>
+
+<p>Before running anything, my expectations were that performance differences would come mainly from the different allocation strategies: garbage collection in D versus manual (de)allocations in C++.
+In particular, I expected D sets to have slightly faster removals due to the GC-deferred deallocations.
+I would normally expect allocations to be faster in C++ on average, but because the D GC is being executed before each round of operations, it shouldn’t affect upserts that much.
+I also expected memory usage to be higher in D, mainly due to its heavier runtime.</p>
+
+<p>Since tree-based and hash-based sets have quite a big performance gap in these benchmarks, we’ll separate these two groups.
+With that said, let’s start with the tree-based containers, <code class="language-plaintext highlighter-rouge">std.container.rbtree</code> and <code class="language-plaintext highlighter-rouge">std::set</code> (charts below).
+Both have very similar performance (which is to be expected, since they’re both red-black trees), but the D version is usually a bit faster at larger \(n\).
+I was a bit surprised by the performance of upserts, which are faster in the C++ version for sets with less than a hundred thousand elements.
+This might be related to the performance of memory allocation with the D GC, as opposed to C++’s <code class="language-plaintext highlighter-rouge">new</code>.</p>
+
+<figure class=""><a href="/assets/images/eris/C++-tree-upsert-int.png" class="image-popup"><img src="/assets/images/eris/C++-tree-upsert-int.png" alt="D vs C++ - tree-based set - upsert - int" /></a></figure>
+
+<figure class=""><a href="/assets/images/eris/C++-tree-lookupFind-int.png" class="image-popup"><img src="/assets/images/eris/C++-tree-lookupFind-int.png" alt="D vs C++ - tree-based set - lookupFind - int" /></a></figure>
+
+<figure class=""><a href="/assets/images/eris/C++-tree-remove-int.png" class="image-popup"><img src="/assets/images/eris/C++-tree-remove-int.png" alt="D vs C++ - tree-based set - remove - int" /></a></figure>
+
+<p>Our hash-based set comparison went similarly, with the D version being slightly faster on lookups, but slightly slower on insertions.
+There was a bigger difference in removal performance in this group, with D AAs being consistently faster than <code class="language-plaintext highlighter-rouge">std::unordered_set</code>.
+Removal speedups range from ~1.5x, up to 4.25x for bigger sets.
+Once again, this might be explained by the different deallocation strategies; after all, D memory is only actually being deallocated during GC cycles, which either happen on insertions, or before the next experiment repetition (a manually-triggered full GC cycle which is not measured).</p>
+
+<figure class=""><a href="/assets/images/eris/C++-hash-upsert-int.png" class="image-popup"><img src="/assets/images/eris/C++-hash-upsert-int.png" alt="D vs C++ - hash-based set - upsert - int" /></a></figure>
+
+<figure class=""><a href="/assets/images/eris/C++-hash-lookupFind-int.png" class="image-popup"><img src="/assets/images/eris/C++-hash-lookupFind-int.png" alt="D vs C++ - hash-based set - lookupFind - int" /></a></figure>
+
+<figure class=""><a href="/assets/images/eris/C++-hash-remove-int.png" class="image-popup"><img src="/assets/images/eris/C++-hash-remove-int.png" alt="D vs C++ - hash-based set - remove - int" /></a></figure>
+
+<p>As for memory usage, here’s how our sets compare (graph below, but note the logarithmic scale on the vertical axis this time).
+Once again, we’re normalizing our estimate of memory usage by the number of elements in each set.
+As expected of our chosen memory metric (maximum process RSS), this leads to a huge overstatement of how much each element actually takes, at least for small \(n\).
+Therefore, this measurement is better interpreted as “what is the maximum amount of bytes each element could be taking, assuming nothing else in the entire program contributed to RSS”.
+For larger \(n\), however, I expect this estimate to tend towards the real per-element memory usage.</p>
+
+<figure class=""><a href="/assets/images/eris/sets-rss-int.png" class="image-popup"><img src="/assets/images/eris/sets-rss-int.png" alt="set containers - memory usage - max rss per element - int" /></a></figure>
+
+<p>Assuming the measure for our largest \(n\) is the better estimate, we end up with the following:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">container</th>
+      <th style="text-align: right">max RSS per element (bytes)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">AA-as-set</td>
+      <td style="text-align: right">2759 B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">std.container.rbtree</code></td>
+      <td style="text-align: right">2371 B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">std::set</code></td>
+      <td style="text-align: right">51 B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">std::unordered_set</code></td>
+      <td style="text-align: right">46 B</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">eris.btree</code></td>
+      <td style="text-align: right">12 B</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>While final values for the C++ containers seem reasonable, that’s far from true for the D sets.
+I expected D’s heavier runtime to inflate memory usage measurements, and we can see that in the left part of the graph as a roughly constant offset between the logarithmic curves of D and C++ containers.
+As we increased \(n\), the C++ programs started to converge towards something close to the true memory usage per element, but the D ones kept to a maximum RSS two orders of magnitude higher.
+Remember that max RSS stands for the greatest amount of physical memory the process occupied during its entire execution.
+Since both AAs and <code class="language-plaintext highlighter-rouge">std.container.rbtree</code> make heavy use of the GC, I assume that is what’s keeping the RSS high; perhaps it keeps freed memory around in order to reuse it later, instead of giving it back to the operating system.</p>
+
+<p>Something you might notice in the last chart is that it includes memory usage for another set container, <code class="language-plaintext highlighter-rouge">eris.btree</code>.
+That’s my custom B-tree, which is implemented in D, but uses a custom allocator (based on <code class="language-plaintext highlighter-rouge">malloc</code> and <code class="language-plaintext highlighter-rouge">free</code>) instead of the D GC.
+We can see that, despite being implemented in D (and being run with the same heavier runtime), this data structure has similar behaviour to the C++ ones with respect to our measure of memory usage, beating them by approximately 4x at \(n = 2^{20}\).
+This also strenghtens the argument that the huge max RSS per element, obtained when benchmarking the D containers, is due to their usage of the GC and probably not even close to true memory usage (if only they supported custom allocators …).</p>
+
+<p>The next section compares my custom <code class="language-plaintext highlighter-rouge">eris.btree</code> container with the other sets we’ve seen so far.</p>
+
+<h2 id="b-tree-container">B-Tree Container</h2>
+
+<p>While D’s standard set containers have roughly equivalent (often slightly better) performance compared to their C++ counterparts, it turns out that C++ standard set containers are not actually that good to begin with.
+From what I could gather, these standard containers can’t be the fastest possible data types due to requirements of reference and iterator stability across mutating operations on the containers, as well as a few requirements related to const-correctness.
+This means that <code class="language-plaintext highlighter-rouge">std::set</code> (like <code class="language-plaintext highlighter-rouge">std::map</code>) pretty much has to be implemented with a binary tree (a red-black tree, to be more precise), and that <code class="language-plaintext highlighter-rouge">std::unordered_set</code> (like <code class="language-plaintext highlighter-rouge">std::unordered_map</code>) can’t use closed hashing (i.e. their hash table implementation has to use separate chaining).
+All of these restrictions lead to worse performance, mainly through less-than-optimal cache usage.</p>
+
+<p>As far as I know, relational databases rely on B+ and B-trees because these data structures provide increased data locality on each node and, due to a fan-out that’s much higher than a binary tree, less pointer chasing when going down the tree.
+While these factors are especially relevant for data structures using hard disks as their underlying storage, <a href="https://panthema.net/2007/stx-btree/speedtest/">they also apply to in-memory data strucutres</a>.
+Therefore, I figured that a simple B-tree-based set would provide a good contestant against D and C++ standard containers.
+Let’s check the results:</p>
+
+<figure class=""><a href="/assets/images/eris/sets-upsert-int.png" class="image-popup"><img src="/assets/images/eris/sets-upsert-int.png" alt="set containers - upsert - int" /></a></figure>
+
+<figure class=""><a href="/assets/images/eris/sets-lookupFind-int.png" class="image-popup"><img src="/assets/images/eris/sets-lookupFind-int.png" alt="set containers - lookupFind - int" /></a></figure>
+
+<figure class=""><a href="/assets/images/eris/sets-lookupFail-int.png" class="image-popup"><img src="/assets/images/eris/sets-lookupFail-int.png" alt="set containers - lookupFail - int" /></a></figure>
+
+<figure class=""><a href="/assets/images/eris/sets-remove-int.png" class="image-popup"><img src="/assets/images/eris/sets-remove-int.png" alt="set containers - remove - int" /></a></figure>
+
+<p>As we can see, for \(2^{14} \le n \le 2^{20}\), the performance of our B-tree is closer to hash-based sets than tree-based ones.
+B-tree operations have a theoretical time complexity of \(\Theta(log_m n)\), for some constant \(m \gt 2\); as \(m\) (the order of the B-tree) increases, this becomes “effectively \(\mathcal{O}(1)\)” for any real-world \(n\), which is precisely what we’re observing in these results.
+If you prefer relative speedups, here’s how our B-tree compares to other sets at \(n = 2^{20}\):</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">container / operation</th>
+      <th style="text-align: right"><code class="language-plaintext highlighter-rouge">upsert</code></th>
+      <th style="text-align: right"><code class="language-plaintext highlighter-rouge">lookupFind</code></th>
+      <th style="text-align: right"><code class="language-plaintext highlighter-rouge">lookupFail</code></th>
+      <th style="text-align: right"><code class="language-plaintext highlighter-rouge">remove</code></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">AA-as-set</td>
+      <td style="text-align: right"><span style="color:orange">1.09x</span></td>
+      <td style="text-align: right"><span style="color:red">0.40x</span></td>
+      <td style="text-align: right"><span style="color:red">0.32x</span></td>
+      <td style="text-align: right"><span style="color:red">0.35x</span></td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">std::set</code></td>
+      <td style="text-align: right"><span style="color:green">4.31x</span></td>
+      <td style="text-align: right"><span style="color:green">7.27x</span></td>
+      <td style="text-align: right"><span style="color:green">4.70x</span></td>
+      <td style="text-align: right"><span style="color:green">5.93x</span></td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">std::unordered_set</code></td>
+      <td style="text-align: right"><span style="color:green">2.02x</span></td>
+      <td style="text-align: right"><span style="color:red">0.58x</span></td>
+      <td style="text-align: right"><span style="color:red">0.42x</span></td>
+      <td style="text-align: right"><span style="color:green">1.50x</span></td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">std.container.rbtree</code></td>
+      <td style="text-align: right"><span style="color:green">3.86x</span></td>
+      <td style="text-align: right"><span style="color:green">4.02x</span></td>
+      <td style="text-align: right"><span style="color:green">4.29x</span></td>
+      <td style="text-align: right"><span style="color:green">4.10x</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Looking at just the tree-based containers, we can see speedups of approximately 4x (and up to ~7x) across the board by using our custom B-tree-based set.
+In most cases, we still fall behind the hash-based containers, albeit by less than the order-of-magnitude margin they had over the red-black trees.
+The exception here is <code class="language-plaintext highlighter-rouge">upsert</code>, where the B-tree gets a little faster than the hash tables.
+As for memory, we covered that in the previous section already.</p>
+
+<p>A B-tree’s main disadvantage is the fact that mutating operations may need to move multiple elements around in memory.
+This invalidates iterators and references to internally-held elements, but may also decrease performance for bigger elements.</p>
+
+<h2 id="bigger-elements">Bigger Elements</h2>
+
+<p>A big part of “modern C++” is copy elision and move semantics.
+These features are supposed to interact nicely with RAII, and improve performance by avoiding unnecessary copies.
+While D also has some features to avoid copies, there’s definitely much less of a focus in that.
+Therefore, it should be interesting to compare our sets with bigger element types.
+In our case, we’ll use fixed-size arrays, each with exactly 32 bytes; they’re ordered by <code class="language-plaintext highlighter-rouge">strncmp</code> and hashed by a 32-bit <a href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a function</a>
+(in the previous experiments, we were relying on each language’s built-in ordering and hashing functions for integers).</p>
+
+<p>In these benchmarks, I expected cache locality to play a smaller role, since fewer elements can fit in the cache now – our B-tree probably won’t get the same speedups it did before.
+To my surprise, the performance of C++’s <code class="language-plaintext highlighter-rouge">std::unordered_set</code> completely broke down with this bigger element type, to the point where I gave up on measuring its performance for any \(n &gt; 10,000\).
+I’m not sure what’s happening, but <code class="language-plaintext highlighter-rouge">std::unordered_set</code> behaves linearly when holding elements with 24+ bytes, and <a href="https://quick-bench.com/q/Akkh2rveMUZ5DSCXuDy-5_HRcik">this is reproducible</a> with clang as well.</p>
+
+<figure class=""><a href="/assets/images/eris/unordered_set-String32.png" class="image-popup"><img src="/assets/images/eris/unordered_set-String32.png" alt="std::unordered_set String32" /></a></figure>
+
+<p>After removing the problematic <code class="language-plaintext highlighter-rouge">std::unordered_set&lt;String32&gt;</code>, our results (disappointingly) match my expectations, with the performance of <code class="language-plaintext highlighter-rouge">eris.btree</code> falling behind the AA implementation, and getting closer to (albeit still faster than) the other tree-based sets.</p>
+
+<figure class=""><a href="/assets/images/eris/sets-upsert-String32.png" class="image-popup"><img src="/assets/images/eris/sets-upsert-String32.png" alt="set containers - upsert - String32" /></a></figure>
+
+<figure class=""><a href="/assets/images/eris/sets-lookupFind-String32.png" class="image-popup"><img src="/assets/images/eris/sets-lookupFind-String32.png" alt="set containers - lookupFind - String32" /></a></figure>
+
+<figure class=""><a href="/assets/images/eris/sets-lookupFail-String32.png" class="image-popup"><img src="/assets/images/eris/sets-lookupFail-String32.png" alt="set containers - lookupFail - String32" /></a></figure>
+
+<figure class=""><a href="/assets/images/eris/sets-remove-String32.png" class="image-popup"><img src="/assets/images/eris/sets-remove-String32.png" alt="set containers - remove - String32" /></a></figure>
+
+<p>Here’s another speedup table for our B-tree at \(n = 2^{20}\):</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">container / operation</th>
+      <th style="text-align: right"><code class="language-plaintext highlighter-rouge">upsert</code></th>
+      <th style="text-align: right"><code class="language-plaintext highlighter-rouge">lookupFind</code></th>
+      <th style="text-align: right"><code class="language-plaintext highlighter-rouge">lookupFail</code></th>
+      <th style="text-align: right"><code class="language-plaintext highlighter-rouge">remove</code></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">AA-as-set</td>
+      <td style="text-align: right"><span style="color:red">0.35x</span></td>
+      <td style="text-align: right"><span style="color:red">0.20x</span></td>
+      <td style="text-align: right"><span style="color:red">0.16x</span></td>
+      <td style="text-align: right"><span style="color:red">0.17x</span></td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">std::set</code></td>
+      <td style="text-align: right"><span style="color:green">1.73x</span></td>
+      <td style="text-align: right"><span style="color:green">1.77x</span></td>
+      <td style="text-align: right"><span style="color:green">1.51x</span></td>
+      <td style="text-align: right"><span style="color:green">1.59x</span></td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code class="language-plaintext highlighter-rouge">std.container.rbtree</code></td>
+      <td style="text-align: right"><span style="color:green">1.37x</span></td>
+      <td style="text-align: right"><span style="color:orange">0.98x</span></td>
+      <td style="text-align: right"><span style="color:green">1.57x</span></td>
+      <td style="text-align: right"><span style="color:green">1.22x</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="checking-assumptions">Checking Assumptions</h2>
+
+<p>As I explained previously, I’m estimating time by picking the minimum measurement across 30 repetitions of each experiment.
+This might be surprising for some of you, who would have expected a report of average timing instead.
+I did some research on benchmarking techniques, and professional teams seem to prefer percentiles when measuring application performance.
+This is because most benchmark results don’t actually follow normal distributions, where mean and standard deviation would do the job.</p>
+
+<p>Since we already have the data for that, we can perform a simple normality test to check whether we should have used the mean instead.
+For each of our parameterized experiments, we collect minimum, maximum, mean and the standard deviation of our 30 measurements.
+With these, we can compute the z-score of our extrema, and compare that to the 68-95-99.7 (a.k.a the \(1\sigma-2\sigma-3\sigma\)) rule.</p>
+
+<figure class=""><a href="/assets/images/eris/sets-normality-int.png" class="image-popup"><img src="/assets/images/eris/sets-normality-int.png" alt="set containers - normality test - int" /></a></figure>
+
+<p>As we can see, there are many \(3\sigma\) (and even \(4\sigma\)) events in our maximum measurements.
+These imply that modeling our performance with a normal distribution would lead us to underestimate how much deviation there really is in our measurements.
+At that point, average elapsed time is not as meaningful, and, since I’m lazy, I didn’t want to implement a more advanced statistics collector.</p>
+
+<h2 id="whats-next">What’s Next</h2>
+
+<p>For now, I’m satisfied with the performance my custom B-tree set was able to achieve.
+My next step is probably going to be improving its API before making it open-source.</p>
+
+<p>As for further benchmarks, we could try exploring other payloads.
+Due to the uniform distribution of our inputs, hash sets have the upper hand.
+It would be interesting to test how well that performance stands up to less-than-ideal hash distributions.</p>
+
+<p>At some point, I’ll also try to make a faster hash table in D (and make it <code class="language-plaintext highlighter-rouge">-betterC</code> compatible, of course).
+When I do, I’ll add it to these benchmarks as well, and maybe the next time I’ll be using the P50 percentile (the median), since now I have an efficient ordered set data structure which I can use to compute percentiles: <code class="language-plaintext highlighter-rouge">eris.btree</code>.</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/#algorithms" class="page__taxonomy-item p-category" rel="tag">algorithms</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/categories/#experiment" class="page__taxonomy-item p-category" rel="tag">experiment</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2023-07-11">July 11, 2023</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/rant/d-woes/" class="pagination--pager" title="Dlang Woes
+">Previous</a>
+    
+    
+      <a href="/rant/time-is-a-lie/" class="pagination--pager" title="Time is a Lie
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    
+<div class="page__related">
+  
+  <h2 class="page__related-title">You may also enjoy</h2>
+  <div class="grid__wrapper">
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/htb-cyber-apocalypse-2025/cave-expedition-decrypt.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/writeup/htb-cyber-apocalypse-2025/" rel="permalink">HTB Cyber Apocalypse CTF 2025
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-03-26T00:00:00+00:00">March 26, 2025</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Writeups for 3 challenges, each in a different category
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/arch-rice.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/arch-awesomewm/" rel="permalink">How to set up an X-based desktop from scratch
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-07-27T00:00:00+00:00">July 27, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 4: From TTY to graphical desktop
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/os-ubuntu.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/ubuntu-lvmcache/" rel="permalink">How to set up lvmcache across LUKS-encrypted partitions
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-07-14T00:00:00+00:00">July 14, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 3: Encrypted hybrid storage
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/refind.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/arch-btrfs-luks-raid/" rel="permalink">How to install Arch on Btrfs with LUKS encryption and software RAID1
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-05-17T00:00:00+00:00">May 17, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 2: I use Arch, btw
+</p>
+  </article>
+</div>
+
+    
+  </div>
+</div>
+
+  
+  
+</div>
+
+      
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 <a href="https://www.baioc.dev">Gabriel B. Sant'Anna</a></div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+  </body>
+</html>

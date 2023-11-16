@@ -1,0 +1,407 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.26.2 by Michael Rose
+  Copyright 2013-2024 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>S4PU - Simple Forth Processing Unit | baioc</title>
+<meta name="description" content="A stack-based 16-bit CPU architecture written in VHDL">
+
+
+  <meta name="author" content="Gabriel B. Sant'Anna">
+  
+  <meta property="article:author" content="Gabriel B. Sant'Anna">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="baioc">
+<meta property="og:title" content="S4PU - Simple Forth Processing Unit">
+<meta property="og:url" content="https://www.baioc.dev/portfolio/s4pu/">
+
+
+  <meta property="og:description" content="A stack-based 16-bit CPU architecture written in VHDL">
+
+
+
+  <meta property="og:image" content="https://www.baioc.dev/assets/images/s4pu.png">
+
+
+
+
+
+  <meta property="article:published_time" content="2025-11-28T05:18:00+00:00">
+
+
+
+  <meta property="article:modified_time" content="2018-11-10T00:00:00+00:00">
+
+
+
+
+<link rel="canonical" href="https://www.baioc.dev/portfolio/s4pu/">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="baioc Feed">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script type="text/javascript">
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+
+  
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Home
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a
+                href="/portfolio/"
+                
+                
+              >Portfolio</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/resume/"
+                
+                
+              >Resume</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/blog/"
+                
+                
+              >Blog</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+    <div class="author__avatar">
+      <a href="https://www.baioc.dev/">
+        <img src="/assets/images/photo.jpg" alt="Gabriel B. Sant'Anna" itemprop="image" class="u-photo">
+      </a>
+    </div>
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="https://www.baioc.dev/" itemprop="url">Gabriel B. Sant'Anna</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <p>Software / Linux / Cybersecurity</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+            <li><a href="https://github.com/baioc" rel="nofollow noopener noreferrer me" itemprop="sameAs"><i class="fab fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+            <li><a href="https://www.linkedin.com/in/baioc/" rel="nofollow noopener noreferrer me" itemprop="sameAs"><i class="fab fa-linkedin" aria-hidden="true"></i><span class="label">LinkedIn</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="S4PU - Simple Forth Processing Unit">
+    <meta itemprop="description" content="A stack-based 16-bit CPU architecture written in VHDL">
+    <meta itemprop="datePublished" content="2025-11-28T05:18:00+00:00">
+    <meta itemprop="dateModified" content="2018-11-10T00:00:00+00:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="https://www.baioc.dev/portfolio/s4pu/" itemprop="url">S4PU - Simple Forth Processing Unit
+</a>
+          </h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Simple Forth Processing Unit (S4PU) is a 16-bit stack-based CPU that explores some of the ideas seen on <a href="https://users.ece.cmu.edu/~koopman/stack_computers/index.html">Koopman’s “Stack Computers: the new wave”</a>.</p>
+
+<p><img src="/assets/images/s4pu.png" alt="S4PU" /></p>
+
+<h2 id="design">Design</h2>
+
+<p>The machine runs on a subset of the <a href="https://en.wikipedia.org/wiki/Forth_(programming_language)">Forth programming language</a> with 32 instructions, thus being considered a <a href="https://en.wikipedia.org/wiki/Minimal_instruction_set_computer">Minimal Instruction Set Computer (MISC)</a> architecture.
+It fits what Koopman calls the “ML0 design”:</p>
+<ul>
+  <li>Multiple Stacks: one dedicated to operating data and another to store return addresses.</li>
+  <li>Large Stack Buffer: although “large” is debatable, here it means the stack resides in on-chip memory and does not consume main memory bandwidth.</li>
+  <li>0-Operand: there are no operands associated with most instructions’ opcode, the top of the data stack is implicitly used instead.</li>
+</ul>
+
+<p>As is the case with most stack computers, S4PU’s strength and weakness is its simplicity.
+While performance levels will never reach those of pipelined superscalar processors, stack-based CPUs are generally simpler, cheaper and less power-hungry.
+This makes them suitable for applications such as embedded systems control.
+More importantly, designs such as this one are really simple and easy to understand – even more so than didatic <a href="https://en.wikipedia.org/wiki/MIPS_architecture">MIPS</a> implementations – and have their place, I believe, in teaching Computer Organization and Design.</p>
+
+<h2 id="implementation">Implementation</h2>
+
+<p>The processor was implemented in VHDL using Altera (which is now a part of Intel) <a href="https://en.wikipedia.org/wiki/Altera_Quartus">Quartus II</a> and synthesis was targeted at an EP2C35F672C6 chip from the Cyclone II family of FPGAs, so that it could be physically prototyped.
+Testbench simulations were performed in ModelSim.</p>
+
+<p>In order to program the CPU, a simple assembler program was developed in Python to translate S4PU’s assembly language into Memory Initialization File (.mif) format which was later loaded into the FPGA’s memory cells standing for the computer’s program memory.</p>
+
+<p class="notice--info">I’ve made the whole project, including documentation (pt-BR), available on <a href="https://gitlab.com/baioc/s4pu">GitLab</a>.</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2018-11-10">November 10, 2018</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/portfolio/pycg/" class="pagination--pager" title="PyCG
+">Previous</a>
+    
+    
+      <a href="/portfolio/seccom-ctf/" class="pagination--pager" title="Introdução a CTFs em Cibersegurança
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+      
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 <a href="https://www.baioc.dev">Gabriel B. Sant'Anna</a></div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+  </body>
+</html>

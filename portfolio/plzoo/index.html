@@ -1,0 +1,509 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.26.2 by Michael Rose
+  Copyright 2013-2024 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>My private PL Zoo | baioc</title>
+<meta name="description" content="Showcase of compilers and interpreters that implement toy Programming Languages">
+
+
+  <meta name="author" content="Gabriel B. Sant'Anna">
+  
+  <meta property="article:author" content="Gabriel B. Sant'Anna">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="baioc">
+<meta property="og:title" content="My private PL Zoo">
+<meta property="og:url" content="https://www.baioc.dev/portfolio/plzoo/">
+
+
+  <meta property="og:description" content="Showcase of compilers and interpreters that implement toy Programming Languages">
+
+
+
+  <meta property="og:image" content="https://www.baioc.dev/assets/images/scheme.png">
+
+
+
+
+
+  <meta property="article:published_time" content="2025-11-28T05:18:00+00:00">
+
+
+
+  <meta property="article:modified_time" content="2021-01-28T00:00:00+00:00">
+
+
+
+
+<link rel="canonical" href="https://www.baioc.dev/portfolio/plzoo/">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="baioc Feed">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script type="text/javascript">
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+
+  
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Home
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a
+                href="/portfolio/"
+                
+                
+              >Portfolio</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/resume/"
+                
+                
+              >Resume</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/blog/"
+                
+                
+              >Blog</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+    <div class="author__avatar">
+      <a href="https://www.baioc.dev/">
+        <img src="/assets/images/photo.jpg" alt="Gabriel B. Sant'Anna" itemprop="image" class="u-photo">
+      </a>
+    </div>
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="https://www.baioc.dev/" itemprop="url">Gabriel B. Sant'Anna</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <p>Software / Linux / Cybersecurity</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+            <li><a href="https://github.com/baioc" rel="nofollow noopener noreferrer me" itemprop="sameAs"><i class="fab fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+            <li><a href="https://www.linkedin.com/in/baioc/" rel="nofollow noopener noreferrer me" itemprop="sameAs"><i class="fab fa-linkedin" aria-hidden="true"></i><span class="label">LinkedIn</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="My private PL Zoo">
+    <meta itemprop="description" content="Showcase of compilers and interpreters that implement toy Programming Languages">
+    <meta itemprop="datePublished" content="2025-11-28T05:18:00+00:00">
+    <meta itemprop="dateModified" content="2021-01-28T00:00:00+00:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="https://www.baioc.dev/portfolio/plzoo/" itemprop="url">My private PL Zoo
+</a>
+          </h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right sticky">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-bars"></i> Contents</h4></header>
+              <ul class="toc__menu"><li><a href="#yet-another-scheme-metacircular-evaluator">Yet another Scheme Metacircular Evaluator</a></li><li><a href="#bytecode-compiler-and-vm-for-lox">Bytecode compiler and VM for Lox</a></li><li><a href="#a-minimal-basic-simulator">A minimal BASIC simulator</a></li><li><a href="#deca---a-compiled-subset-of-java">Deca - A compiled subset of Java</a></li><li><a href="#honorable-mentions">Honorable Mentions</a><ul><li><a href="#logic-programming-in-lisp">Logic programming in lisp</a></li><li><a href="#automata-compiling-macros">Automata-compiling macros</a></li><li><a href="#assembling-forth">Assembling Forth</a></li><li><a href="#java-embedded-scheme">Java-embedded Scheme</a></li></ul></li></ul>
+            </nav>
+          </aside>
+        
+        <p>After reading <a href="https://mitpress.mit.edu/sites/default/files/sicp/full-text/book/book.html">The Wizard Book</a> and going through <a href="https://www.youtube.com/playlist?list=PLE18841CABEA24090">The SICP lectures</a>, I found myself deeply interested in PL design and implementation.
+That naturally led me to further reading on the subject, as well as to the development of compilers and interpreters for toy programming languages.</p>
+
+<p>With those projects, I got to learn about and implement:</p>
+<ul>
+  <li>Compilers for stack-based and register-based target architectures.</li>
+  <li>Interpreters for dynamically-typed languages.</li>
+  <li>Garbage collection algorithms.</li>
+  <li>Virtual Tables for OOP inheritance and dynamic dispatch.</li>
+  <li>Static typechecking.</li>
+  <li>Hand-written and tool-generated parsers.</li>
+  <li>First-class functions, closures and their low-level implementation.</li>
+  <li>Optimizations such as tail-call elimination, string interning and constant folding.</li>
+  <li>Different evaluation strategies (nondeterminism, lazyness).</li>
+  <li>Pattern-matching and unification.</li>
+</ul>
+
+<h2 id="yet-another-scheme-metacircular-evaluator">Yet another Scheme Metacircular Evaluator</h2>
+
+<p>This is where the magic began: a Scheme interpreter written in Scheme following <a href="https://mitpress.mit.edu/sites/default/files/sicp/full-text/book/book-Z-H-25.html#%_chap_4">Chapter 4 of The Wizard Book</a>.
+Differently than what most people do, however, I kept extending the first evaluator with the variations that followed in the next sections (instead of building them upon a minimal, scratch version).</p>
+
+<p><a href="https://github.com/baioc/paradigms/blob/master/Scheme/sicp/meta.scm">The result</a> turned up as a macro-less R5RS(-ish) implementation that separates syntactic analysis from the actual interpreter execution and additionally provides built-in <code class="language-plaintext highlighter-rouge">amb</code> and <code class="language-plaintext highlighter-rouge">try-catch</code> special forms for nondeterministic computing, as well as a <code class="language-plaintext highlighter-rouge">retry</code> command in the REPL that backtracks to the most recent nondeterministic fork and tries a different path.</p>
+
+<figure class=""><img src="/assets/images/scheme.png" alt="" /><figcaption>
+      Using the nondeterministic Scheme evaluator to solve the SEND+MORE=MONEY puzzle (source not shown).
+
+    </figcaption></figure>
+
+<!--scheme
+(define (require pred)
+  (if (not pred) (amb)))
+
+(define (distinct? items)
+  (cond ((null? items) true)
+        ((null? (cdr items)) true)
+        ((member (car items) (cdr items)) false)
+        (else (distinct? (cdr items)))))
+
+(define (send+more=money)
+  (let ((d (amb 0 1 2 3 4 5 6 7 8 9))
+        (e (amb 0 1 2 3 4 5 6 7 8 9))
+        (m (amb 0 1 2 3 4 5 6 7 8 9))
+        (n (amb 0 1 2 3 4 5 6 7 8 9))
+        (o (amb 0 1 2 3 4 5 6 7 8 9))
+        (r (amb 0 1 2 3 4 5 6 7 8 9))
+        (s (amb 0 1 2 3 4 5 6 7 8 9))
+        (y (amb 0 1 2 3 4 5 6 7 8 9)))
+    (require (distinct? (list d e m n o r s y)))
+    (require (not (= s 0)))
+    (require (not (= m 0)))
+    (let ((send  (+             (* 1000 s) (* 100 e) (* 10 n) (* 1 d)))
+          (more  (+             (* 1000 m) (* 100 o) (* 10 r) (* 1 e)))
+          (money (+ (* 10000 m) (* 1000 o) (* 100 n) (* 10 e) (* 1 y))))
+      (require (= (+ send more) money))
+      (list (cons 'd d)
+            (cons 'e e)
+            (cons 'm m)
+            (cons 'n n)
+            (cons 'o o)
+            (cons 'r r)
+            (cons 's s)
+            (cons 'y y)))))
+-->
+
+<h2 id="bytecode-compiler-and-vm-for-lox">Bytecode compiler and VM for Lox</h2>
+
+<p><a href="https://github.com/baioc/clox">This</a> was my implementation of Robert Nystrom’s <a href="https://www.craftinginterpreters.com/">Crafting Interpreters</a> single-pass compiler and bytecode virtual machine for the Lox programming language, coming from what is probably the best (also free) beginner-friendly resource for learning about how programming languages are implemented.
+Most of it is written in standard C99, making use of features such as Flexible Array Members (FAMs), designated struct initializers and Variable-Length Arrays (VLAs, just once).</p>
+
+<p>Notably, Lox is an efficient, dynamically-typed, object-oriented, garbage-collected scripting language with some runtime introspection and support for closures and first-class functions.
+The implemented clox version uses a hand-written recursive descent (Pratt) parser and compiles down to bytecode targetting a stack-based VM that encompasses a Mark &amp; Sweep GC and includes many useful optimizations such as string interning, NaN boxing and computed <code class="language-plaintext highlighter-rouge">goto</code>s for efficient instruction dispatch (requires <a href="https://gcc.gnu.org/onlinedocs/gcc/Labels-as-Values.html">GCC’s labels-as-values extension</a>).</p>
+
+<h2 id="a-minimal-basic-simulator">A minimal BASIC simulator</h2>
+
+<p>Wanting to improve my french before going abroad on an exchange program, I decided to acquire some programming-related vocabulary by skimming through the original, untranslated version of <a href="http://caml.inria.fr/pub/docs/oreilly-book/">Developing Applications With Objective Caml</a> while learning F# instead of OCaml.
+One example application in Chapter 6 caught my attention: it was a very minimal BASIC interpreter which I extended by implementing system directives (using as reference whatever I could find online about the old Microsoft BASIC) and by adding support for subroutines.
+The <a href="https://github.com/baioc/paradigms/tree/master/F%23/basic">entire simulator</a> is quite short given that BASIC is a very <del>basic</del> simple non-structured imperative language with dynamic types and no notion of scopes or even functions.
+In fact, a considerable part of its development time was dedicated to the hand-written shift-reduce parser, which was much harder to grasp than the top-down parsers I had coded until then.</p>
+
+<figure class=""><img src="/assets/images/basic.png" alt="" /><figcaption>
+      Fizz buzz in BASIC. Hopefully the last thing I’ll ever program in this language.
+
+    </figcaption></figure>
+
+<h2 id="deca---a-compiled-subset-of-java">Deca - A compiled subset of Java</h2>
+
+<p>I’ve been told all Ensimag students have at least one project in common: the <em>Projet Génie Logiciel</em> (french for “Software Engineering Project”).
+In this project, students have to work in groups of five to develop, in less than a month and using Agile practices, a full-blown compiler for Deca: a statically-typed, object-oriented language that resembles a subset of Java and is further specified in a 231-page long document that is given to students in the beginning of the project.
+It compiles down to a register-based architecture – inspired by the <a href="https://en.wikipedia.org/wiki/Motorola_68000">68000</a> – that is used in Ensimag’s closed-source abstract machine.</p>
+
+<p>The compiler uses <a href="https://www.antlr.org/">ANTLR</a> to generate a lexer and a parser from a description of the accepted tokens and grammar.
+Those are employed to build the AST that is then processed during the multiple verification and code generation passes that follow.
+Unfortunately, the project needed to be coded in Java and the initial skeleton used an Interpreter pattern for everything, meaning we had to deal with a ton of trivial files and the usual OOP inheritance abuse (worsened by the fact that the original codebase programmers had apparently never heard of interfaces, only abstract classes).
+In the end though, I was happy with the test suite we set up – allowing expected output to be written with regular expressions inside comments in the Deca test sources – and the fact that we got to implement virtual method tables and some basic constant folding optimization.</p>
+
+<p>We also had the opportunity to extend the base language with anonymous functions, closures and functional object interfaces.
+In doing so, I finally scratched the itch to design something better than what Java has for functional types (how it forces users/libraries to define a different interface for every possible function arity, plus specific interfaces for primitive types), using something that looks like <code class="language-plaintext highlighter-rouge">Lambda&lt;ArgTypes*,ReturnType&gt;</code>.</p>
+
+<figure class=""><a href="/assets/images/deca.png" class="image-popup" title="Lazy (even) Streams library in Deca-λ (Deca + our functional extension), side by side with the generated assembly code.
+"><img src="/assets/images/deca.png" alt="" /></a><figcaption>
+      Lazy (even) Streams library in Deca-λ (Deca + our functional extension), side by side with the generated assembly code.
+
+    </figcaption></figure>
+
+<h2 id="honorable-mentions">Honorable Mentions</h2>
+
+<h3 id="logic-programming-in-lisp">Logic programming in lisp</h3>
+
+<p>Another one from the venerable Wizard Book: a (lispy) <a href="https://github.com/baioc/paradigms/blob/master/Scheme/sicp/prolisp.scm">logic programming language interpreter</a> with built-in pattern-matching and unification.</p>
+
+<h3 id="automata-compiling-macros">Automata-compiling macros</h3>
+
+<p><a href="https://github.com/baioc/paradigms/blob/master/Scheme/misc/automata.scm">Here</a> I simply implement the interpreter and the macro-time compiler for the FSM DSL as presented in Shriram Krishnamurthi’s excelent <a href="https://cs.brown.edu/~sk/Publications/Papers/Published/sk-automata-macros/">macro tutorial</a>.</p>
+
+<h3 id="assembling-forth">Assembling Forth</h3>
+
+<p>In order to test <a href="https://baioc.github.io/portfolio/s4pu/">my custom CPU</a>, I wrote a <a href="https://gitlab.com/baioc/s4pu/-/tree/master/forth">simple assembler script</a> in Python to translate a Forth-like assembly language into executable machine code.</p>
+
+<h3 id="java-embedded-scheme">Java-embedded Scheme</h3>
+
+<p>On <a href="https://github.com/baioc/ArchwizardDuel">another project</a>, I added a tree-walking interpreter to a distributed Java application in order to use Scheme as an embedded scripting language.</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2021-01-28">January 28, 2021</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/portfolio/pcsea/" class="pagination--pager" title="PCSEA - Projet Système d’Exploitation
+">Previous</a>
+    
+    
+      <a href="/portfolio/publications/" class="pagination--pager" title="Publications
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+      
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 <a href="https://www.baioc.dev">Gabriel B. Sant'Anna</a></div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+  </body>
+</html>

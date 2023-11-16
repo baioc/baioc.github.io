@@ -1,0 +1,659 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.26.2 by Michael Rose
+  Copyright 2013-2024 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>How to set up lvmcache across LUKS-encrypted partitions | baioc</title>
+<meta name="description" content="Advanced dual-boot setup - Part 3: Encrypted hybrid storage">
+
+
+  <meta name="author" content="Gabriel B. Sant'Anna">
+  
+  <meta property="article:author" content="Gabriel B. Sant'Anna">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="baioc">
+<meta property="og:title" content="How to set up lvmcache across LUKS-encrypted partitions">
+<meta property="og:url" content="https://www.baioc.dev/tutorial/ubuntu-lvmcache/">
+
+
+  <meta property="og:description" content="Advanced dual-boot setup - Part 3: Encrypted hybrid storage">
+
+
+
+  <meta property="og:image" content="https://www.baioc.dev/assets/images/dual-boot/os-ubuntu.png">
+
+
+
+
+
+  <meta property="article:published_time" content="2024-07-14T00:00:00+00:00">
+
+
+
+  <meta property="article:modified_time" content="2024-07-21T00:00:00+00:00">
+
+
+
+
+<link rel="canonical" href="https://www.baioc.dev/tutorial/ubuntu-lvmcache/">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="baioc Feed">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script type="text/javascript">
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+
+  
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single long">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Home
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a
+                href="/portfolio/"
+                
+                
+              >Portfolio</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/resume/"
+                
+                
+              >Resume</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/blog/"
+                
+                
+              >Blog</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="How to set up lvmcache across LUKS-encrypted partitions">
+    <meta itemprop="description" content="Advanced dual-boot setup - Part 3: Encrypted hybrid storage">
+    <meta itemprop="datePublished" content="2024-07-14T00:00:00+00:00">
+    <meta itemprop="dateModified" content="2024-07-21T00:00:00+00:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="https://www.baioc.dev/tutorial/ubuntu-lvmcache/" itemprop="url">How to set up lvmcache across LUKS-encrypted partitions
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-07-14T00:00:00+00:00">July 14, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right sticky">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-bars"></i> Contents</h4></header>
+              <ul class="toc__menu"><li><a href="#0-prepare-operating-environment">0. Prepare operating environment</a></li><li><a href="#1-reduce-root-ssd-volume">1. Reduce root SSD volume</a></li><li><a href="#2-create-an-encrypted-partition">2. Create an encrypted partition</a></li><li><a href="#3-extend-lvm-volume-group">3. Extend LVM volume group</a></li><li><a href="#4-set-up-the-lvmcache">4. Set up the lvmcache</a></li><li><a href="#5-reboot-to-ubuntu">5. Reboot to Ubuntu</a></li><li><a href="#6-setting-up-decryption">6. Setting up decryption</a></li><li><a href="#7-mount-the-cached-partition">7. Mount the cached partition</a></li></ul>
+            </nav>
+          </aside>
+        
+        <p>In this tutorial, I’ll set up an <code class="language-plaintext highlighter-rouge">lvmcache</code> across LUKS-encrypted partitions in a Debian-based system.
+This was the solution I chose to increase the performance of hybrid storage - in which part of the SSD acts as a cache to the HDD - in a fully-encrypted setup.</p>
+
+<p>Starting from a fresh <a href="../ubuntu-24.04-encrypted">Ubuntu 24.04 LTS encrypted install</a>, we’ll:</p>
+<ul>
+  <li>Shrink the root volume in order to free disk space in the primary disk (SSD)</li>
+  <li>Create an encrypted partition in the secondary disk (HDD)</li>
+  <li>Configure a volume in the SSD as a cache for the HDD volume</li>
+  <li>Set up initramfs hooks to mount everything on boot, with a single decryption password</li>
+</ul>
+
+<h2 id="0-prepare-operating-environment">0. Prepare operating environment</h2>
+
+<p>While I’m sure some of the operations we’re about to perform could be applied to a live system, I prefer to do these things from a live USB.
+I’ll use an Arch Linux ISO for this, since it is lightweight and includes all the tools we need.</p>
+
+<h2 id="1-reduce-root-ssd-volume">1. Reduce root SSD volume</h2>
+
+<p>After flashing the ISO to a USB and booting into it, we start by decrypting the Ubuntu LUKS partition (<code class="language-plaintext highlighter-rouge">/dev/sda3</code> in this case).
+Then, we can resize the filesystem and reduce the logical volume in one go (in this case, freeing up 5GiB in the primary LVM physical volume):</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>cryptsetup open /dev/sda3 ubuntu-root
+<span class="nv">$ </span>lvreduce <span class="nt">-v</span> <span class="nt">--resizefs</span> <span class="nt">-L</span> <span class="nt">-5G</span> /dev/ubuntu-vg/ubuntu-lv
+</code></pre></div></div>
+
+<figure class=""><a href="/assets/images/dual-boot/lvmcache-lvreduce.png" class="image-popup" title="Shrinking the Ubuntu root logical volume.
+"><img src="/assets/images/dual-boot/lvmcache-lvreduce.png" alt="lvmcache-lvreduce" /></a><figcaption>
+      Shrinking the Ubuntu root logical volume.
+
+    </figcaption></figure>
+
+<h2 id="2-create-an-encrypted-partition">2. Create an encrypted partition</h2>
+
+<p>Let’s set up the HDD LUKS-encrypted partition, making sure that:</p>
+<ul>
+  <li>We use the same encryption password as in the root volume (this is optional, but allows us to use the <code class="language-plaintext highlighter-rouge">decrypt_keyctl</code> script to unlock both partitions with a single password prompt)</li>
+  <li>The sector size used in the HDD partition matches the one in the SSD (this is mandatory as far as I’m aware, otherwise LVM won’t let us extend the volume group, issuing an error like <code class="language-plaintext highlighter-rouge">Devices have inconsistent logical block sizes</code>)</li>
+</ul>
+
+<figure class=""><a href="/assets/images/dual-boot/lvmcache-luksFormat.png" class="image-popup" title="Setting up a new LUKS-encrypted partition with the right sector size, as verified with lsblk -t
+"><img src="/assets/images/dual-boot/lvmcache-luksFormat.png" alt="lvmcache-luksFormat" /></a><figcaption>
+      Setting up a new LUKS-encrypted partition with the right sector size, as verified with lsblk -t
+
+    </figcaption></figure>
+
+<h2 id="3-extend-lvm-volume-group">3. Extend LVM volume group</h2>
+
+<p>Next, we layer an LVM physical volume on top of the new LUKS partition, then add it to the existing LVM volume group.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pvcreate /dev/mapper/ubuntu-data
+<span class="nv">$ </span>vgextend ubuntu-vg /dev/mapper/ubuntu-data
+</code></pre></div></div>
+
+<figure class=""><a href="/assets/images/dual-boot/lvmcache-vgextend.png" class="image-popup" title="Extending an existing LVM volume group with a new physical volume.
+"><img src="/assets/images/dual-boot/lvmcache-vgextend.png" alt="lvmcache-vgextend" /></a><figcaption>
+      Extending an existing LVM volume group with a new physical volume.
+
+    </figcaption></figure>
+
+<p>NOTE: if you need to close a LUKS+LVM partition for any reason, you many need to stop the volume group with <code class="language-plaintext highlighter-rouge">vgchange -a n ubuntu-vg</code> before <code class="language-plaintext highlighter-rouge">cryptsetup close</code>ing the partition.</p>
+
+<h2 id="4-set-up-the-lvmcache">4. Set up the lvmcache</h2>
+
+<p>In order to create the cache, we’ll need a logical volume in each device:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>lvcreate <span class="nt">-n</span> work-hdd <span class="nt">-l</span> 100%PVS ubuntu-vg /dev/mapper/ubuntu-data
+<span class="nv">$ </span>lvcreate <span class="nt">-n</span> work-ssd <span class="nt">-l</span> 100%PVS ubuntu-vg /dev/mapper/ubuntu-root
+</code></pre></div></div>
+
+<figure class=""><a href="/assets/images/dual-boot/lvmcache-lvcreate.png" class="image-popup" title="Creating a logical volume in each device.
+"><img src="/assets/images/dual-boot/lvmcache-lvcreate.png" alt="lvmcache-lvcreate" /></a><figcaption>
+      Creating a logical volume in each device.
+
+    </figcaption></figure>
+
+<p>Then, we follow <a href="https://www.man7.org/linux/man-pages/man7/lvmcache.7.html">the documentation</a> in order to create the cache as either a <code class="language-plaintext highlighter-rouge">--cachepool</code> or a <code class="language-plaintext highlighter-rouge">--cachevol</code> (see <a href="https://unix.stackexchange.com/questions/647225/lvmcache-why-use-a-cachepool-instead-of-a-cachevol/767061#767061">this StackOverflow question</a> for more information on the choice):</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>lvconvert <span class="nt">--type</span> cache <span class="nt">--cachepool</span> work-ssd ubuntu-vg/work-hdd
+</code></pre></div></div>
+
+<figure class=""><a href="/assets/images/dual-boot/lvmcache-lvconvert.png" class="image-popup" title="Converting volumes to an lvmcache. Notice that, like me, you may need to shrink the slower volume to accommodate LVM metadata.
+"><img src="/assets/images/dual-boot/lvmcache-lvconvert.png" alt="lvmcache-lvconvert" /></a><figcaption>
+      Converting volumes to an lvmcache. Notice that, like me, you may need to shrink the slower volume to accommodate LVM metadata.
+
+    </figcaption></figure>
+
+<p>In order to make use of the cache, just use the <code class="language-plaintext highlighter-rouge">work-hdd</code> logical volume normally.
+For example, this would be a good time to add a filesystem to the cached volume:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>mkfs.ext4 /dev/ubuntu-vg/work-hdd
+</code></pre></div></div>
+
+<h2 id="5-reboot-to-ubuntu">5. Reboot to Ubuntu</h2>
+
+<p>We should now be able to reboot into Ubuntu, albeit with a small hiccup: after entering our decryption password, the boot process may drop into a BusyBox recovery shell.
+There’s no need to panic, a first <code class="language-plaintext highlighter-rouge">exit</code> command will tip us that the reason for failure is that something went wrong when mounting the root volume.</p>
+
+<p>In this case, that’s because we never told the system that it needed to decrypt the HDD partition, and LVM fails by default when a volume group is incomplete.
+We can run <code class="language-plaintext highlighter-rouge">lvm lvdisplay</code> to check that, while the new logical volume is not available, the old one (containing the system root) still is.
+Therefore, we just activate the volume group in partial mode with <code class="language-plaintext highlighter-rouge">lvm vgchange -a y --partial ubuntu-vg</code>, then <code class="language-plaintext highlighter-rouge">exit</code> again to finish the boot process.</p>
+
+<figure class=""><a href="/assets/images/dual-boot/lvmcache-busybox.png" class="image-popup" title="Continuing a failed boot process with a partial LVM volume group.
+"><img src="/assets/images/dual-boot/lvmcache-busybox.png" alt="lvmcache-busybox" /></a><figcaption>
+      Continuing a failed boot process with a partial LVM volume group.
+
+    </figcaption></figure>
+
+<h2 id="6-setting-up-decryption">6. Setting up decryption</h2>
+
+<p>Once the boot process is done, open a terminal to decrypt the remaining partition - the LVM volumes inside should also get recognized automatically.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>cryptsetup open /dev/sdb1 ubuntu-data
+</code></pre></div></div>
+
+<p>We’ll now set up <a href="https://unix.stackexchange.com/questions/392284/using-a-single-passphrase-to-unlock-multiple-encrypted-disks-at-boot/392286#392286">a script</a> which will cache our decryption password in order to open both of our LUKS partitions during the boot process (more specifically, by the initramfs image which is loaded from the boot partition).</p>
+
+<p>We begin by installing the <code class="language-plaintext highlighter-rouge">keyutils</code> package.
+Then, edit the <code class="language-plaintext highlighter-rouge">/etc/crypttab</code> file in order to add the <code class="language-plaintext highlighter-rouge">keyscript</code> option and set up the same <code class="language-plaintext highlighter-rouge">CRYPTTAB_KEY</code> for both entries.
+We also add the <code class="language-plaintext highlighter-rouge">initramfs</code> options and <a href="https://unix.stackexchange.com/questions/206754/difference-between-cryptopts-and-crypttab/447676#447676">make sure it will be handled there</a> by setting <code class="language-plaintext highlighter-rouge">CRYPTSETUP=y</code> in <code class="language-plaintext highlighter-rouge">/etc/cryptsetup-initramfs/conf-hook</code>.
+Finally, re-generate the initramfs with <code class="language-plaintext highlighter-rouge">update-initramfs</code>.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>apt <span class="nb">install </span>keyutils
+<span class="nv">$ </span><span class="nb">sudo </span>nano /etc/crypttab
+<span class="nv">$ </span><span class="nb">sudo </span>nano /etc/cryptsetup-initramfs/conf-hook
+<span class="nv">$ </span><span class="nb">sudo </span>update-initramfs <span class="nt">-k</span> all <span class="nt">-u</span>
+</code></pre></div></div>
+
+<figure class=""><a href="/assets/images/dual-boot/lvmcache-keyscript.png" class="image-popup" title="Setting up the decrypt_keyctl script after some sanity checks.
+"><img src="/assets/images/dual-boot/lvmcache-keyscript.png" alt="lvmcache-keyscript" /></a><figcaption>
+      Setting up the decrypt_keyctl script after some sanity checks.
+
+    </figcaption></figure>
+
+<p>After those steps, we can reboot to check that we’ll no longer drop to a BusyBox recovery shell.
+Furthermore, from now on, both partitions will be unlocked by a single boot password prompt.</p>
+
+<h2 id="7-mount-the-cached-partition">7. Mount the cached partition</h2>
+
+<p>Finally, we can set up an entry in <code class="language-plaintext highlighter-rouge">/etc/fstab</code> in order to automatically mount our cached partition.
+In my case, I’ll create an <code class="language-plaintext highlighter-rouge">/hdd</code> folder that’s owned by my main user, but another possibility would be mounting to <code class="language-plaintext highlighter-rouge">/home</code> directly (make sure to have backups, if you do).</p>
+
+<p>I should note that, in order to use UUIDs to reference an LVM logical volume in fstab, we need to combine the volume group (VG) UUID and the logical volume (LV) UUID.
+We can acquire those with <code class="language-plaintext highlighter-rouge">vgdisplay</code> and <code class="language-plaintext highlighter-rouge">lvdisplay</code>, respectively, then remove the hyphens and concatenate them to get the full LVM device mapper UUID path.</p>
+
+<figure class=""><a href="/assets/images/dual-boot/lvmcache-fstab.png" class="image-popup" title="Setting up fstab to auto-mount the cached volume.
+"><img src="/assets/images/dual-boot/lvmcache-fstab.png" alt="lvmcache-fstab" /></a><figcaption>
+      Setting up fstab to auto-mount the cached volume.
+
+    </figcaption></figure>
+
+<p>In the end, we have most of the system stored in the faster SSD, while our user data can stay in the bigger (but slower) HDD - both devices using LUKS encryption.
+The LVM subsystem will then take care of moving frequently accessed HDD data into the SSD cache - automatically improving performance for the data that’s actually being used.
+Victory!</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/#linux" class="page__taxonomy-item p-category" rel="tag">linux</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/categories/#tutorial" class="page__taxonomy-item p-category" rel="tag">tutorial</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2024-07-21">July 21, 2024</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/tutorial/arch-btrfs-luks-raid/" class="pagination--pager" title="How to install Arch on Btrfs with LUKS encryption and software RAID1
+">Previous</a>
+    
+    
+      <a href="/tutorial/arch-awesomewm/" class="pagination--pager" title="How to set up an X-based desktop from scratch
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    
+<div class="page__related">
+  
+  <h2 class="page__related-title">You may also enjoy</h2>
+  <div class="grid__wrapper">
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/htb-cyber-apocalypse-2025/cave-expedition-decrypt.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/writeup/htb-cyber-apocalypse-2025/" rel="permalink">HTB Cyber Apocalypse CTF 2025
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-03-26T00:00:00+00:00">March 26, 2025</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Writeups for 3 challenges, each in a different category
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/arch-rice.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/arch-awesomewm/" rel="permalink">How to set up an X-based desktop from scratch
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-07-27T00:00:00+00:00">July 27, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 4: From TTY to graphical desktop
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/refind.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/arch-btrfs-luks-raid/" rel="permalink">How to install Arch on Btrfs with LUKS encryption and software RAID1
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-05-17T00:00:00+00:00">May 17, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 2: I use Arch, btw
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/ubuntu-boot-encrypted.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/ubuntu-24.04-encrypted/" rel="permalink">How to install Ubuntu 24.04 LTS with Full Disk Encryption
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-05-16T00:00:00+00:00">May 16, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 1: Ubuntu guided installation
+</p>
+  </article>
+</div>
+
+    
+  </div>
+</div>
+
+  
+  
+</div>
+
+      
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 <a href="https://www.baioc.dev">Gabriel B. Sant'Anna</a></div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+  </body>
+</html>

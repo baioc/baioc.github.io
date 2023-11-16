@@ -1,0 +1,22 @@
+User-agent: ChatGPT-User
+User-agent: GPTBot
+User-agent: Google-CloudVertexBot
+User-agent: Google-Extended
+User-agent: CCBot
+User-agent: PerplexityBot
+User-agent: anthropic-ai
+‍User-agent: Claude-Web
+User-agent: ClaudeBot
+User-Agent: Facebookbot
+User-Agent: Meta-ExternalAgent
+User-Agent: Meta-ExternalFetcher
+User-Agent: Amazonbot
+Disallow: /
+
+User-agent: *
+Disallow: /seccom-ctf/index.html
+
+User-Agent: *
+DisallowAITraining: /
+
+Sitemap: /sitemap.xml

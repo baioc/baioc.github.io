@@ -1,0 +1,880 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.26.2 by Michael Rose
+  Copyright 2013-2024 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>How to set up an X-based desktop from scratch | baioc</title>
+<meta name="description" content="Advanced dual-boot setup - Part 4: From TTY to graphical desktop">
+
+
+  <meta name="author" content="Gabriel B. Sant'Anna">
+  
+  <meta property="article:author" content="Gabriel B. Sant'Anna">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="baioc">
+<meta property="og:title" content="How to set up an X-based desktop from scratch">
+<meta property="og:url" content="https://www.baioc.dev/tutorial/arch-awesomewm/">
+
+
+  <meta property="og:description" content="Advanced dual-boot setup - Part 4: From TTY to graphical desktop">
+
+
+
+  <meta property="og:image" content="https://www.baioc.dev/assets/images/dual-boot/arch-rice.png">
+
+
+
+
+
+  <meta property="article:published_time" content="2024-07-27T00:00:00+00:00">
+
+
+
+
+
+
+<link rel="canonical" href="https://www.baioc.dev/tutorial/arch-awesomewm/">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="baioc Feed">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script type="text/javascript">
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+
+  
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single long">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Home
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a
+                href="/portfolio/"
+                
+                
+              >Portfolio</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/resume/"
+                
+                
+              >Resume</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/blog/"
+                
+                
+              >Blog</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="How to set up an X-based desktop from scratch">
+    <meta itemprop="description" content="Advanced dual-boot setup - Part 4: From TTY to graphical desktop">
+    <meta itemprop="datePublished" content="2024-07-27T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="https://www.baioc.dev/tutorial/arch-awesomewm/" itemprop="url">How to set up an X-based desktop from scratch
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-07-27T00:00:00+00:00">July 27, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right sticky">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-bars"></i> Contents</h4></header>
+              <ul class="toc__menu"><li><a href="#0-manual-btrfs-snapshot">0. Manual btrfs snapshot</a></li><li><a href="#1-network-and-time">1. Network and time</a></li><li><a href="#2-firewall">2. Firewall</a></li><li><a href="#3-non-root-user">3. Non-root user</a></li><li><a href="#4-x-initialization">4. X initialization</a></li><li><a href="#5-awesomewm-configuration">5. awesomeWM configuration</a></li><li><a href="#6-pipewire-audio">6. Pipewire audio</a></li><li><a href="#7-pacman-and-snapshots">7. Pacman and snapshots</a></li><li><a href="#8-other-customizations">8. Other customizations</a></li></ul>
+            </nav>
+          </aside>
+        
+        <p>In the final post of this dual-boot series, I’ll show how to go from a base Arch install:</p>
+
+<figure class=""><a href="/assets/images/dual-boot/arch-base.png" class="image-popup" title="Base Arch tty, after booting for the first time - at least all peripherals (monitor, keyboard, mouse) were working out of the box.
+"><img src="/assets/images/dual-boot/arch-base.png" alt="arch-base" /></a><figcaption>
+      Base Arch tty, after booting for the first time - at least all peripherals (monitor, keyboard, mouse) were working out of the box.
+
+    </figcaption></figure>
+
+<p>To a simple <a href="https://awesomewm.org/">awesomeWM</a> desktop environment:</p>
+
+<figure class=""><a href="/assets/images/dual-boot/arch-rice.png" class="image-popup" title="This is a screenshot of my personal install. We’ll be going in this direction.
+"><img src="/assets/images/dual-boot/arch-rice.png" alt="arch-rice" /></a><figcaption>
+      This is a screenshot of my personal install. We’ll be going in this direction.
+
+    </figcaption></figure>
+
+<h2 id="0-manual-btrfs-snapshot">0. Manual btrfs snapshot</h2>
+
+<p>Btrfs’s snapshot capability is one of the reasons I chose this file system, so before anything else I’ll use that to make a backup of the entire root partition.
+While I’ll create the snapshot manually this time, later in this tutorial I’m going to show how to set up automatic backups.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>mount <span class="nt">-o</span> <span class="nv">subvolid</span><span class="o">=</span>5 /dev/mapper/arch-root /mnt
+<span class="nv">$ </span>btrfs subvolume snapshot /mnt/@ /mnt/@snapshot-baseline
+<span class="nv">$ </span>umount /mnt
+</code></pre></div></div>
+
+<p>That’s all it takes, and you’ll notice it’s also instant thanks to btrfs copy-on-write.</p>
+
+<figure class=""><a href="/assets/images/dual-boot/arch-btrfs-snapshot.png" class="image-popup" title="After creating the snapshot, we can also mount it and check its contents.
+"><img src="/assets/images/dual-boot/arch-btrfs-snapshot.png" alt="arch-btrfs-snapshot" /></a><figcaption>
+      After creating the snapshot, we can also mount it and check its contents.
+
+    </figcaption></figure>
+
+<h2 id="1-network-and-time">1. Network and time</h2>
+
+<p>During installation, I made sure that the <a href="https://wiki.archlinux.org/title/NetworkManager"><code class="language-plaintext highlighter-rouge">NetworkManager</code></a> systemd service would auto-start.
+In case you forgot to do that before, this is a good time to run:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>systemctl <span class="nb">enable </span>NetworkManager
+<span class="nv">$ </span>systemctl start NetworkManager
+</code></pre></div></div>
+
+<p>I also like to always resolve <code class="language-plaintext highlighter-rouge">localhost</code> to … well … the local host.
+So I make sure that my <code class="language-plaintext highlighter-rouge">/etc/hosts</code> file contains the following entries:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>127.0.0.1        localhost
+::1              localhost
+</code></pre></div></div>
+
+<p>Since I also want my system time to be correct, I’ll also enable the built-in NTP service:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>timedatectl set-ntp <span class="nb">true</span>
+</code></pre></div></div>
+
+<figure class=""><a href="/assets/images/dual-boot/arch-network.png" class="image-popup"><img src="/assets/images/dual-boot/arch-network.png" alt="arch-network" /></a></figure>
+
+<h2 id="2-firewall">2. Firewall</h2>
+
+<p>The first thing to do after connecting to the internet is setting up protection - a firewall, in this case.
+I like <a href="https://wiki.archlinux.org/title/Uncomplicated_Firewall">ufw</a>, which is pretty easy to install and enable by default:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pacman <span class="nt">-S</span> ufw
+<span class="nv">$ </span>systemctl <span class="nb">enable </span>ufw
+<span class="nv">$ </span>systemctl start ufw
+<span class="nv">$ </span>ufw <span class="nb">enable</span>
+<span class="nv">$ </span>ufw status verbose
+Status: active
+Logging: on <span class="o">(</span>low<span class="o">)</span>
+Default: deny <span class="o">(</span>incoming<span class="o">)</span>, allow <span class="o">(</span>outgoing<span class="o">)</span>, deny <span class="o">(</span>routed<span class="o">)</span>
+New profiles: skip
+</code></pre></div></div>
+
+<p>The default configuration is already the best option for most desktop users: deny all incoming traffic (connections initiated in the network) and allow all outgoing traffic.</p>
+
+<p>Personally, I also like to use <a href="https://github.com/evilsocket/opensnitch">OpenSnitch</a> to block all outgoing traffic by default, then handpick exceptions based on program, protocol and target address &amp; port.
+I know this is too much of a nuisance for most people, so I’ll leave this out of the tutorial.</p>
+
+<h2 id="3-non-root-user">3. Non-root user</h2>
+
+<p>Even if I’m the only person using this system, it’s more secure to do it from a non-root user by default.
+The following commands create a user called <code class="language-plaintext highlighter-rouge">user</code> with their own home directory, sets a password, then installs <code class="language-plaintext highlighter-rouge">zsh</code> and sets that as <code class="language-plaintext highlighter-rouge">user</code>’s default shell.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>useradd <span class="nt">--create-home</span> user
+<span class="nv">$ </span>passwd user
+<span class="nv">$ </span>pacman <span class="nt">-S</span> zsh
+<span class="nv">$ </span>chsh <span class="nt">-s</span> /usr/bin/zsh user
+</code></pre></div></div>
+
+<p>Then, in order to be able to perform administrative actions through <code class="language-plaintext highlighter-rouge">sudo</code> or Polkit, I’ll add <code class="language-plaintext highlighter-rouge">user</code> to the <code class="language-plaintext highlighter-rouge">wheel</code> group:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>usermod <span class="nt">-aG</span> wheel user
+</code></pre></div></div>
+
+<p>And also update the sudoers file with <code class="language-plaintext highlighter-rouge">EDITOR=nano visudo</code>, making sure to uncomment the line that reads:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>%wheel ALL=(ALL:ALL) ALL
+</code></pre></div></div>
+
+<figure class=""><a href="/assets/images/dual-boot/arch-security.png" class="image-popup" title="Using a non-privileged user by default is a security control, just like setting up a local firewall.
+"><img src="/assets/images/dual-boot/arch-security.png" alt="arch-security" /></a><figcaption>
+      Using a non-privileged user by default is a security control, just like setting up a local firewall.
+
+    </figcaption></figure>
+
+<p>You can now exit the current shell and log back in as the new user.
+If you changed the default shell to <code class="language-plaintext highlighter-rouge">zsh</code>, you may also be prompted to do some initial configuration.</p>
+
+<h2 id="4-x-initialization">4. X initialization</h2>
+
+<p>We’re going to use X.Org as our window system, with awesome as a window manager.
+Furthermore, in order to access the shell from an X(11) session, we’ll also need to install a terminal emulator.
+We can get started by installing the necessary packages:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>pacman <span class="nt">-S</span> xorg-server xorg-xinit awesome alacritty
+</code></pre></div></div>
+
+<p>I want the Xorg server to start whenever I log in as <code class="language-plaintext highlighter-rouge">user</code> from the default <code class="language-plaintext highlighter-rouge">tty1</code>.
+Implementing this is as simple as configuring the <code class="language-plaintext highlighter-rouge">zsh</code> login shell (<code class="language-plaintext highlighter-rouge">~/.zprofile</code>) to run <a href="https://wiki.archlinux.org/title/Xinit"><code class="language-plaintext highlighter-rouge">startx</code></a>:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># /home/user/.zprofile</span>
+<span class="k">if</span> <span class="o">[</span> <span class="nt">-z</span> <span class="s2">"</span><span class="nv">$DISPLAY</span><span class="s2">"</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="o">[</span> <span class="s2">"</span><span class="nv">$XDG_VTNR</span><span class="s2">"</span> <span class="nt">-le</span> 1 <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">exec </span>startx
+<span class="k">fi</span>
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">startx</code> program will then run the <code class="language-plaintext highlighter-rouge">~/.xinitrc</code> script to start up client programs, including our window manager of choice.
+We just need to copy the default script to the user’s home folder, remove the last few lines running programs we don’t have, and append <code class="language-plaintext highlighter-rouge">exec awesome</code>:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cp</span> /etc/X11/xinit/xinitrc ~/.xinitrc
+<span class="nv">$ </span>nano ~/.xinitrc
+
+<span class="nv">$ </span><span class="nb">cat</span> ~/.xinitrc
+<span class="c">#!/bin/sh</span>
+
+<span class="c"># merge in defaults and keymaps</span>
+
+<span class="nv">userresources</span><span class="o">=</span><span class="nv">$HOME</span>/.Xresources
+<span class="nv">usermodmap</span><span class="o">=</span><span class="nv">$HOME</span>/.Xmodmap
+<span class="nv">sysresources</span><span class="o">=</span>/etc/X11/xinit/.Xresources
+<span class="nv">sysmodmap</span><span class="o">=</span>/etc/X11/xinit/.Xmodmap
+
+<span class="k">if</span> <span class="o">[</span> <span class="nt">-f</span> <span class="nv">$sysresources</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span>xrdb <span class="nt">-merge</span> <span class="nv">$sysresources</span>
+<span class="k">fi
+
+if</span> <span class="o">[</span> <span class="nt">-f</span> <span class="nv">$sysmodmap</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span>xmodmap <span class="nv">$sysmodmap</span>
+<span class="k">fi
+
+if</span> <span class="o">[</span> <span class="nt">-f</span> <span class="s2">"</span><span class="nv">$userresources</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span>xrdb <span class="nt">-merge</span> <span class="s2">"</span><span class="nv">$userresources</span><span class="s2">"</span>
+<span class="k">fi
+
+if</span> <span class="o">[</span> <span class="nt">-f</span> <span class="s2">"</span><span class="nv">$usermodmap</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span>xmodmap <span class="s2">"</span><span class="nv">$usermodmap</span><span class="s2">"</span>
+<span class="k">fi</span>
+
+<span class="c"># start some nice programs</span>
+
+<span class="k">if</span> <span class="o">[</span> <span class="nt">-d</span> /etc/X11/xinit/xinitrc.d <span class="o">]</span> <span class="p">;</span> <span class="k">then
+ for </span>f <span class="k">in</span> /etc/X11/xinit/xinitrc.d/?<span class="k">*</span>.sh <span class="p">;</span> <span class="k">do</span>
+  <span class="o">[</span> <span class="nt">-x</span> <span class="s2">"</span><span class="nv">$f</span><span class="s2">"</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="nb">.</span> <span class="s2">"</span><span class="nv">$f</span><span class="s2">"</span>
+ <span class="k">done
+ </span><span class="nb">unset </span>f
+<span class="k">fi
+
+</span><span class="nb">exec </span>awesome
+</code></pre></div></div>
+
+<p>Since I’m the only one who’ll be using this system, I’ll also enable <a href="https://wiki.archlinux.org/title/Getty#Automatic_login_to_virtual_console">auto-login</a> - this means I’ll only have to type in the disk decryption password before getting to my desktop.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo mkdir</span> <span class="nt">-p</span> /etc/systemd/system/getty@tty1.service.d
+<span class="nv">$ </span><span class="nb">sudo </span>nano /etc/systemd/system/getty@tty1.service.d/autologin.conf
+
+<span class="nv">$ </span><span class="nb">cat</span> /etc/systemd/system/getty@tty1.service.d/autologin.conf
+<span class="o">[</span>Service]
+<span class="nv">Type</span><span class="o">=</span>simple
+<span class="nv">ExecStart</span><span class="o">=</span>
+<span class="nv">ExecStart</span><span class="o">=</span>-/sbin/agetty <span class="nt">-o</span> <span class="s1">'-p -f -- \\u'</span> <span class="nt">--noclear</span> <span class="nt">--autologin</span> user %I <span class="nv">$TERM</span>
+<span class="nv">Environment</span><span class="o">=</span><span class="nv">XDG_SESSION_TYPE</span><span class="o">=</span>x11
+</code></pre></div></div>
+
+<p>That’s it!
+We can now reboot and drop into a barebones graphical desktop:</p>
+
+<figure class=""><a href="/assets/images/dual-boot/arch-awesome.png" class="image-popup" title="A fresh install of awesomeWM. I have to say, getting to this point was easier than I thought it would be.
+"><img src="/assets/images/dual-boot/arch-awesome.png" alt="arch-awesome" /></a><figcaption>
+      A fresh install of awesomeWM. I have to say, getting to this point was easier than I thought it would be.
+
+    </figcaption></figure>
+
+<h2 id="5-awesomewm-configuration">5. awesomeWM configuration</h2>
+
+<p>One of the first things you may notice if you’re following this tutorial is that the “open terminal” buttons and shortcuts are not working.
+That’s because, by default, awesome is configured to use <code class="language-plaintext highlighter-rouge">xterm</code>, whereas we installed Alacritty.
+You can still open Alacritty “manually”, either by typing <code class="language-plaintext highlighter-rouge">alacritty</code> in the command prompt (<code class="language-plaintext highlighter-rouge">Super + R</code>) or choosing it in the built-in application menu (<code class="language-plaintext highlighter-rouge">Super + P</code>).</p>
+
+<p>After getting to a terminal, I suggest overriding the default configuration:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">mkdir</span> <span class="nt">-p</span> ~/.config/awesome/
+<span class="nv">$ </span><span class="nb">cp</span> /etc/xdg/awesome/rc.lua ~/.config/awesome/
+<span class="nv">$ </span>nano ~/.config/awesome/rc.lua
+</code></pre></div></div>
+
+<p>Make sure to change the line that reads <code class="language-plaintext highlighter-rouge">terminal = "xterm"</code> to <code class="language-plaintext highlighter-rouge">terminal = "alacritty"</code>.
+In order to apply any changes, we need to reload awesome (<code class="language-plaintext highlighter-rouge">Super + Ctrl + R</code>).
+We should now be able to open our terminal of choice with <code class="language-plaintext highlighter-rouge">Super + Enter</code>.</p>
+
+<p>After that, I suggest taking a look at <a href="https://awesomewm.org/recipes/">some awesomeWM configuration recipes</a> in order to understand how to configure it, edit keybindings to your liking or add useful widgets.
+Note that, at this point, you can use <code class="language-plaintext highlighter-rouge">pacman</code> to install your web browser of choice and use that to read the documentation directly from your just-configured graphical system.</p>
+
+<p>For example, one of the first things I did was adding a blurry screen lock script:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/sh</span>
+
+<span class="nb">set</span> <span class="nt">-e</span>
+
+<span class="nv">screenshot</span><span class="o">=</span><span class="si">$(</span><span class="nb">mktemp</span> /tmp/lock-screen-scrot-XXXXXXXXXX<span class="si">)</span>
+scrot <span class="nt">--overwrite</span> <span class="nt">--format</span> png <span class="nt">-F</span> <span class="s2">"</span><span class="nv">$screenshot</span><span class="s2">"</span>
+magick <span class="s2">"</span><span class="nv">$screenshot</span><span class="s2">"</span> <span class="nt">-blur</span> 0x8 <span class="s2">"</span><span class="k">${</span><span class="nv">screenshot</span><span class="k">}</span><span class="s2">-blur.png"</span>
+i3lock <span class="nt">--image</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">screenshot</span><span class="k">}</span><span class="s2">-blur.png"</span> <span class="nt">--pointer</span><span class="o">=</span>default <span class="nt">--ignore-empty-password</span> <span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span>
+</code></pre></div></div>
+
+<p>After saving this to a file called <code class="language-plaintext highlighter-rouge">lock-screen</code>, we need to:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>pacman <span class="nt">-S</span> i3lock scrot imagemagick               <span class="c"># install programs used in the script</span>
+<span class="nv">$ </span><span class="nb">chmod</span> +x lock-screen                                  <span class="c"># make the script executable</span>
+<span class="nv">$ </span><span class="nb">mkdir</span> <span class="nt">-p</span> ~/.local/bin                                 <span class="c"># create a ~/.local/bin/ folder</span>
+<span class="nv">$ </span><span class="nb">echo</span> <span class="s1">'export PATH=$PATH:$HOME/.local/bin'</span> <span class="o">&gt;&gt;</span> .zshenv  <span class="c"># append it to our user's PATH</span>
+<span class="nv">$ </span><span class="nb">mv </span>lock-screen ~/.local/bin/                          <span class="c"># put the lock screen script there</span>
+</code></pre></div></div>
+
+<p>Then, in order to launch it with <code class="language-plaintext highlighter-rouge">Super + L</code>, add the following snippet to the global keys section of <code class="language-plaintext highlighter-rouge">~/.config/awesome/rc.lua</code>.
+After restarting awesome, the new shortcut will also show up in the hotkeys help popup (<code class="language-plaintext highlighter-rouge">Super + S</code>), and will blur &amp; lock the screen when activated.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">awful</span><span class="p">.</span><span class="n">key</span><span class="p">(</span>
+    <span class="p">{</span> <span class="n">modkey</span><span class="p">,</span> <span class="p">},</span> <span class="s2">"l"</span><span class="p">,</span>
+    <span class="k">function</span><span class="p">()</span> <span class="n">awful</span><span class="p">.</span><span class="n">spawn</span><span class="p">(</span><span class="s2">"lock-screen"</span><span class="p">)</span> <span class="k">end</span><span class="p">,</span>
+    <span class="p">{</span> <span class="n">description</span> <span class="o">=</span> <span class="s2">"lock the current session"</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="s2">"launcher"</span> <span class="p">}</span>
+<span class="p">),</span>
+</code></pre></div></div>
+
+<p>Another thing you might want to do is load a prettier built-in theme (before overriding it to your own tastes) - you can list the contents of <code class="language-plaintext highlighter-rouge">/usr/share/awesome/themes</code> to check what alternatives came preinstalled with awesome.
+Then, you can change the <code class="language-plaintext highlighter-rouge">beautiful.init()</code> line in <code class="language-plaintext highlighter-rouge">~/.config/awesome/rc.lua</code>, like so:</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">- beautiful.init(gears.filesystem.get_themes_dir() .. "default/theme.lua")
+</span><span class="gi">+ beautiful.init(gears.filesystem.get_themes_dir() .. "xresources/theme.lua")
+</span></code></pre></div></div>
+
+<h2 id="6-pipewire-audio">6. Pipewire audio</h2>
+
+<p>A basic installation like the one we just went through mostly just works out of the box.
+I didn’t have to do anything other than plug in my HDMI monitor, wireless mouse and USB keyboard.</p>
+
+<p>Soon enough, however, I realized that audio was missing.
+Desktop Linux is somewhat infamous for having audio issues, but I think <a href="https://wiki.archlinux.org/title/PipeWire">PipeWire</a> has made that a thing of the past.
+All we need to do is install a few packages (and possibly reboot), then it all just works:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>pacman <span class="nt">-S</span> pipewire <span class="se">\</span>
+    pipewire-audio pipewire-alsa pipewire-pulse pipewire-jack <span class="se">\</span>
+    wireplumber alsa-utils
+</code></pre></div></div>
+
+<p>You might want to set up keybindings for the following audio related commands:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>alsamixer <span class="nt">-V</span> all                               <span class="c"># control audio in terminal</span>
+<span class="nv">$ </span>pactl set-sink-volume @DEFAULT_SINK@ <span class="nt">-5</span>%       <span class="c"># lower volume by 5%</span>
+<span class="nv">$ </span>pactl set-sink-volume @DEFAULT_SINK@ +5%       <span class="c"># increase volume by 5%</span>
+<span class="nv">$ </span>pactl set-sink-mute @DEFAULT_SINK@ toggle      <span class="c"># toggle audio mute</span>
+<span class="nv">$ </span>pactl set-source-mute @DEFAULT_SOURCE@ toggle  <span class="c"># toggle microphone mute</span>
+</code></pre></div></div>
+
+<h2 id="7-pacman-and-snapshots">7. Pacman and snapshots</h2>
+
+<p>As promised, we’ll now set up automatic system backups, making use of btrfs snapshots.
+These are SYSTEM backups (of the root partition) and not DATA backups (does not include the home partition), intented to enable undoing a bad update or a breaking config change.
+You should configure additional backup schemes for user data.</p>
+
+<p>With that disclaimer out of the way, let’s install <a href="https://wiki.archlinux.org/title/Snapper">snapper</a>:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>pacman <span class="nt">-S</span> snapper
+<span class="nv">$ </span><span class="nb">sudo </span>snapper <span class="nt">-c</span> root create-config /
+</code></pre></div></div>
+
+<p>Snapper saves snapshots under the <code class="language-plaintext highlighter-rouge">/.snapshots</code> mount point; that’s OK.
+The issue is that, by default, it creates a subvolume under whatever is currently mounted at <code class="language-plaintext highlighter-rouge">/</code>, but I would rather keep snapshots in the top-level of the btrfs volume structure.
+Therefore, I’ll delete the just-created <code class="language-plaintext highlighter-rouge">.snapshots</code> SUBVOLUME and make a new one, mounted at <code class="language-plaintext highlighter-rouge">/.snapshots</code>:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>btrfs subvolume delete /.snapshots
+<span class="nv">$ </span><span class="nb">sudo </span>mount <span class="nt">-o</span> <span class="nv">subvolid</span><span class="o">=</span>5 /dev/mapper/arch-root /mnt
+<span class="nv">$ </span><span class="nb">sudo </span>btrfs subvolume create /mnt/@snapshots
+<span class="nv">$ </span><span class="nb">sudo </span>umount /mnt
+<span class="nv">$ </span><span class="nb">sudo mkdir</span> /.snapshots
+<span class="nv">$ </span><span class="nb">sudo chmod </span>750 /.snapshots
+<span class="nv">$ </span><span class="nb">echo</span> <span class="s1">'UUID=${same_UUID_as_other_subvolumes}	/.snapshots	btrfs	subvol=@snapshots,rw,relatime,space_cache=v2,compress=zstd:1	0	0'</span> | <span class="nb">sudo tee</span> <span class="nt">-a</span> /etc/fstab
+<span class="nv">$ </span><span class="nb">sudo </span>mount /.snapshots
+</code></pre></div></div>
+
+<p>Then, I’ll disable snapper’s default time-based backups:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo sed</span> <span class="nt">-i</span> <span class="s1">'s/TIMELINE_CREATE="no"/TIMELINE_CREATE="yes"/'</span> /etc/snapper/configs/root
+<span class="nv">$ </span><span class="nb">sudo </span>systemctl stop snapper-timeline.timer
+<span class="nv">$ </span><span class="nb">sudo </span>systemctl disable snapper-timeline.timer
+</code></pre></div></div>
+
+<p>In order to create a snapshot manually, we can run <code class="language-plaintext highlighter-rouge">snapper create</code>.
+To list existing snapshots, just use <code class="language-plaintext highlighter-rouge">snapper list</code>.
+Each snapshot is a btrfs subvolume and can be mounted as such.</p>
+
+<p>Now, in order to run backups every time we make a potentially breaking change, we’ll install <a href="https://barnettphd.com/snap-pac/configuration.html"><code class="language-plaintext highlighter-rouge">snap-pac</code></a>.
+By default, it is configured to create a snapshot of the root partition before and after every time we modify the system with <code class="language-plaintext highlighter-rouge">pacman</code> (installing a package, updating the system, etc).</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>pacman <span class="nt">-S</span> snap-pac
+</code></pre></div></div>
+
+<p>You can run <code class="language-plaintext highlighter-rouge">snapper list</code> to see the snapshot which was automatically created after installing <code class="language-plaintext highlighter-rouge">snap-pac</code> itself.
+Personally, I preferred to <code class="language-plaintext highlighter-rouge">snapper delete</code> this initial one, just to make sure every change has a <code class="language-plaintext highlighter-rouge">pre</code> and <code class="language-plaintext highlighter-rouge">post</code> snapshot.</p>
+
+<figure class=""><a href="/assets/images/dual-boot/arch-snapper.png" class="image-popup" title="Setting up snapper as an automatic system backup tool for Arch.
+"><img src="/assets/images/dual-boot/arch-snapper.png" alt="arch-snapper" /></a><figcaption>
+      Setting up snapper as an automatic system backup tool for Arch.
+
+    </figcaption></figure>
+
+<p>Although the current setup covers changes to the root partition, we might not be able to fully restore the system without kernel backups as well.
+The kernel is not currently being backed up, since it lives in the boot partition.
+Thankfully, the <a href="https://wiki.archlinux.org/title/System_backup#Snapshots_and_/boot_partition">Arch Wiki has this covered</a> by teaching us how to set up pacman hooks to copy the kernel from the boot partition to our snapshot-able root:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>pacman <span class="nt">-S</span> rsync
+<span class="nv">$ </span><span class="nb">sudo mkdir</span> /.bootbackup
+<span class="nv">$ </span><span class="nb">sudo mkdir</span> <span class="nt">-p</span> /etc/pacman.d/hooks
+
+<span class="nv">$ </span>nano /etc/pacman.d/hooks/95-bootbackup_pre.hook
+<span class="nv">$ </span><span class="nb">cat</span> /etc/pacman.d/hooks/95-bootbackup_pre.hook
+<span class="o">[</span>Trigger]
+Operation <span class="o">=</span> Upgrade
+Operation <span class="o">=</span> Install
+Operation <span class="o">=</span> Remove
+Type <span class="o">=</span> Path
+Target <span class="o">=</span> usr/lib/modules/<span class="k">*</span>/vmlinuz
+<span class="o">[</span>Action]
+Depends <span class="o">=</span> rsync
+Description <span class="o">=</span> Backing up pre /boot...
+When <span class="o">=</span> PreTransaction
+Exec <span class="o">=</span> /usr/bin/bash <span class="nt">-c</span> <span class="s1">'rsync -a --mkpath --delete /boot/ "/.bootbackup/$(date +%Y-%m-%d.%Hh%Mm%Ss).pre"/'</span>
+
+<span class="nv">$ </span>nano /etc/pacman.d/hooks/95-bootbackup_post.hook
+<span class="nv">$ </span><span class="nb">cat</span> /etc/pacman.d/hooks/95-bootbackup_post.hook
+<span class="o">[</span>Trigger]
+Operation <span class="o">=</span> Upgrade
+Operation <span class="o">=</span> Install
+Operation <span class="o">=</span> Remove
+Type <span class="o">=</span> Path
+Target <span class="o">=</span> usr/lib/modules/<span class="k">*</span>/vmlinuz
+<span class="o">[</span>Action]
+Depends <span class="o">=</span> rsync
+Description <span class="o">=</span> Backing up post /boot...
+When <span class="o">=</span> PostTransaction
+Exec <span class="o">=</span> /usr/bin/bash <span class="nt">-c</span> <span class="s1">'rsync -a --mkpath --delete /boot/ "/.bootbackup/$(date +%Y-%m-%d.%Hh%Mm%Ss).post"/'</span>
+</code></pre></div></div>
+
+<p>We can now run a full system update, with confidence that we can revert it in case things break.
+(In fact, it is a good idea to keep you Arch ISO live USB around, since <a href="https://bbs.archlinux.org/viewtopic.php?pid=1508842#p1508842">restoring your system from these snapshots</a> may require manual intervention).</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>pacman <span class="nt">-Syu</span>
+</code></pre></div></div>
+
+<h2 id="8-other-customizations">8. Other customizations</h2>
+
+<p>In the previous Arch tutorial, we went from a live USB to a minimal installation, with not much other than network connectivity.
+In this one, we moved from a TTY login to a graphical desktop environment, with auto-login, a terminal emulator, a working audio system, automatic backups and a fully customizable window manager; with a web browser being just a <code class="language-plaintext highlighter-rouge">pacman -S</code> away.</p>
+
+<p>The result might still look and feel too barebones for some people, but after this point each one can customize the system however they like.
+That’s the beauty of (Arch) Linux: this system is now yours, do with it whatever you want.
+Enjoy!</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/#linux" class="page__taxonomy-item p-category" rel="tag">linux</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/categories/#tutorial" class="page__taxonomy-item p-category" rel="tag">tutorial</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2024-07-27T00:00:00+00:00">July 27, 2024</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/tutorial/ubuntu-lvmcache/" class="pagination--pager" title="How to set up lvmcache across LUKS-encrypted partitions
+">Previous</a>
+    
+    
+      <a href="/writeup/htb-cyber-apocalypse-2025/" class="pagination--pager" title="HTB Cyber Apocalypse CTF 2025
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    
+<div class="page__related">
+  
+  <h2 class="page__related-title">You may also enjoy</h2>
+  <div class="grid__wrapper">
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/htb-cyber-apocalypse-2025/cave-expedition-decrypt.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/writeup/htb-cyber-apocalypse-2025/" rel="permalink">HTB Cyber Apocalypse CTF 2025
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-03-26T00:00:00+00:00">March 26, 2025</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Writeups for 3 challenges, each in a different category
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/os-ubuntu.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/ubuntu-lvmcache/" rel="permalink">How to set up lvmcache across LUKS-encrypted partitions
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-07-14T00:00:00+00:00">July 14, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 3: Encrypted hybrid storage
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/refind.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/arch-btrfs-luks-raid/" rel="permalink">How to install Arch on Btrfs with LUKS encryption and software RAID1
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-05-17T00:00:00+00:00">May 17, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 2: I use Arch, btw
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/ubuntu-boot-encrypted.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/ubuntu-24.04-encrypted/" rel="permalink">How to install Ubuntu 24.04 LTS with Full Disk Encryption
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-05-16T00:00:00+00:00">May 16, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 1: Ubuntu guided installation
+</p>
+  </article>
+</div>
+
+    
+  </div>
+</div>
+
+  
+  
+</div>
+
+      
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 <a href="https://www.baioc.dev">Gabriel B. Sant'Anna</a></div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+  </body>
+</html>
