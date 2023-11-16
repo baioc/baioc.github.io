@@ -1,0 +1,607 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.26.2 by Michael Rose
+  Copyright 2013-2024 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>How to install Quartus II on Linux | baioc</title>
+<meta name="description" content="Altera Quartus II installation tutorial for Debian-based Linux distros">
+
+
+  <meta name="author" content="Gabriel B. Sant'Anna">
+  
+  <meta property="article:author" content="Gabriel B. Sant'Anna">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="baioc">
+<meta property="og:title" content="How to install Quartus II on Linux">
+<meta property="og:url" content="https://www.baioc.dev/tutorial/quartus-linux/">
+
+
+  <meta property="og:description" content="Altera Quartus II installation tutorial for Debian-based Linux distros">
+
+
+
+  <meta property="og:image" content="https://www.baioc.dev/assets/images/s4pu.png">
+
+
+
+
+
+  <meta property="article:published_time" content="2019-03-13T00:00:00+00:00">
+
+
+
+
+
+
+<link rel="canonical" href="https://www.baioc.dev/tutorial/quartus-linux/">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="baioc Feed">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script type="text/javascript">
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+
+  
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single long">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Home
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a
+                href="/portfolio/"
+                
+                
+              >Portfolio</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/resume/"
+                
+                
+              >Resume</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/blog/"
+                
+                
+              >Blog</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="How to install Quartus II on Linux">
+    <meta itemprop="description" content="Altera Quartus II installation tutorial for Debian-based Linux distros">
+    <meta itemprop="datePublished" content="2019-03-13T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="https://www.baioc.dev/tutorial/quartus-linux/" itemprop="url">How to install Quartus II on Linux
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2019-03-13T00:00:00+00:00">March 13, 2019</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right sticky">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-bars"></i> Contents</h4></header>
+              <ul class="toc__menu"><li><a href="#1-download--install">1) Download &amp; Install</a></li><li><a href="#2-add-path-dependencies">2) Add PATH dependencies</a></li><li><a href="#3-install-32-bit-packages">3) Install 32-bit packages</a></li><li><a href="#4-usb-blaster-configuration">4) USB-Blaster configuration</a></li></ul>
+            </nav>
+          </aside>
+        
+        <p>Please note that this tutorial is intended for Debian-derived Linux distros such as Ubuntu, Mint, MX, etc.</p>
+
+<p>Users running Arch-based distros should refer to the <a href="https://wiki.archlinux.org/index.php/Altera_Design_Software">Arch Wiki</a> (in fact, arch users can automatically download, install, and get the Quartus toolkit to work on their computers by simply using one of the <a href="https://aur.archlinux.org/packages/?O=0&amp;K=quartus-free">AUR’s packages</a>).</p>
+
+<h2 id="1-download--install">1) Download &amp; Install</h2>
+
+<p>Go to <a href="https://www.intel.com/content/www/us/en/programmable/downloads/download-center.html" class="btn">Intel Download Center</a>.</p>
+
+<p><strong>Select by Device</strong> -&gt; Choose Device Family -&gt; Choose your Device</p>
+
+<p>Click on the most recent <strong>Web Edition</strong>.</p>
+
+<p>Select the rigth OS and click on <strong>Individual Files</strong>.</p>
+
+<p>Download only what you need.</p>
+
+<p>Give the downloaded script execution permission:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">chmod</span> +x QuartusSetup.run
+</code></pre></div></div>
+
+<p>Run the installation script:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>/path/to/script/QuartusSetup.run
+</code></pre></div></div>
+
+<h2 id="2-add-path-dependencies">2) Add PATH dependencies</h2>
+
+<p>Create the following script file to be run at startup, one way to accomplish this is to append <code class="language-plaintext highlighter-rouge">source /path/to/script/quartus.sh</code> to your shell configuration file.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">QUARTUS_64BIT</span><span class="o">=</span>1                         <span class="c"># Remove this if running on 32 bit</span>
+<span class="nb">export </span><span class="nv">ALTERA_ROOT</span><span class="o">=</span><span class="s2">"</span><span class="nv">$HOME</span><span class="s2">/Applications/altera"</span> <span class="c"># Change this to the path you've installed Altera Quartus at</span>
+
+<span class="nb">export </span><span class="nv">QUARTUS_ROOTDIR_OVERRIDE</span><span class="o">=</span><span class="s2">"</span><span class="nv">$ALTERA_ROOT</span><span class="s2">/quartus"</span>
+<span class="nb">export </span><span class="nv">QSYS_ROOTDIR</span><span class="o">=</span><span class="s2">"</span><span class="nv">$QUARTUS_ROOTDIR_OVERRIDE</span><span class="s2">/sopc_builder/bin"</span>
+<span class="nb">export </span><span class="nv">QUARTUS_LIBRARY_PATHS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$QUARTUS_ROOTDIR_OVERRIDE</span><span class="s2">/linux/:/lib/x86_64-linux-gnu/"</span>
+<span class="nb">export </span><span class="nv">SOPC_KIT_NIOS2</span><span class="o">=</span><span class="s2">"</span><span class="nv">$ALTERA_ROOT</span><span class="s2">/nios2eds"</span>
+<span class="nb">export </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">:</span><span class="nv">$QUARTUS_LIBRARY_PATHS</span><span class="s2">"</span>
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">"</span><span class="nv">$PATH</span><span class="s2">:</span><span class="nv">$ALTERA_ROOT</span><span class="s2">/quartus/bin"</span>
+</code></pre></div></div>
+
+<h2 id="3-install-32-bit-packages">3) Install 32-bit packages</h2>
+
+<p>A few 32-bit compatibility packages will probably need to be installed on 64-bit systems in order for some tools to work.</p>
+
+<p>Try opening and using any tool directly fom the Quartus GUI. If it doesn’t work, run it from the terminal and there should be some complaint about a missing packge or library. Look up on what package you may find this library and install it.</p>
+
+<p><strong>The eclipse-nios2 tool requires installing <code class="language-plaintext highlighter-rouge">libgtk2.0-0:i386</code></strong></p>
+
+<p>It may also require starting it through the terminal with:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$SOPC_KIT_NIOS2</span>/bin/eclipse-nios2 <span class="nt">-configuration</span> <span class="nv">$HOME</span>/.nios2-ide-6.1 <span class="nv">$WORKSPACE_ARGS</span> <span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span>
+</code></pre></div></div>
+
+<p>Extra packages I needed on a MX Linux install included <code class="language-plaintext highlighter-rouge">gcc-multilib</code>, <code class="language-plaintext highlighter-rouge">lib32ncurses5</code>, <code class="language-plaintext highlighter-rouge">libx11-6</code>, <code class="language-plaintext highlighter-rouge">libfreetype6</code>, <code class="language-plaintext highlighter-rouge">libpng12</code>, <code class="language-plaintext highlighter-rouge">libc6</code>, <code class="language-plaintext highlighter-rouge">libxtst6</code>, <code class="language-plaintext highlighter-rouge">zlib1g</code>, <code class="language-plaintext highlighter-rouge">libssl1.0.0</code> and <code class="language-plaintext highlighter-rouge">libssl-dev</code>; generally the <code class="language-plaintext highlighter-rouge">:i386</code> versions. You may also need Java 8 or greater.</p>
+
+<h2 id="4-usb-blaster-configuration">4) USB-Blaster configuration</h2>
+
+<p><strong>This part is based on <a href="http://www.fpga-dev.com/altera-usb-blaster-with-ubuntu/">a blog post from fpga-dev</a> which can no longer be read.</strong></p>
+
+<p>At first, connect the cable and make sure the USB device is recognized:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>dmesg | <span class="nb">tail</span>
+<span class="o">[</span>...]
+<span class="o">[</span>16059.962298] usb 2-2: New USB device found, <span class="nv">idVendor</span><span class="o">=</span>09fb, <span class="nv">idProduct</span><span class="o">=</span>6010
+<span class="o">[</span>16059.962301] usb 2-2: New USB device strings: <span class="nv">Mfr</span><span class="o">=</span>1, <span class="nv">Product</span><span class="o">=</span>2, <span class="nv">SerialNumber</span><span class="o">=</span>3
+<span class="o">[</span>16059.962303] usb 2-2: Product: CV SoCKit
+<span class="o">[</span>16059.962305] usb 2-2: Manufacturer: Altera
+<span class="o">[</span>16059.962307] usb 2-2: SerialNumber: ARCVSC-123-457
+
+<span class="nv">$ </span>lsusb | <span class="nb">grep </span>Altera
+Bus 002 Device 007: ID 09fb:6010 Altera
+</code></pre></div></div>
+<p>Take note of the Product ID listed - 6010 in the above example.</p>
+
+<p>The Quartus software will use the Linux built-in usb_device drivers. By default, only root has access to these so we must make sure the user is allowed to access them as well.</p>
+
+<p>jtagd, part of the Quartus tools, is a deamon that provides the interface between the Altera tool accessing the JTAG chain and the USB driver. If not already running, jtagd will be startetd automatically when the Quartus software or jtagconfig is run. You’ll usually run these as a user, which means jtagd will also run as a user. That is why edited permission for the usb_device is necessary.</p>
+
+<p>Create a file /etc/udev/rules.d/51-usbblaster.rules, make sure it has read permissions for root, and fill it with this content:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SUBSYSTEM=="usb",\
+ENV{DEVTYPE}=="usb_device",\
+ATTR{idVendor}=="09fb",\
+ATTR{idProduct}=="6010",\
+MODE="0666",\
+NAME="bus/usb/$env{BUSNUM}/$env{DEVNUM}",\
+RUN+="/bin/chmod 0666 %c"
+</code></pre></div></div>
+
+<p>Edit the value for ATTR{idProduct} to match the Product ID determined before.</p>
+
+<p>If you have more than one Product ID you want this to work for, simply repeat the above lines in the same file and use the other Product IDs for ATTR{idProduct}.</p>
+
+<p>For the changes to take effect, reboot the machine.</p>
+
+<p>Make sure jtagd has access to the list of devices:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo mkdir</span> /etc/jtagd
+<span class="nv">$ </span><span class="nb">sudo cp</span> <span class="nv">$QUARTUS_ROOTDIR_OVERRIDE</span>/linux64/pgm_parts.txt /etc/jtagd/jtagd.pgm_parts
+</code></pre></div></div>
+
+<p>Also make sure this file has read access for the user.</p>
+
+<p>The cable should now be recognized as a valid hardware by the Quartus tools. From Quartus, select Tools, Programmer, Hardware Setup… and then select the board from the drop-down list. Now, the Programmer, JTAG Chain Debugger and System console should all recognize and use the USB-Blaster device.</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/#linux" class="page__taxonomy-item p-category" rel="tag">linux</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/categories/#tutorial" class="page__taxonomy-item p-category" rel="tag">tutorial</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2019-03-13T00:00:00+00:00">March 13, 2019</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/link/pl-history/" class="pagination--pager" title="A Brief History of Programming Languages
+">Previous</a>
+    
+    
+      <a href="/tutorial/fibonacci/" class="pagination--pager" title="Fibonacci numbers: from zero to hero
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    
+<div class="page__related">
+  
+  <h2 class="page__related-title">You may also enjoy</h2>
+  <div class="grid__wrapper">
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/htb-cyber-apocalypse-2025/cave-expedition-decrypt.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/writeup/htb-cyber-apocalypse-2025/" rel="permalink">HTB Cyber Apocalypse CTF 2025
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-03-26T00:00:00+00:00">March 26, 2025</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Writeups for 3 challenges, each in a different category
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/arch-rice.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/arch-awesomewm/" rel="permalink">How to set up an X-based desktop from scratch
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-07-27T00:00:00+00:00">July 27, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 4: From TTY to graphical desktop
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/os-ubuntu.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/ubuntu-lvmcache/" rel="permalink">How to set up lvmcache across LUKS-encrypted partitions
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-07-14T00:00:00+00:00">July 14, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 3: Encrypted hybrid storage
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/refind.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/arch-btrfs-luks-raid/" rel="permalink">How to install Arch on Btrfs with LUKS encryption and software RAID1
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-05-17T00:00:00+00:00">May 17, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 2: I use Arch, btw
+</p>
+  </article>
+</div>
+
+    
+  </div>
+</div>
+
+  
+  
+</div>
+
+      
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 <a href="https://www.baioc.dev">Gabriel B. Sant'Anna</a></div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+  </body>
+</html>

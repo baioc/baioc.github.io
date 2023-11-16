@@ -1,0 +1,713 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.26.2 by Michael Rose
+  Copyright 2013-2024 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Dlang Woes | baioc</title>
+<meta name="description" content="There are programming languages that people complain about and languages that nobody uses; and I’m starting to use D">
+
+
+  <meta name="author" content="Gabriel B. Sant'Anna">
+  
+  <meta property="article:author" content="Gabriel B. Sant'Anna">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="baioc">
+<meta property="og:title" content="Dlang Woes">
+<meta property="og:url" content="https://www.baioc.dev/rant/d-woes/">
+
+
+  <meta property="og:description" content="There are programming languages that people complain about and languages that nobody uses; and I’m starting to use D">
+
+
+
+  <meta property="og:image" content="https://www.baioc.dev/assets/images/aigen-nightcafe-woe.png">
+
+
+
+
+
+  <meta property="article:published_time" content="2023-04-11T00:00:00+00:00">
+
+
+
+
+
+
+<link rel="canonical" href="https://www.baioc.dev/rant/d-woes/">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="baioc Feed">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script type="text/javascript">
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+
+  
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Home
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a
+                href="/portfolio/"
+                
+                
+              >Portfolio</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/resume/"
+                
+                
+              >Resume</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/blog/"
+                
+                
+              >Blog</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+    <div class="author__avatar">
+      <a href="https://www.baioc.dev/">
+        <img src="/assets/images/photo.jpg" alt="Gabriel B. Sant'Anna" itemprop="image" class="u-photo">
+      </a>
+    </div>
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="https://www.baioc.dev/" itemprop="url">Gabriel B. Sant'Anna</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <p>Software / Linux / Cybersecurity</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+            <li><a href="https://github.com/baioc" rel="nofollow noopener noreferrer me" itemprop="sameAs"><i class="fab fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+            <li><a href="https://www.linkedin.com/in/baioc/" rel="nofollow noopener noreferrer me" itemprop="sameAs"><i class="fab fa-linkedin" aria-hidden="true"></i><span class="label">LinkedIn</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Dlang Woes">
+    <meta itemprop="description" content="There are programming languages that people complain about and languages that nobody uses; and I’m starting to use D">
+    <meta itemprop="datePublished" content="2023-04-11T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="https://www.baioc.dev/rant/d-woes/" itemprop="url">Dlang Woes
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2023-04-11T00:00:00+00:00">April 11, 2023</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <blockquote>
+  <p>woe (noun)</p>
+  <ul>
+    <li>great sorrow or distress (often used hyperbolically).</li>
+  </ul>
+</blockquote>
+
+<p>There’s a quote by Bjarne Stroustrup saying that “<em>there are only two kinds of languages: the ones people complain about and the ones nobody uses</em>”.
+Complaining is therefore a natural result of using a language, and I’ve been using <a href="https://dlang.org/">D</a> a bit more in my latest side projects.</p>
+
+<p>While there’s a lot of great things to be said about this <a href="https://dlang.org/comparison.html">language</a> and its <a href="https://github.com/Pure-D/code-d">tooling</a> (especially when compared to C, C++ and other contenders), there are also some warts here and there.
+So, here’s some complaining, either pointing out bugs or simply violations of the principle of least astonishment (POLA) in the language (in my opinion, that is).</p>
+
+<h3 id="struct-this-vs-class-this">struct this vs class this</h3>
+
+<p>Q: Can you pass <code class="language-plaintext highlighter-rouge">this</code> by <code class="language-plaintext highlighter-rouge">ref</code>?
+<br />
+A1: Only inside structs, not classes.
+<br />
+A2: Actually, you can assign <code class="language-plaintext highlighter-rouge">this</code> to a variable, then pass that variable by ref.
+<br />
+A3: Consider passing by <a href="https://dlang.org/spec/template.html#auto-ref-parameters">auto ref</a> instead, or maybe <a href="https://dlang.org/spec/function.html#in-params">in</a> if the argument is also <code class="language-plaintext highlighter-rouge">const</code>.</p>
+
+<div class="language-d highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// struct.this vs class.this</span>
+<span class="c1">// or, pass this by ref</span>
+
+<span class="kt">int</span> <span class="n">bar</span><span class="p">(</span><span class="n">T</span><span class="p">)(</span><span class="k">ref</span> <span class="n">T</span> <span class="n">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">1</span><span class="p">;</span> <span class="p">}</span>
+
+<span class="k">class</span> <span class="n">C</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">foo</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">bar</span><span class="p">;</span> <span class="p">}</span> <span class="c1">// &lt;--- error</span>
+<span class="p">}</span>
+
+<span class="k">struct</span> <span class="n">S</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">foo</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="n">bar</span><span class="p">;</span> <span class="p">}</span> <span class="c1">// &lt;--- but this works?</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">auto</span> <span class="n">c</span> <span class="p">=</span> <span class="k">new</span> <span class="n">C</span><span class="p">();</span>
+    <span class="n">c</span><span class="p">.</span><span class="n">bar</span><span class="p">;</span> <span class="c1">// &lt;--- also works</span>
+<span class="p">}</span>
+
+<span class="c1">// Error: none of the overloads of template `onlineapp.bar` are callable using argument types `!()(C)`</span>
+<span class="c1">// Candidate is: `bar(T)(ref T x)`</span>
+</code></pre></div></div>
+
+<h3 id="ufcs-vs-method-overloading">UFCS vs Method Overloading</h3>
+
+<p>Q: Does <strong>Universal</strong> Function Call Syntax (UFCS) turn <code class="language-plaintext highlighter-rouge">variable.foo(arguments)</code> into <code class="language-plaintext highlighter-rouge">foo(variable, arguments)</code> ?
+<br />
+A1: <a href="https://ddili.org/ders/d.en/ufcs.html">Yeah! Cool, huh?</a>
+<br />
+A2: Actually, UFCS only applies to functions in module scope (lambdas or local ones don’t count).
+<br />
+A3: They also don’t work in the presence of methods called <code class="language-plaintext highlighter-rouge">foo</code> (never mind the full typed signature).</p>
+
+<div class="language-d highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// UFCS vs Method Overloading</span>
+
+<span class="kt">int</span> <span class="n">foo</span><span class="p">(</span><span class="n">T</span><span class="p">)(</span><span class="k">ref</span> <span class="n">T</span> <span class="n">x</span><span class="p">,</span> <span class="kt">float</span> <span class="n">f</span><span class="p">){</span> <span class="k">return</span> <span class="mi">1</span><span class="p">;</span> <span class="p">}</span>
+
+<span class="k">struct</span> <span class="n">A</span> <span class="p">{}</span>
+
+<span class="k">struct</span> <span class="n">B</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">foo</span><span class="p">(</span><span class="kt">bool</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">2</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">import</span> <span class="n">std</span><span class="p">.</span><span class="n">stdio</span> <span class="p">:</span> <span class="n">writeln</span><span class="p">;</span>
+
+    <span class="n">A</span> <span class="n">a</span><span class="p">;</span>
+    <span class="n">writeln</span><span class="p">(</span><span class="s">"A * bool  -&gt; "</span><span class="p">,</span> <span class="n">a</span><span class="p">.</span><span class="n">foo</span><span class="p">(</span><span class="kc">true</span><span class="p">));</span>
+    <span class="n">writeln</span><span class="p">(</span><span class="s">"A * float -&gt; "</span><span class="p">,</span> <span class="n">a</span><span class="p">.</span><span class="n">foo</span><span class="p">(</span><span class="mf">1.23</span><span class="p">));</span> <span class="c1">// &lt;--- ok, uses UFCS</span>
+
+    <span class="n">B</span> <span class="n">b</span><span class="p">;</span>
+    <span class="n">writeln</span><span class="p">(</span><span class="s">"B * bool -&gt; "</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">foo</span><span class="p">(</span><span class="kc">true</span><span class="p">));</span>
+    <span class="n">writeln</span><span class="p">(</span><span class="s">"B * float -&gt; "</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">foo</span><span class="p">(</span><span class="mf">1.23</span><span class="p">));</span> <span class="c1">// &lt;--- error (ignores UFCS?)</span>
+    <span class="n">writeln</span><span class="p">(</span><span class="s">"B * float (without UFCS) -&gt; "</span><span class="p">,</span> <span class="n">foo</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="mf">1.23</span><span class="p">));</span> <span class="c1">// &lt;--- ok</span>
+<span class="p">}</span>
+
+<span class="c1">// Error: function `B.foo(bool b)` is not callable using argument types `(double)`</span>
+<span class="c1">// cannot pass argument `1.23` of type `double` to parameter `bool b`</span>
+</code></pre></div></div>
+
+<h3 id="taggedpointer-vs-safe">taggedPointer vs @safe</h3>
+
+<p>Q: Are <a href="https://dlang.org/library/std/bitmanip/tagged_pointer.html">std.bitmanip.taggedPointer</a>s safe?
+<br />
+A1: Yes they’re safe: they only use pointer bits which are known (at compile time!) to be zero due to alignment constraints.
+<br />
+A2: But they’re not <code class="language-plaintext highlighter-rouge">scope @safe</code> though. <a href="https://issues.dlang.org/show_bug.cgi?id=23095">Here’s the bug report</a>.
+<br />
+A3: Also, they don’t work in <a href="https://tour.dlang.org/tour/en/gems/compile-time-function-evaluation-ctfe">CTFE</a> because pointer casts are not allowed there.</p>
+
+<div class="language-d highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// taggedPointer accessors are not scope</span>
+<span class="c1">// Compile with: -dip1000 -main</span>
+<span class="c1">// Bugzilla #3095, reported in 2022-05-05</span>
+
+<span class="k">import</span> <span class="n">std</span><span class="p">.</span><span class="n">bitmanip</span> <span class="p">:</span> <span class="n">taggedPointer</span><span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">S</span> <span class="p">{</span>
+    <span class="k">mixin</span><span class="p">(</span><span class="n">taggedPointer</span><span class="p">!(</span>
+        <span class="kt">int</span><span class="p">*,</span> <span class="s">"ptr"</span><span class="p">,</span>
+        <span class="kt">bool</span><span class="p">,</span> <span class="s">"flag"</span><span class="p">,</span> <span class="mi">1</span>
+    <span class="p">));</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">foo</span><span class="p">(</span><span class="k">scope</span> <span class="k">ref</span> <span class="n">S</span> <span class="n">s</span><span class="p">)</span> <span class="nd">@safe</span> <span class="p">{</span>
+    <span class="n">s</span><span class="p">.</span><span class="n">flag</span><span class="p">;</span> <span class="c1">// &lt;--- error</span>
+<span class="p">}</span>
+
+<span class="c1">// Error: scope variable `s` assigned to non-scope parameter `this` calling `flag`</span>
+</code></pre></div></div>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/#programming-languages" class="page__taxonomy-item p-category" rel="tag">programming-languages</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/categories/#rant" class="page__taxonomy-item p-category" rel="tag">rant</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2023-04-11T00:00:00+00:00">April 11, 2023</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/tutorial/fibonacci/" class="pagination--pager" title="Fibonacci numbers: from zero to hero
+">Previous</a>
+    
+    
+      <a href="/experiment/d-sets-btree/" class="pagination--pager" title="On the performance of D sets
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    
+<div class="page__related">
+  
+  <h2 class="page__related-title">You may also enjoy</h2>
+  <div class="grid__wrapper">
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/htb-cyber-apocalypse-2025/cave-expedition-decrypt.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/writeup/htb-cyber-apocalypse-2025/" rel="permalink">HTB Cyber Apocalypse CTF 2025
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-03-26T00:00:00+00:00">March 26, 2025</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Writeups for 3 challenges, each in a different category
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/arch-rice.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/arch-awesomewm/" rel="permalink">How to set up an X-based desktop from scratch
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-07-27T00:00:00+00:00">July 27, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 4: From TTY to graphical desktop
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/os-ubuntu.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/ubuntu-lvmcache/" rel="permalink">How to set up lvmcache across LUKS-encrypted partitions
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-07-14T00:00:00+00:00">July 14, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 3: Encrypted hybrid storage
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/refind.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/arch-btrfs-luks-raid/" rel="permalink">How to install Arch on Btrfs with LUKS encryption and software RAID1
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-05-17T00:00:00+00:00">May 17, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 2: I use Arch, btw
+</p>
+  </article>
+</div>
+
+    
+  </div>
+</div>
+
+  
+  
+</div>
+
+      
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 <a href="https://www.baioc.dev">Gabriel B. Sant'Anna</a></div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+  </body>
+</html>
