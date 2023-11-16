@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /seccom-ctf/index.html
+
+Sitemap: /sitemap.xml
