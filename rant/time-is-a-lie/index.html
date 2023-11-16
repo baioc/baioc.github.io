@@ -1,0 +1,633 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.26.2 by Michael Rose
+  Copyright 2013-2024 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Time is a Lie | baioc</title>
+<meta name="description" content="Why your time calculation is wrong, and what do the sun and the moon have to do with that">
+
+
+  <meta name="author" content="Gabriel B. Sant'Anna">
+  
+  <meta property="article:author" content="Gabriel B. Sant'Anna">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="baioc">
+<meta property="og:title" content="Time is a Lie">
+<meta property="og:url" content="https://www.baioc.dev/rant/time-is-a-lie/">
+
+
+  <meta property="og:description" content="Why your time calculation is wrong, and what do the sun and the moon have to do with that">
+
+
+
+  <meta property="og:image" content="https://www.baioc.dev/assets/images/aigen-perchance-analogclock.jpg">
+
+
+
+
+
+  <meta property="article:published_time" content="2023-07-17T00:00:00+00:00">
+
+
+
+
+
+
+<link rel="canonical" href="https://www.baioc.dev/rant/time-is-a-lie/">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="baioc Feed">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script type="text/javascript">
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+
+  
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single long">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Home
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a
+                href="/portfolio/"
+                
+                
+              >Portfolio</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/resume/"
+                
+                
+              >Resume</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/blog/"
+                
+                
+              >Blog</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Time is a Lie">
+    <meta itemprop="description" content="Why your time calculation is wrong, and what do the sun and the moon have to do with that">
+    <meta itemprop="datePublished" content="2023-07-17T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="https://www.baioc.dev/rant/time-is-a-lie/" itemprop="url">Time is a Lie
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2023-07-17T00:00:00+00:00">July 17, 2023</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right sticky">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-bars"></i> Contents</h4></header>
+              <ul class="toc__menu"><li><a href="#ancient-lunisolar-calendars">Ancient Lunisolar Calendars</a></li><li><a href="#leap-days-and-the-gregorian-reform">Leap Days and the Gregorian Reform</a></li><li><a href="#iso-8601-and-leap-seconds">ISO 8601 and Leap Seconds</a></li><li><a href="#conclusion">Conclusion</a></li></ul>
+            </nav>
+          </aside>
+        
+        <p>In order to measure time, we need some periodic event to use as a time unit.
+Then, if we can order two events one after the other, we can count elapsed time units between them.
+That’s enough to measure relative time, but if two or more systems want to share timing information about events which were not observed by all participants, they also need a fixed frame of reference, an epoch.
+For example, take two arbitrary events A and B, then count N units between them; what time was it when A happened?
+With the information at hand, the best answer you can give is that A happened N units before B.
+Then, what time was it when B happened? N units after A, of course.
+If I didn’t observe neither A or B, that answer might be completely useless to me.</p>
+
+<p>If you think the previous example is unrealistic, you probably haven’t tried to read Linux <code class="language-plaintext highlighter-rouge">dmesg</code> logs.
+By default, <code class="language-plaintext highlighter-rouge">dmesg</code> adds a timestamp to each kernel message, and this timestamp is measured in terms of uptime, i.e., seconds since kernel startup.
+If a user doesn’t know when the system was last turned on, it is impossible to answer things like “was this kernel warning issued in the last week?” unless you have also registered the start/end of the week using these timestamps, or you know for sure there was no reboot in the last week (to make things worse, uptime does not tick while the system is sleeping or hibernating, so you would also have to take standby time into account).</p>
+
+<p>We could even use these requirements to synthesize a formal definition of a calendar.
+I won’t bother, however, because as you’ll see, dealing with time and human calendars is incredibly complex.
+If you’ve ever seen (or maybe written) code like this:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">days</span> <span class="o">=</span> <span class="n">wholeMonths</span><span class="o">*</span><span class="mi">30</span> <span class="o">+</span> <span class="n">wholeYears</span><span class="o">*</span><span class="mi">365</span>
+<span class="n">timeInSeconds</span> <span class="o">=</span> <span class="n">days</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span>
+<span class="nf">createAlert</span><span class="p">(</span><span class="nf">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">timeInSeconds</span><span class="p">)</span>
+</code></pre></div></div>
+<p>Then you probably knew, deep down, that it was imprecise.
+But how bad can it get, really?
+That calculation assumes:</p>
+<ul>
+  <li>Every month has 30 days.</li>
+  <li>Every year has 365 days.</li>
+  <li>Every day has \(24 \times 60 \times 60\) seconds.</li>
+</ul>
+
+<p>The truth is that every single one of these assumptions is wrong.</p>
+
+<h2 id="ancient-lunisolar-calendars">Ancient Lunisolar Calendars</h2>
+
+<p>One of the first periodic events we could observe was the cycle of day and night.
+So the primitive man decided to use days as a base time unit, and to this days we’re paying for that decision while trying to maintain backwards compatibility to some extent.</p>
+
+<p>Of course, the primitive man wasn’t that good with big numbers, and eventually chose a more coarsely-granular time scale: eras following lunar and/or solar cycles.
+Meanwhile, their time anchors were based on political events, such as the crowning of a new ruler.
+Using these systems, we can imagine someone referring to a specific day as “the 3rd day of the 200th crescent moon of the 11th Dynasty”.</p>
+
+<p>Unfortunately, these astronomical events which guide our calendars don’t repeat on an integer number of days.
+Still, we kept the day as a base time unit and decided that months and years must have a whole number of days.
+As a result, we have to make our calendars slightly irregular in order to compensate the frequency difference between astronomical and civil calendars.
+These drift-compensation mechanisms are called <a href="https://en.wikipedia.org/wiki/Intercalation_(timekeeping)">intercalary seconds/days/weeks/months</a>.</p>
+
+<p>For example: if the lunar month had a period of exactly 29.5 days, and we alternated between 29 and 30 -day calendar months, these would be in sync with a maximum error of \(\pm 0.5\) days.
+Then, in order to compute how long to wait until “this day next month”, we would need to take that into account:</p>
+<div class="language-d highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">days</span> <span class="p">=</span> <span class="n">currentMonth</span><span class="p">.</span><span class="n">isEven</span> <span class="p">?</span> <span class="mi">30</span> <span class="p">:</span> <span class="mi">29</span><span class="p">;</span>
+<span class="n">timeInSeconds</span> <span class="p">=</span> <span class="n">days</span> <span class="p">*</span> <span class="mi">24</span> <span class="p">*</span> <span class="mi">60</span> <span class="p">*</span> <span class="mi">60</span><span class="p">;</span>
+</code></pre></div></div>
+<p>But is the moon really that important, to the point where we need to change our calendar in order to keep them in sync?
+Probably not, but the sun apparently is.</p>
+
+<h2 id="leap-days-and-the-gregorian-reform">Leap Days and the Gregorian Reform</h2>
+
+<p>We’re all familiar with <a href="Leap_year">leap (or bissextile) years</a>: every four years or so, the year has 366 days instead of the usual 365, and February ends on the 29th instead of the 28th.
+This intercalary event happens because we want our civil calendar to have a whole number of days each year, while keeping it in sync with the solar calendar.
+Unfortunately, the cosmos doesn’t care about integers nearly as much as we do, and the period of Earth’s revolution around the sun is approximately 365.2422 days (365 full days plus ~5.8128 hours).
+This difference would cause the calendar year to drift over time with respect to certain astronomical events, notably seasons.</p>
+
+<p>If we round the period difference between solar and calendar years from ~5.8128 to 6 hours, then adding an extra day to our calendars every four years would be enough to fix this drift precisely, and seasons would be off by at most 18 hours.
+Since the period offset is actually smaller than 6 hours, doing this every four years would lead to an overcompensation.
+This is precisely how the Julian calendar worked (or, how it didn’t work).</p>
+
+<p>Currently, most of the world uses the Gregorian calendar, which was introduced in 1582 A.D. as a substitute to the Julian Calendar.
+Before the Gregorian calendar was established, the Julian calendar had been running since 45 B.C., using excessive leap years.
+This led to an offset (w.r.t. the solar year) of approximately 10 days, all of which were adjusted at once: in 1582, the next day after October <strong>4</strong> (a Thursday) was October <strong>15</strong> (a Friday).
+After that point, we’ve been skipping leap years (we don’t add the leap day) on years which are multiples of 100 and not multiples of 400.
+In the end, our maximum error with respect to seasonal events is approximately 2 days, and an era in the Gregorian calendar (a full period, taking leap days into account) is 400 years long.</p>
+
+<p>The Julian-Gregorian transition doesn’t make time calculations any more complicated if you pretend the Gregorian calendar had always been in effect; in which case you would be using the <em>proleptic</em> Gregorian calendar.
+Unfortunately, you might be surprised by date and time libraries trying to be smart about it.
+<a href="https://stackoverflow.com/questions/23457470/calendar-to-date-conversion-for-dates-before-15-oct-1582-gregorian-to-julian-ca">Java is a notable example</a>, as converting a <code class="language-plaintext highlighter-rouge">java.util.Date</code> to a string will use a default-parameter <a href="https://docs.oracle.com/javase/8/docs/api/java/util/GregorianCalendar.html">GregorianCalendar</a>.
+Despite the name, that implementation actually switches between Gregorian and Julian calendars when going across the transition, so these strings might lead to time calculations which are off by 10 days.</p>
+
+<h2 id="iso-8601-and-leap-seconds">ISO 8601 and Leap Seconds</h2>
+
+<p>Nowadays, we have standard representations / interchange formats for time and dates.
+<a href="https://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a> was first introduced in 1988, and it has some nice features:</p>
+
+<ul>
+  <li>Fixes the proleptic Gregorian calendar as an international standard for civil dates.</li>
+  <li>Lexicographical order of the representation corresponds to chronological order.</li>
+  <li>Robust applications can easily parse dates with higher-than-needed precision.</li>
+</ul>
+
+<p>Unfortunately, we’re still left with a couple of problems, mostly artifacts from the past.</p>
+
+<p>When the <em>day</em> was used as a base time unit, we needed to compensate calendars based on units bigger than that, and anything smaller was simply defined as a fraction of a day.
+So, in the past, the second was defined to be \(\frac{1}{24 \times 60 \times 60} = \frac{1}{86400}\) of a day.
+Currently, in the <a href="https://en.wikipedia.org/wiki/International_System_of_Units">S.I.</a>, seconds are the base time unit, where 1 second is defined as “the duration of 9,192,631,770 periods of the radiation corresponding to the transition between the two hyperfine levels of the ground state of the caesium-133 atom”.
+If we ignore relativistic frequency shifts, that’s pretty much a constant, and <a href="https://en.wikipedia.org/wiki/International_Atomic_Time">TAI</a> is a time standard which tracks time based on a monotonic clock, ticking precisely every second and centered around the Unix epoch <code class="language-plaintext highlighter-rouge">1970-01-01T00:00:00Z</code>.
+Unfortunately, now that our base unit became smaller, solar time and civil time start differing, and calendar days need drift compensation as well.</p>
+
+<p><a href="https://en.wikipedia.org/wiki/Universal_Time">UT1</a> is a time standard which tracks the Earth’s rotation angle, also known as solar time.
+However, the Earth spins irregularly, and the length of a day has been slowly increasing for the past centuries (this is apparently caused in part by the moon).
+This means that UT1 (solar time) and TAI (atomic time) are drifting apart.
+Now, what we actually use to coordinate time worldwide is the UTC standard, which we decided would have seconds elapsing at the same rate as TAI, all while keeping it’s offset to UT1 to less than a second.
+In this case, drift compensation is done by adding a <a href="https://en.wikipedia.org/wiki/Leap_second">leap second</a> every now and then.</p>
+
+<p>Unlike leap days, however, the addition of leap seconds to UTC does not follow a regular schedule.
+When it does happen, the last minute of the day goes from 00 to 60 (and this is compatible with ISO 8601), for a total of 61 seconds in that minute.
+As of 2023, UTC is 37 seconds behind TAI, and the next scheduled leap second will be advertised in <a href="https://hpiers.obspm.fr/iers/bul/bulc/bulletinc.dat">“Bulletin C”</a>.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Remember our initial assumptions?</p>
+
+<ul>
+  <li>Every month has 30 days.</li>
+  <li>Every year has 365 days.</li>
+  <li>Every day has \(24 \times 60 \times 60\) seconds.</li>
+</ul>
+
+<p>I’m sure you knew the first one was wrong already, since you’re used to the Gregorian calendar.</p>
+
+<p>The second is also common knowledge, but we often forget about leap days.</p>
+
+<p>The third is false in both UT1 and UTC, since days are getting longer, and every now and then we have a leap second to account for.</p>
+
+<p>Furthermore, we can’t even refer to specific times in the past or future:</p>
+<ul>
+  <li>In ISO 8601, dates before 1582-10-15 can only be transmitted after mutual agreement of the parts exchanging information; this is done in order to avoid ambiguities and confusion related to the Julian-Gregorian transition.</li>
+  <li>The fact that we can’t predict the addition of leap seconds to UTC makes it impossible to reference precise date-times in the future.</li>
+</ul>
+
+<p>In reality, the best we could do would probably be to forget about days, months and years altogether; use the Unix epoch as a reference, and atomic clocks to make sure frequency doesn’t drift away from the standard second.
+Although this is feasible when we’re talking about computer systems, I’m not sure it will ever catch on.</p>
+
+<p>In the end, UTC is the best we currently have for civil time, even if it is a lie.</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/#timing" class="page__taxonomy-item p-category" rel="tag">timing</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/categories/#rant" class="page__taxonomy-item p-category" rel="tag">rant</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2023-07-17T00:00:00+00:00">July 17, 2023</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/experiment/d-sets-btree/" class="pagination--pager" title="On the performance of D sets
+">Previous</a>
+    
+    
+      <a href="/tutorial/dual-boot-linux-encrypted-hybrid-storage/" class="pagination--pager" title="How to set up separately-encrypted dual-booting Linux systems on hybrid storage
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    
+<div class="page__related">
+  
+  <h2 class="page__related-title">You may also enjoy</h2>
+  <div class="grid__wrapper">
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/htb-cyber-apocalypse-2025/cave-expedition-decrypt.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/writeup/htb-cyber-apocalypse-2025/" rel="permalink">HTB Cyber Apocalypse CTF 2025
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-03-26T00:00:00+00:00">March 26, 2025</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Writeups for 3 challenges, each in a different category
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/arch-rice.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/arch-awesomewm/" rel="permalink">How to set up an X-based desktop from scratch
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-07-27T00:00:00+00:00">July 27, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 4: From TTY to graphical desktop
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/os-ubuntu.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/ubuntu-lvmcache/" rel="permalink">How to set up lvmcache across LUKS-encrypted partitions
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-07-14T00:00:00+00:00">July 14, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 3: Encrypted hybrid storage
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="/assets/images/dual-boot/refind.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/tutorial/arch-btrfs-luks-raid/" rel="permalink">How to install Arch on Btrfs with LUKS encryption and software RAID1
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-05-17T00:00:00+00:00">May 17, 2024</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Advanced dual-boot setup - Part 2: I use Arch, btw
+</p>
+  </article>
+</div>
+
+    
+  </div>
+</div>
+
+  
+  
+</div>
+
+      
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2025 <a href="https://www.baioc.dev">Gabriel B. Sant'Anna</a></div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+  </body>
+</html>
