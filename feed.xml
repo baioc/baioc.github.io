@@ -1,0 +1,1270 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2024-01-30T00:58:41-03:00</updated><id>/feed.xml</id><title type="html">baioc</title><subtitle>My personal webpage acting as a portfolio, resume and blog</subtitle><author><name>Gabriel Baiocchi de Sant&apos;Anna</name></author><entry><title type="html">Time is a Lie</title><link href="/rant/time-is-a-lie/" rel="alternate" type="text/html" title="Time is a Lie" /><published>2023-07-17T00:00:00-03:00</published><updated>2023-07-17T00:00:00-03:00</updated><id>/rant/time-is-a-lie</id><content type="html" xml:base="/rant/time-is-a-lie/">&lt;p&gt;In order to measure time, we need some periodic event to use as a time unit.
+Then, if we can order two events one after the other, we can count elapsed time units between them.
+That’s enough to measure relative time, but if two or more systems want to share timing information about events which were not observed by all participants, they also need a fixed frame of reference, an epoch.
+For example, take two arbitrary events A and B, then count N units between them; what time was it when A happened?
+With the information at hand, the best answer you can give is that A happened N units before B.
+Then, what time was it when B happened? N units after A, of course.
+If I didn’t observe neither A or B, that answer might be completely useless to me.&lt;/p&gt;
+
+&lt;p&gt;If you think the previous example is unrealistic, you probably haven’t tried to read Linux &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;dmesg&lt;/code&gt; logs.
+By default, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;dmesg&lt;/code&gt; adds a timestamp to each kernel message, and this timestamp is measured in terms of uptime, i.e., seconds since kernel startup.
+If a user doesn’t know when the system was last turned on, it is impossible to answer things like “was this kernel warning issued in the last week?” unless you have also registered the start/end of the week using these timestamps, or you know for sure there was no reboot in the last week (to make things worse, uptime does not tick while the system is sleeping or hibernating, so you would also have to take standby time into account).&lt;/p&gt;
+
+&lt;p&gt;We could even use these requirements to synthesize a formal definition of a calendar.
+I won’t bother, however, because as you’ll see, dealing with time and human calendars is incredibly complex.
+If you’ve ever seen (or maybe written) code like this:&lt;/p&gt;
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;days&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wholeMonths&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wholeYears&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;365&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;timeInSeconds&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;days&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;24&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;60&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;60&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;createAlert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;timeInSeconds&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Then you probably knew, deep down, that it was imprecise.
+But how bad can it get, really?
+That calculation assumes:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Every month has 30 days.&lt;/li&gt;
+  &lt;li&gt;Every year has 365 days.&lt;/li&gt;
+  &lt;li&gt;Every day has \(24 \times 60 \times 60\) seconds.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The truth is that every single one of these assumptions is wrong.&lt;/p&gt;
+
+&lt;h2 id=&quot;ancient-lunisolar-calendars&quot;&gt;Ancient Lunisolar Calendars&lt;/h2&gt;
+
+&lt;p&gt;One of the first periodic events we could observe was the cycle of day and night.
+So the primitive man decided to use days as a base time unit, and to this days we’re paying for that decision while trying to maintain backwards compatibility to some extent.&lt;/p&gt;
+
+&lt;p&gt;Of course, the primitive man wasn’t that good with big numbers, and eventually chose a more coarsely-granular time scale: eras following lunar and/or solar cycles.
+Meanwhile, their time anchors were based on political events, such as the crowning of a new ruler.
+Using these systems, we can imagine someone referring to a specific day as “the 3rd day of the 200th crescent moon of the 11th Dynasty”.&lt;/p&gt;
+
+&lt;p&gt;Unfortunately, these astronomical events which guide our calendars don’t repeat on an integer number of days.
+Still, we kept the day as a base time unit and decided that months and years must have a whole number of days.
+As a result, we have to make our calendars slightly irregular in order to compensate the frequency difference between astronomical and civil calendars.
+These drift-compensation mechanisms are called &lt;a href=&quot;https://en.wikipedia.org/wiki/Intercalation_(timekeeping)&quot;&gt;intercalary seconds/days/weeks/months&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;For example: if the lunar month had a period of exactly 29.5 days, and we alternated between 29 and 30 -day calendar months, these would be in sync with a maximum error of \(\pm 0.5\) days.
+Then, in order to compute how long to wait until “this day next month”, we would need to take that into account:&lt;/p&gt;
+&lt;div class=&quot;language-d highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;days&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;currentMonth&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;isEven&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;29&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;timeInSeconds&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;days&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;24&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;60&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;60&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;But is the moon really that important, to the point where we need to change our calendar in order to keep them in sync?
+Probably not, but the sun apparently is.&lt;/p&gt;
+
+&lt;h2 id=&quot;leap-days-and-the-gregorian-reform&quot;&gt;Leap Days and the Gregorian Reform&lt;/h2&gt;
+
+&lt;p&gt;We’re all familiar with &lt;a href=&quot;Leap_year&quot;&gt;leap (or bissextile) years&lt;/a&gt;: every four years or so, the year has 366 days instead of the usual 365, and February ends on the 29th instead of the 28th.
+This intercalary event happens because we want our civil calendar to have a whole number of days each year, while keeping it in sync with the solar calendar.
+Unfortunately, the cosmos doesn’t care about integers nearly as much as we do, and the period of Earth’s revolution around the sun is approximately 365.2422 days (365 full days plus ~5.8128 hours).
+This difference would cause the calendar year to drift over time with respect to certain astronomical events, notably seasons.&lt;/p&gt;
+
+&lt;p&gt;If we round the period difference between solar and calendar years from ~5.8128 to 6 hours, then adding an extra day to our calendars every four years would be enough to fix this drift precisely, and seasons would be off by at most 18 hours.
+Since the period offset is actually smaller than 6 hours, doing this every four years would lead to an overcompensation.
+This is precisely how the Julian calendar worked (or, how it didn’t work).&lt;/p&gt;
+
+&lt;p&gt;Currently, most of the world uses the Gregorian calendar, which was introduced in 1582 A.D. as a substitute to the Julian Calendar.
+Before the Gregorian calendar was established, the Julian calendar had been running since 45 B.C., using excessive leap years.
+This led to an offset (w.r.t. the solar year) of approximately 10 days, all of which were adjusted at once: in 1582, the next day after October &lt;strong&gt;4&lt;/strong&gt; (a Thursday) was October &lt;strong&gt;15&lt;/strong&gt; (a Friday).
+After that point, we’ve been skipping leap years (we don’t add the leap day) on years which are multiples of 100 and not multiples of 400.
+In the end, our maximum error with respect to seasonal events is approximately 2 days, and an era in the Gregorian calendar (a full period, taking leap days into account) is 400 years long.&lt;/p&gt;
+
+&lt;p&gt;The Julian-Gregorian transition doesn’t make time calculations any more complicated if you pretend the Gregorian calendar had always been in effect; in which case you would be using the &lt;em&gt;proleptic&lt;/em&gt; Gregorian calendar.
+Unfortunately, you might be surprised by date and time libraries trying to be smart about it.
+&lt;a href=&quot;https://stackoverflow.com/questions/23457470/calendar-to-date-conversion-for-dates-before-15-oct-1582-gregorian-to-julian-ca&quot;&gt;Java is a notable example&lt;/a&gt;, as converting a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;java.util.Date&lt;/code&gt; to a string will use a default-parameter &lt;a href=&quot;https://docs.oracle.com/javase/8/docs/api/java/util/GregorianCalendar.html&quot;&gt;GregorianCalendar&lt;/a&gt;.
+Despite the name, that implementation actually switches between Gregorian and Julian calendars when going across the transition, so these strings might lead to time calculations which are off by 10 days.&lt;/p&gt;
+
+&lt;h2 id=&quot;iso-8601-and-leap-seconds&quot;&gt;ISO 8601 and Leap Seconds&lt;/h2&gt;
+
+&lt;p&gt;Nowadays, we have standard representations / interchange formats for time and dates.
+&lt;a href=&quot;https://en.wikipedia.org/wiki/ISO_8601&quot;&gt;ISO 8601&lt;/a&gt; was first introduced in 1988, and it has some nice features:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Fixes the proleptic Gregorian calendar as an international standard for civil dates.&lt;/li&gt;
+  &lt;li&gt;Lexicographical order of the representation corresponds to chronological order.&lt;/li&gt;
+  &lt;li&gt;Robust applications can easily parse dates with higher-than-needed precision.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Unfortunately, we’re still left with a couple of problems, mostly artifacts from the past.&lt;/p&gt;
+
+&lt;p&gt;When the &lt;em&gt;day&lt;/em&gt; was used as a base time unit, we needed to compensate calendars based on units bigger than that, and anything smaller was simply defined as a fraction of a day.
+So, in the past, the second was defined to be \(\frac{1}{24 \times 60 \times 60} = \frac{1}{86400}\) of a day.
+Currently, in the &lt;a href=&quot;https://en.wikipedia.org/wiki/International_System_of_Units&quot;&gt;S.I.&lt;/a&gt;, seconds are the base time unit, where 1 second is defined as “the duration of 9,192,631,770 periods of the radiation corresponding to the transition between the two hyperfine levels of the ground state of the caesium-133 atom”.
+If we ignore relativistic frequency shifts, that’s pretty much a constant, and &lt;a href=&quot;https://en.wikipedia.org/wiki/International_Atomic_Time&quot;&gt;TAI&lt;/a&gt; is a time standard which tracks time based on a monotonic clock, ticking precisely every second and centered around the Unix epoch &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1970-01-01T00:00:00Z&lt;/code&gt;.
+Unfortunately, now that our base unit became smaller, solar time and civil time start differing, and calendar days need drift compensation as well.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Universal_Time&quot;&gt;UT1&lt;/a&gt; is a time standard which tracks the Earth’s rotation angle, also known as solar time.
+However, the Earth spins irregularly, and the length of a day has been slowly increasing for the past centuries (this is apparently caused in part by the moon).
+This means that UT1 (solar time) and TAI (atomic time) are drifting apart.
+Now, what we actually use to coordinate time worldwide is the UTC standard, which we decided would have seconds elapsing at the same rate as TAI, all while keeping it’s offset to UT1 to less than a second.
+In this case, drift compensation is done by adding a &lt;a href=&quot;https://en.wikipedia.org/wiki/Leap_second&quot;&gt;leap second&lt;/a&gt; every now and then.&lt;/p&gt;
+
+&lt;p&gt;Unlike leap days, however, the addition of leap seconds to UTC does not follow a regular schedule.
+When it does happen, the last minute of the day goes from 00 to 60 (and this is compatible with ISO 8601), for a total of 61 seconds in that minute.
+As of 2023, UTC is 37 seconds behind TAI, and the next scheduled leap second will be advertised in &lt;a href=&quot;https://hpiers.obspm.fr/iers/bul/bulc/bulletinc.dat&quot;&gt;“Bulletin C”&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;Remember our initial assumptions?&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Every month has 30 days.&lt;/li&gt;
+  &lt;li&gt;Every year has 365 days.&lt;/li&gt;
+  &lt;li&gt;Every day has \(24 \times 60 \times 60\) seconds.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I’m sure you knew the first one was wrong already, since you’re used to the Gregorian calendar.&lt;/p&gt;
+
+&lt;p&gt;The second is also common knowledge, but we often forget about leap days.&lt;/p&gt;
+
+&lt;p&gt;The third is false in both UT1 and UTC, since days are getting longer, and every now and then we have a leap second to account for.&lt;/p&gt;
+
+&lt;p&gt;Furthermore, we can’t even refer to specific times in the past or future:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;In ISO 8601, dates before 1582-10-15 can only be transmitted after mutual agreement of the parts exchanging information; this is done in order to avoid ambiguities and confusion related to the Julian-Gregorian transition.&lt;/li&gt;
+  &lt;li&gt;The fact that we can’t predict the addition of leap seconds to UTC makes it impossible to reference precise date-times in the future.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In reality, the best we could do would probably be to forget about days, months and years altogether; use the Unix epoch as a reference, and atomic clocks to make sure frequency doesn’t drift away from the standard second.
+Although this is feasible when we’re talking about computer systems, I’m not sure it will ever catch on.&lt;/p&gt;
+
+&lt;p&gt;In the end, UTC is the best we currently have for civil time, even if it is a lie.&lt;/p&gt;</content><author><name>Gabriel Baiocchi de Sant&apos;Anna</name></author><category term="rant" /><category term="synchronization" /><summary type="html">Why your time calculation is wrong and what does the sun and the moon have to do with that</summary></entry><entry><title type="html">On the performance of D sets</title><link href="/benchmark/d-sets-perf/" rel="alternate" type="text/html" title="On the performance of D sets" /><published>2023-07-04T00:00:00-03:00</published><updated>2023-07-11T00:00:00-03:00</updated><id>/benchmark/d-sets-perf</id><content type="html" xml:base="/benchmark/d-sets-perf/">&lt;p&gt;If I google “dlang sets”, the first result is &lt;a href=&quot;https://forum.dlang.org/post/pzrahdwnnphcmdaevaln@forum.dlang.org&quot;&gt;this forum post, “How to use sets in D?”&lt;/a&gt;.
+The main alternatives, brought up in the replies, consist of using &lt;a href=&quot;https://dlang.org/phobos/std_container_rbtree.html&quot;&gt;std.container.rbtree&lt;/a&gt; or making a custom wrapper around the built-in associative arrays (AAs).
+I’ll explore and compare the performance of those options, then try to come up with something better and, more importantly, something that works in &lt;a href=&quot;https://dlang.org/spec/betterc.html&quot;&gt;DasBetterC&lt;/a&gt; mode.&lt;/p&gt;
+
+&lt;h2 id=&quot;experimental-setup&quot;&gt;Experimental Setup&lt;/h2&gt;
+
+&lt;p&gt;I’ve written four small parameterized benchmarks, one for each relevant operation on a mutable set data type:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;upsert&lt;/code&gt;: creates an empty set container and upserts \(n\) random elements (of a given element type), measuring elapsed CPU time of all \(n\) insertions.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;lookupFind&lt;/code&gt;: inserts \(n\) random elements, then looks up these same elements in the set (checking that they were found), while measuring only the lookups.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;lookupFail&lt;/code&gt;: inserts \(2n\) random elements, removes the first \(n\), then looks them up (checking that they were NOT found).&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;remove&lt;/code&gt;: inserts \(n\) random elements, then removes them one by one, measuring only removals.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In each of these, we measure elapsed CPU time (using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;clock&lt;/code&gt;) of performing all \(n\) operations.
+Then, we repeat that 30 times in order to eliminate some measurement noise.
+All elements are randomized once (using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;rand&lt;/code&gt;), in the very beginning of the test, with a fixed random seed, and the D garbage collector (GC) is executed before each of those repetitions.
+Finally, we vary \(n\) across powers of two, \(2^{4} \le n \le 2^{20}\).&lt;/p&gt;
+
+&lt;p&gt;Since the payload does not change while repeating each experiment, we estimate performance using &lt;a href=&quot;https://arxiv.org/abs/1608.04295&quot;&gt;Chen and Revel’s&lt;/a&gt; model: if \(measuredTime = realTime + randomDelay\), and \(randomDelay\) is always non-negative (the system can become slower at times due to other processes running, but not randomly faster), then the minimum value we can obtain of \(measureTime\) should be the best estimate of \(realTime\).
+Once we have the estimate of how long it takes to perform an operation \(n\) times, we’ll report that time normalized by the number of repetitions, that is, \(estimateTime(n) \div n\).&lt;/p&gt;
+
+&lt;p&gt;AAs and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std.container.rbtree&lt;/code&gt; both lack support for custom allocators, which makes it really hard to precisely measure their memory usage.
+I’m aware of &lt;a href=&quot;https://dlang.org/phobos/core_memory.html#.GC&quot;&gt;core.memory.GC&lt;/a&gt;, but it didn’t work as expected when I tried it and it could never be as precise as a custom allocator anyhow.
+Since I’m lazy, I chose to use GNU &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;time&lt;/code&gt;’s report of resident set size (RSS) as a single way to measure memory usage across D, C and C++ programs.&lt;/p&gt;
+
+&lt;p&gt;GNU time can be used to report the maximum RSS of a program, and in each experiment that should correspond to the point in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;lookupFail&lt;/code&gt; after inserting \(2n\) elements.
+Then, we could get a (very rough) estimate of memory usage per element by dividing that value by the number of elements in each set.
+It should be noted, however, that these \(2n\) elements were generated at random and are being deduplicated by the set, so the &lt;a href=&quot;https://en.wikipedia.org/wiki/Birthday_problem&quot;&gt;birthday problem&lt;/a&gt; applies more and more as \(n\) grows.
+Therefore, we also need to record the maximum number of elements stored in the set during a program run.
+We also note that, for small \(n\), we expect max RSS to be incredibly imprecise, since most of it is being used by the language runtime.&lt;/p&gt;
+
+&lt;p&gt;For the sake of completeness, here’s more information about the system these micro-benchmarks ran on:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Host: Dell Inspiron 7559 (Notebook)
+CPU: Intel i7-6700HQ (8) @ 3.500GHz
+Caches (L1d, L1i, L2, L3): 128 KiB, 128 KiB, 1 MiB, 6 MiB
+Memory: 16 GiB
+OS: Pop!_OS 22.04 LTS x86_64
+Kernel: Linux 6.2.6-76060206-generic
+D compiler: ldc2 1.32.2
+D flags: -O -release -inline -boundscheck=off
+C++ compiler: g++ (Ubuntu 11.3.0-1ubuntu1~22.04.1) 11.3.0
+C++ flags: -std=c++17 -O3
+time: time (GNU Time) UNKNOWN
+Shell: bash 5.1.16
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;And &lt;a href=&quot;/assets/docs/sets-raw.csv&quot;&gt;here’s&lt;/a&gt; a table with raw experimental results.&lt;/p&gt;
+
+&lt;h2 id=&quot;aa-as-set-vs-stdcontainerrbtree&quot;&gt;AA-as-set vs std.container.rbtree&lt;/h2&gt;
+
+&lt;p&gt;If we limit ourselves to the D runtime and standard library, we’ll be comparing hash-tables (AAs) and red-black trees (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std.container.rbtree&lt;/code&gt;).
+Since our inputs follow a uniform distribution, their hashes ought to be uniformly distributed as well, which is pretty much the ideal situation for hash tables.
+Therefore, I expect the AA-based set to have much faster (average \(\mathcal{O}(1)\)) lookups than the tree-based set (\(\Theta(log_2 n)\)), and for lookup time to dominate other operations as well.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/eris/D-lookupFind-int.png&quot; alt=&quot;D lookupFind - int&quot; /&gt;
+&lt;img src=&quot;/assets/images/eris/D-lookupFail-int.png&quot; alt=&quot;D lookupFail - int&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The two graphs above show results for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;lookupFind&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;lookupFail&lt;/code&gt;, respectively, using integer elements.
+As predicted, AAs exhibit near-constant time complexity.
+Meanwhile, lookups on the tree-based set become logarithmically slower as \(n\) increases – it only looks linear in our graphs because of the logarithmic scale on the horizontal axis.&lt;/p&gt;
+
+&lt;p&gt;The graph of our tree-based set looks like two connected lines, with the second having a larger slope.
+I’m guessing this happens because, after a certain point, we’re hitting the next level of the memory hierarchy much more frequently.
+Why do I think this?
+Well, my CPU’s L1d, L2 and L3 sizes are 128 KiB, 1 MiB and 6 MiB, respectively.
+Therefore, if we were to completely fill my L2 cache with 4-byte integers, it would fit at most \(262,144\) elements.
+Since our data structures are never as memory-efficient as a giant array with contiguous elements, we start hitting L3 a little earlier than \(n = 262,144\), and we see that that’s approximately where the slope changes.&lt;/p&gt;
+
+&lt;p&gt;I won’t bother showing graphs for the other operations, since their shapes are pretty much the same.
+In fact, I’m only showing both &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;lookupFind&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;lookupFail&lt;/code&gt; (and in the same vertical scale) to note that the difference between a successful and a non-successful lookup is much more significant in a tree-based set (find is 1.56x faster than fail at \(n = 2^{20}\)) than in a hash-based set (resp. 1.18x).
+Here’s a table summarizing the relative perfomance of these sets at a few input sizes:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;Operation&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;AA speedup at \(n = 2^{7}\)&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;\(n = 2^{10}\)&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;\(n = 2^{20}\)&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;upsert&lt;/code&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:orange&quot;&gt;0.92x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;1.74x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt; 3.53x&lt;/span&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;lookupFind&lt;/code&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;1.50x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;5.00x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;10.17x&lt;/span&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;lookupFail&lt;/code&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;2.50x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;3.94x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;13.43x&lt;/span&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;remove&lt;/code&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;1.67x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;4.60x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;11.60x&lt;/span&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;It’s pretty clear that using AAs instead of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std.container.rbtree&lt;/code&gt; should be preferred whenever you don’t need in-order iteration over set elements, as the performance gains range from pretty small to an order of magnitude (on most operations).
+That is, of course, if you can get a uniform distribution of hashes.&lt;/p&gt;
+
+&lt;p&gt;For memory results, see the next section.&lt;/p&gt;
+
+&lt;h2 id=&quot;d-vs-c&quot;&gt;D vs C++&lt;/h2&gt;
+
+&lt;p&gt;Some people consider D to be a successor to C++, so I’m also interested in comparing the set data structures in each language’s standard libraries.
+So, after some messing around with C++’s terrible templates and macros, I’ve ported our micro-benchmark program in order to add &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::set&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::unordered_set&lt;/code&gt; to our comparison.&lt;/p&gt;
+
+&lt;p&gt;Before running anything, my expectations were that performance differences would come mainly from the different allocation strategies: garbage collection in D versus manual (de)allocations in C++.
+In particular, I expected D sets to have slightly faster removals due to the GC-deferred deallocations.
+I would normally expect allocations to be faster in C++ on average, but because the D GC is being executed before each round of operations, it shouldn’t affect upserts that much.
+I also expected memory usage to be higher in D, mainly due to its heavier runtime.&lt;/p&gt;
+
+&lt;p&gt;Since tree-based and hash-based sets have quite a big performance gap in these benchmarks, we’ll separate these two groups.
+With that said, let’s start with the tree-based containers, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std.container.rbtree&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::set&lt;/code&gt; (charts below).
+Both have very similar performance (which is to be expected, since they’re both red-black trees), but the D version is usually a bit faster at larger \(n\).
+I was a bit surprised by the performance of upserts, which are faster in the C++ version for sets with less than a hundred thousand elements.
+This might be related to the performance of memory allocation with the D GC, as opposed to C++’s &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;new&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/eris/C++-tree-upsert-int.png&quot; alt=&quot;D vs C++ - tree-based set - upsert - int&quot; /&gt;
+&lt;img src=&quot;/assets/images/eris/C++-tree-lookupFind-int.png&quot; alt=&quot;D vs C++ - tree-based set - lookupFind - int&quot; /&gt;
+&lt;img src=&quot;/assets/images/eris/C++-tree-remove-int.png&quot; alt=&quot;D vs C++ - tree-based set - remove - int&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Our hash-based set comparison went similarly, with the D version being slightly faster on lookups, but slightly slower on insertions.
+There was a bigger difference in removal performance in this group, with D AAs being consistently faster than &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::unordered_set&lt;/code&gt;.
+Removal speedups range from ~1.5x, up to 4.25x for bigger sets.
+Once again, this might be explained by the different deallocation strategies; after all, D memory is only actually being deallocated during GC cycles, which either happen on insertions, or before the next experiment repetition (a manually-triggered full GC cycle which is not measured).&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/eris/C++-hash-upsert-int.png&quot; alt=&quot;D vs C++ - hash-based set - upsert - int&quot; /&gt;
+&lt;img src=&quot;/assets/images/eris/C++-hash-lookupFind-int.png&quot; alt=&quot;D vs C++ - hash-based set - lookupFind - int&quot; /&gt;
+&lt;img src=&quot;/assets/images/eris/C++-hash-remove-int.png&quot; alt=&quot;D vs C++ - hash-based set - remove - int&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;As for memory usage, here’s how our sets compare (graph below, but note the logarithmic scale on the vertical axis this time).
+Once again, we’re normalizing our estimate of memory usage by the number of elements in each set.
+As expected of our chosen memory metric (maximum process RSS), this leads to a huge overstatement of how much each element actually takes, at least for small \(n\).
+Therefore, this measurement is better interpreted as “what is the maximum amount of bytes each element could be taking, assuming nothing else in the entire program contributed to RSS”.
+For larger \(n\), however, I expect this estimate to tend towards the real per-element memory usage.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/eris/sets-rss-int.png&quot; alt=&quot;set containers - memory usage - max rss per element - int&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Assuming the measure for our largest \(n\) is the better estimate, we end up with the following:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;container&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;max RSS per element (bytes)&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;AA-as-set&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;2759 B&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std.container.rbtree&lt;/code&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;2371 B&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::set&lt;/code&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;51 B&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::unordered_set&lt;/code&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;46 B&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;eris.btree&lt;/code&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;12 B&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;While final values for the C++ containers seem reasonable, that’s far from true for the D sets.
+I expected D’s heavier runtime to inflate memory usage measurements, and we can see that in the left part of the graph as a roughly constant offset between the logarithmic curves of D and C++ containers.
+As we increased \(n\), the C++ programs started to converge towards something close to the true memory usage per element, but the D ones kept to a maximum RSS two orders of magnitude higher.
+Remember that max RSS stands for the greatest amount of physical memory the process occupied during its entire execution.
+Since both AAs and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std.container.rbtree&lt;/code&gt; make heavy use of the GC, I assume that is what’s keeping the RSS high; perhaps it keeps freed memory around in order to reuse it later, instead of giving it back to the operating system.&lt;/p&gt;
+
+&lt;p&gt;Something you might notice in the last chart is that it includes memory usage for another set container, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;eris.btree&lt;/code&gt;.
+That’s my custom B-tree, which is implemented in D, but uses a custom allocator (based on &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;malloc&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;free&lt;/code&gt;) instead of the D GC.
+We can see that, despite being implemented in D (and being run with the same heavier runtime), this data structure has similar behaviour to the C++ ones with respect to our measure of memory usage, beating them by approximately 4x at \(n = 2^{20}\).
+This also strenghtens the argument that the huge max RSS per element, obtained when benchmarking the D containers, is due to their usage of the GC and probably not even close to true memory usage (if only they supported custom allocators …).&lt;/p&gt;
+
+&lt;p&gt;The next section compares my custom &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;eris.btree&lt;/code&gt; container with the other sets we’ve seen so far.&lt;/p&gt;
+
+&lt;h2 id=&quot;b-tree-container&quot;&gt;B-Tree Container&lt;/h2&gt;
+
+&lt;p&gt;While D’s standard set containers have roughly equivalent (often slightly better) performance compared to their C++ counterparts, it turns out that C++ standard set containers are not actually that good to begin with.
+From what I could gather, these standard containers can’t be the fastest possible data types due to requirements of reference and iterator stability across mutating operations on the containers, as well as a few requirements related to const-correctness.
+This means that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::set&lt;/code&gt; (like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::map&lt;/code&gt;) pretty much has to be implemented with a binary tree (a red-black tree, to be more precise), and that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::unordered_set&lt;/code&gt; (like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::unordered_map&lt;/code&gt;) can’t use closed hashing (i.e. their hash table implementation has to use separate chaining).
+All of these restrictions lead to worse performance, mainly through less-than-optimal cache usage.&lt;/p&gt;
+
+&lt;p&gt;As far as I know, relational databases rely on B+ and B-trees because these data structures provide increased data locality on each node and, due to a fan-out that’s much higher than a binary tree, less pointer chasing when going down the tree.
+While these factors are especially relevant for data structures using hard disks as their underlying storage, &lt;a href=&quot;https://panthema.net/2007/stx-btree/speedtest/&quot;&gt;they also apply to in-memory data strucutres&lt;/a&gt;.
+Therefore, I figured that a simple B-tree-based set would provide a good contestant against D and C++ standard containers.
+Let’s check the results:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/eris/sets-upsert-int.png&quot; alt=&quot;set containers - upsert - int&quot; /&gt;
+&lt;img src=&quot;/assets/images/eris/sets-lookupFind-int.png&quot; alt=&quot;set containers - lookupFind - int&quot; /&gt;
+&lt;img src=&quot;/assets/images/eris/sets-lookupFail-int.png&quot; alt=&quot;set containers - lookupFail - int&quot; /&gt;
+&lt;img src=&quot;/assets/images/eris/sets-remove-int.png&quot; alt=&quot;set containers - remove - int&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;As we can see, for \(2^{14} \le n \le 2^{20}\), the performance of our B-tree is closer to hash-based sets than tree-based ones.
+B-tree operations have a theoretical time complexity of \(\Theta(log_m n)\), for some constant \(m \gt 2\); as \(m\) (the order of the B-tree) increases, this becomes “effectively \(\mathcal{O}(1)\)” for any real-world \(n\), which is precisely what we’re observing in these results.
+If you prefer relative speedups, here’s how our B-tree compares to other sets at \(n = 2^{20}\):&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;container / operation&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;upsert&lt;/code&gt;&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;lookupFind&lt;/code&gt;&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;lookupFail&lt;/code&gt;&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;remove&lt;/code&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;AA-as-set&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:orange&quot;&gt;1.09x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:red&quot;&gt;0.40x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:red&quot;&gt;0.32x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:red&quot;&gt;0.35x&lt;/span&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::set&lt;/code&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;4.31x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;7.27x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;4.70x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;5.93x&lt;/span&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::unordered_set&lt;/code&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;2.02x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:red&quot;&gt;0.58x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:red&quot;&gt;0.42x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;1.50x&lt;/span&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std.container.rbtree&lt;/code&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;3.86x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;4.02x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;4.29x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;4.10x&lt;/span&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Looking at just the tree-based containers, we can see speedups of approximately 4x (and up to ~7x) across the board by using our custom B-tree-based set.
+In most cases, we still fall behind the hash-based containers, albeit by less than the order-of-magnitude margin they had over the red-black trees.
+The exception here is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;upsert&lt;/code&gt;, where the B-tree gets a little faster than the hash tables.
+As for memory, we covered that in the previous section already.&lt;/p&gt;
+
+&lt;p&gt;A B-tree’s main disadvantage is the fact that mutating operations may need to move multiple elements around in memory.
+This invalidates iterators and references to internally-held elements, but may also decrease performance for bigger elements.&lt;/p&gt;
+
+&lt;h2 id=&quot;bigger-elements&quot;&gt;Bigger Elements&lt;/h2&gt;
+
+&lt;p&gt;A big part of “modern C++” is copy elision and move semantics.
+These features are supposed to interact nicely with RAII, and improve performance by avoiding unnecessary copies.
+While D also has some features to avoid copies, there’s definitely much less of a focus in that.
+Therefore, it should be interesting to compare our sets with bigger element types.
+In our case, we’ll use fixed-size arrays, each with exactly 32 bytes; they’re ordered by &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;strncmp&lt;/code&gt; and hashed by a 32-bit &lt;a href=&quot;http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a&quot;&gt;FNV-1a function&lt;/a&gt;
+(in the previous experiments, we were relying on each language’s built-in ordering and hashing functions for integers).&lt;/p&gt;
+
+&lt;p&gt;In these benchmarks, I expected cache locality to play a smaller role, since fewer elements can fit in the cache now – our B-tree probably won’t get the same speedups it did before.
+To my surprise, the performance of C++’s &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::unordered_set&lt;/code&gt; completely broke down with this bigger element type, to the point where I gave up on measuring its performance for any \(n &amp;gt; 10,000\).
+I’m not sure what’s happening, but &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::unordered_set&lt;/code&gt; behaves linearly when holding elements with 24+ bytes, and &lt;a href=&quot;https://quick-bench.com/q/Akkh2rveMUZ5DSCXuDy-5_HRcik&quot;&gt;this is reproducible&lt;/a&gt; with clang as well.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/eris/unordered_set-String32.png&quot; alt=&quot;std::unordered_set&amp;amp;ltString32&amp;amp;gt&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;After removing the problematic &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::unordered_set&amp;lt;String32&amp;gt;&lt;/code&gt;, our results (disappointingly) match my expectations, with the performance of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;eris.btree&lt;/code&gt; falling behind the AA implementation, and getting closer to (albeit still faster than) the other tree-based sets.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/eris/sets-upsert-String32.png&quot; alt=&quot;set containers - upsert - String32&quot; /&gt;
+&lt;img src=&quot;/assets/images/eris/sets-lookupFind-String32.png&quot; alt=&quot;set containers - lookupFind - String32&quot; /&gt;
+&lt;img src=&quot;/assets/images/eris/sets-lookupFail-String32.png&quot; alt=&quot;set containers - lookupFail - String32&quot; /&gt;
+&lt;img src=&quot;/assets/images/eris/sets-remove-String32.png&quot; alt=&quot;set containers - remove - String32&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Here’s another speedup table for our B-tree at \(n = 2^{20}\):&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: left&quot;&gt;container / operation&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;upsert&lt;/code&gt;&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;lookupFind&lt;/code&gt;&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;lookupFail&lt;/code&gt;&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;remove&lt;/code&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;AA-as-set&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:red&quot;&gt;0.35x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:red&quot;&gt;0.20x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:red&quot;&gt;0.16x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:red&quot;&gt;0.17x&lt;/span&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::set&lt;/code&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;1.73x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;1.77x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;1.51x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;1.59x&lt;/span&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: left&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std.container.rbtree&lt;/code&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;1.37x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:orange&quot;&gt;0.98x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;1.57x&lt;/span&gt;&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;&lt;span style=&quot;color:green&quot;&gt;1.22x&lt;/span&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&quot;checking-assumptions&quot;&gt;Checking Assumptions&lt;/h2&gt;
+
+&lt;p&gt;As I explained previously, I’m estimating time by picking the minimum measurement across 30 repetitions of each experiment.
+This might be surprising for some of you, who would have expected a report of average timing instead.
+I did some research on benchmarking techniques, and professional teams seem to prefer percentiles when measuring application performance.
+This is because most benchmark results don’t actually follow normal distributions, where mean and standard deviation would do the job.&lt;/p&gt;
+
+&lt;p&gt;Since we already have the data for that, we can perform a simple normality test to check whether we should have used the mean instead.
+For each of our parameterized experiments, we collect minimum, maximum, mean and the standard deviation of our 30 measurements.
+With these, we can compute the z-score of our extrema, and compare that to the 68-95-99.7 (a.k.a the \(1\sigma-2\sigma-3\sigma\)) rule.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/eris/sets-normality-int.png&quot; alt=&quot;set containers - normality test - int&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;As we can see, there are many \(3\sigma\) (and even \(4\sigma\)) events in our maximum measurements.
+These imply that modeling our performance with a normal distribution would lead us to underestimate how much deviation there really is in our measurements.
+At that point, average elapsed time is not as meaningful, and, since I’m lazy, I didn’t want to implement a more advanced statistics collector.&lt;/p&gt;
+
+&lt;h2 id=&quot;whats-next&quot;&gt;What’s Next&lt;/h2&gt;
+
+&lt;p&gt;For now, I’m satisfied with the performance my custom B-tree set was able to achieve.
+My next step is probably going to be improving its API before making it open-source.&lt;/p&gt;
+
+&lt;p&gt;As for further benchmarks, we could try exploring other payloads.
+Due to the uniform distribution of our inputs, hash sets have the upper hand.
+It would be interesting to test how well that performance stands up to less-than-ideal hash distributions.&lt;/p&gt;
+
+&lt;p&gt;At some point, I’ll also try to make a faster hash table in D (and make it &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-betterC&lt;/code&gt; compatible, of course).
+When I do, I’ll add it to these benchmarks as well, and maybe the next time I’ll be using the P50 percentile (the median), since now I have an efficient ordered set data structure which I can use to compute percentiles: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;eris.btree&lt;/code&gt;.&lt;/p&gt;</content><author><name>Gabriel Baiocchi de Sant&apos;Anna</name></author><category term="benchmark" /><category term="algorithms" /><summary type="html">Better than C++, but we can still do betterC</summary></entry><entry><title type="html">Dlang Woes</title><link href="/rant/d-woes/" rel="alternate" type="text/html" title="Dlang Woes" /><published>2023-04-11T00:00:00-03:00</published><updated>2023-04-11T00:00:00-03:00</updated><id>/rant/d-woes</id><content type="html" xml:base="/rant/d-woes/">&lt;blockquote&gt;
+  &lt;p&gt;woe (noun)&lt;/p&gt;
+  &lt;ul&gt;
+    &lt;li&gt;great sorrow or distress (often used hyperbolically).&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;There’s a quote by Bjarne Stroustrup saying that “&lt;em&gt;there are only two kinds of languages: the ones people complain about and the ones nobody uses&lt;/em&gt;”.
+Complaining is therefore a natural result of using a language, and I’ve been using &lt;a href=&quot;https://dlang.org/&quot;&gt;D&lt;/a&gt; a bit more in my latest side projects.&lt;/p&gt;
+
+&lt;p&gt;While there’s a lot of great things to be said about this &lt;a href=&quot;https://dlang.org/comparison.html&quot;&gt;language&lt;/a&gt; and its &lt;a href=&quot;https://github.com/Pure-D/code-d&quot;&gt;tooling&lt;/a&gt; (especially when compared to C, C++ and other contenders), there are also some warts here and there.
+So, here’s some complaining, either pointing out bugs or simply violations of the principle of least astonishment (POLA) in the language (in my opinion, that is).&lt;/p&gt;
+
+&lt;h3 id=&quot;struct-this-vs-class-this&quot;&gt;struct this vs class this&lt;/h3&gt;
+
+&lt;p&gt;Q: Can you pass &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;this&lt;/code&gt; by &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref&lt;/code&gt;?
+&lt;br /&gt;
+A1: Only inside structs, not classes.
+&lt;br /&gt;
+A2: Actually, you can assign &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;this&lt;/code&gt; to a variable, then pass that variable by ref.
+&lt;br /&gt;
+A3: Consider passing by &lt;a href=&quot;https://dlang.org/spec/template.html#auto-ref-parameters&quot;&gt;auto ref&lt;/a&gt; instead, or maybe &lt;a href=&quot;https://dlang.org/spec/function.html#in-params&quot;&gt;in&lt;/a&gt; if the argument is also &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;const&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-d highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// struct.this vs class.this&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// or, pass this by ref&lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;ref&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;lt;--- error&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;S&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;lt;--- but this works?&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;lt;--- also works&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Error: none of the overloads of template `onlineapp.bar` are callable using argument types `!()(C)`&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// Candidate is: `bar(T)(ref T x)`&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;ufcs-vs-method-overloading&quot;&gt;UFCS vs Method Overloading&lt;/h3&gt;
+
+&lt;p&gt;Q: Does &lt;strong&gt;Universal&lt;/strong&gt; Function Call Syntax (UFCS) turn &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;variable.foo(arguments)&lt;/code&gt; into &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;foo(variable, arguments)&lt;/code&gt; ?
+&lt;br /&gt;
+A1: &lt;a href=&quot;https://ddili.org/ders/d.en/ufcs.html&quot;&gt;Yeah! Cool, huh?&lt;/a&gt;
+&lt;br /&gt;
+A2: Actually, UFCS only applies to functions in module scope (lambdas or local ones don’t count).
+&lt;br /&gt;
+A3: They also don’t work in the presence of methods called &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;foo&lt;/code&gt; (never mind the full typed signature).&lt;/p&gt;
+
+&lt;div class=&quot;language-d highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// UFCS vs Method Overloading&lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;ref&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;A&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stdio&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;writeln&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;A&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;writeln&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;A * bool  -&amp;gt; &quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;writeln&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;A * float -&amp;gt; &quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;1.23&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;lt;--- ok, uses UFCS&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;writeln&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;B * bool -&amp;gt; &quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;writeln&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;B * float -&amp;gt; &quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;1.23&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;lt;--- error (ignores UFCS?)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;writeln&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;B * float (without UFCS) -&amp;gt; &quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;1.23&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;lt;--- ok&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Error: function `B.foo(bool b)` is not callable using argument types `(double)`&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// cannot pass argument `1.23` of type `double` to parameter `bool b`&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;taggedpointer-vs-safe&quot;&gt;taggedPointer vs @safe&lt;/h3&gt;
+
+&lt;p&gt;Q: Are &lt;a href=&quot;https://dlang.org/library/std/bitmanip/tagged_pointer.html&quot;&gt;std.bitmanip.taggedPointer&lt;/a&gt;s safe?
+&lt;br /&gt;
+A1: Yes they’re safe: they only use pointer bits which are known (at compile time!) to be zero due to alignment constraints.
+&lt;br /&gt;
+A2: But they’re not &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;scope @safe&lt;/code&gt; though. &lt;a href=&quot;https://issues.dlang.org/show_bug.cgi?id=23095&quot;&gt;Here’s the bug report&lt;/a&gt;.
+&lt;br /&gt;
+A3: Also, they don’t work in &lt;a href=&quot;https://tour.dlang.org/tour/en/gems/compile-time-function-evaluation-ctfe&quot;&gt;CTFE&lt;/a&gt; because pointer casts are not allowed there.&lt;/p&gt;
+
+&lt;div class=&quot;language-d highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// taggedPointer accessors are not scope&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// Compile with: -dip1000 -main&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// Bugzilla #3095, reported in 2022-05-05&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bitmanip&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;taggedPointer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;S&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;mixin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;taggedPointer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;!(&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;*,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;ptr&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;flag&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;scope&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;ref&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;S&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;nd&quot;&gt;@safe&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;lt;--- error&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Error: scope variable `s` assigned to non-scope parameter `this` calling `flag`&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>Gabriel Baiocchi de Sant&apos;Anna</name></author><category term="rant" /><category term="programming-languages" /><summary type="html">There are programming languages that people complain about and languages that nobody uses; and I&apos;m starting to use D</summary></entry><entry><title type="html">The Need To Know Guide to 1990 Programming Languages</title><link href="/link/programming-languages-1990/" rel="alternate" type="text/html" title="The Need To Know Guide to 1990 Programming Languages" /><published>2020-08-20T00:00:00-03:00</published><updated>2020-08-20T00:00:00-03:00</updated><id>/link/programming-languages-1990</id><content type="html" xml:base="/link/programming-languages-1990/"></content><author><name>Gabriel Baiocchi de Sant&apos;Anna</name></author><category term="link" /><category term="humour" /><category term="programming-languages" /><summary type="html">[extern] Cartoons drawn for the computing industry press of 1990</summary></entry><entry><title type="html">Fibonacci numbers: from zero to hero</title><link href="/tutorial/fibonacci/" rel="alternate" type="text/html" title="Fibonacci numbers: from zero to hero" /><published>2020-01-15T00:00:00-03:00</published><updated>2020-01-15T00:00:00-03:00</updated><id>/tutorial/fibonacci</id><content type="html" xml:base="/tutorial/fibonacci/">&lt;p&gt;Fibonacci numbers appear unexpectedly often in Mathematics and in Computer Science.
+They are related to the &lt;a href=&quot;https://en.wikipedia.org/wiki/Golden_ratio&quot;&gt;golden ratio&lt;/a&gt; and just like the magical number, have a very extensive &lt;a href=&quot;https://en.wikipedia.org/wiki/Fibonacci_number&quot;&gt;Wikipedia entry&lt;/a&gt;.
+The Fibonacci sequence is defined by a &lt;a href=&quot;https://en.wikipedia.org/wiki/Recurrence_relation&quot;&gt;recurrence relation&lt;/a&gt; and is used as a canonical example of recursion in introductory programming and/or discrete math courses for computer science.
+This means that pretty much every programmer has implemented an algorithm to find Fibonacci numbers.
+Here we explore some possible approaches.&lt;/p&gt;
+
+&lt;p class=&quot;notice--info&quot;&gt;For a TLDR, jump to the bottom of the page.&lt;/p&gt;
+
+&lt;h2 id=&quot;a-golden-sequence&quot;&gt;A golden sequence&lt;/h2&gt;
+
+&lt;p&gt;The Fibonacci numbers can be defined as&lt;/p&gt;
+
+&lt;p&gt;\(F_0 = 0, F_1 = 1\) and&lt;/p&gt;
+
+&lt;p&gt;\(F_n = F_{n-1} + F_{n-2}\) for \(n &amp;gt; 1\)&lt;/p&gt;
+
+&lt;p&gt;Most programmers think of a function when reading the previous definition, where the subscript number is its single argument.
+Others see it as some data structure being indexed; this idea will be useful later.
+The naive approach then translates math directly into some programming language, for instance C.&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;That definition has some obvious practical issues.
+For any negative input, the procedure launches into an infinite loop and eventually crashes the program.
+Secondly, it is extremely inefficient: on my machine it takes around 15 seconds to compute and print &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fib(47)&lt;/code&gt; (gcc 9.2.0 with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-O3&lt;/code&gt;).
+At last, we will quickly run into &lt;a href=&quot;https://wiki.sei.cmu.edu/confluence/display/c/INT32-C.+Ensure+that+operations+on+signed+integers+do+not+result+in+overflow&quot;&gt;undefined behaviour as we overflow&lt;/a&gt; through the limits of our signed integer representation.
+In fact, with 32-bit signed ints we can only correctly calculate the sequence for values of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;n&lt;/code&gt; from zero to 46.
+That limit goes up to 93 when using longer 64-bit numbers and making them &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;unsigned&lt;/code&gt; allows us to find a single extra number of the sequence.&lt;/p&gt;
+
+&lt;p&gt;There are two easy ways to remove the danger of an infinite loop: we can assert against negative values and crash the program (or throw an exception) intentionally or we can change the conditional to avoid the loop and return a technically incorrect result.
+Another option is to extend the sequence for negative integers, this shall be done latter on.
+We also solve the numeric representation issue by using a programming language which supports arbitrary-precision arithmetic (aka &lt;a href=&quot;https://en.wikipedia.org/wiki/Arbitrary-precision_arithmetic&quot;&gt;bignums&lt;/a&gt;) by default, so let’s &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;goto&lt;/code&gt; Python.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;While we could theoretically compute bigger Fibonacci numbers now, it would take ages to do so using this implementation.
+While Python made the performance worse by a factor of ~50x in relation to C, the problem is the underlying algorithm being used.
+By substituting each call to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fib&lt;/code&gt; by the subsequent multiple-recursive calls it generates, we find out that there is lots of redundant computation being done.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;                         &lt;span class=&quot;n&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+             &lt;span class=&quot;n&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;        &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+     &lt;span class=&quot;n&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;       &lt;span class=&quot;n&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Notice that an invocation of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fib(n)&lt;/code&gt; reaches the base cases (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fib(0)&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fib(1)&lt;/code&gt;) \(F_{n+1}\) times.
+In fact, let \(C_n\) be the number of calls executed when computing &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fib(n)&lt;/code&gt;, then for all \(n &amp;gt; 1\)&lt;/p&gt;
+
+\[C_n = 1 + C_{n-1} + C_{n-2}\]
+
+&lt;p&gt;Meanwhile, for the base cases we have&lt;/p&gt;
+
+\[C_0 + 1 = 2 = 2 F_1\\
+C_1 + 1 = 2 = 2 F_2\]
+
+&lt;p&gt;So we can try to conjecture that&lt;/p&gt;
+
+\[C_n + 1 = 2 F_{n+1}\]
+
+&lt;p&gt;Supposing that holds for \(C_{n-1}\) and \(C_{n-2}\) the proof goes as follows:&lt;/p&gt;
+
+\[C_n = 1 + C_{n-1} + C_{n-2}\\
+C_n + 1 = (C_{n-1} + 1) + (C_{n-2} + 1)\\
+C_n + 1 = 2 F_n + 2 F_{n-1}\\
+C_n + 1 = 2 (F_n + F_{n-1})\\
+C_n + 1 = 2 F_{n+1}\\\]
+
+&lt;p&gt;Thus we have proved that for all \(n \ge 0\)&lt;/p&gt;
+
+\[C_n = 2 F_{n+1} - 1\]
+
+&lt;p&gt;With this we have proved that the naive implementation presented earlier has exponential time complexity (the Fibonacci sequence grows exponentially), more specifically \(\Theta(\phi^{n})\), where \(\phi\) is the golden ratio.
+The previous theorem is also the sole reason this binary-recursive procedure is useful in &lt;a href=&quot;https://github.com/drujensen/fib&quot;&gt;benchmarks&lt;/a&gt;, as we may easily calculate the exact number of function calls performed and find the average invocation time.&lt;/p&gt;
+
+&lt;h2 id=&quot;going-down-the-rabbit-hole&quot;&gt;Going down the rabbit hole&lt;/h2&gt;
+
+&lt;p&gt;Looking back upon the recurrence relation \(F_k = F_{k-1} + F_{k-2}\) one may intuitively deduce that it should be possible to compute \(F_{k+n}\) in linear time if values of \(F_{k+n-1}\) and \(F_{k+n-2}\) are known.
+For instance when \(n=0\) only a single addition is needed; for \(n=1\) we need two: the first to compute \(F_{k}\) and another to find \(F_{k+1}\); and so son.
+The most common “efficient” procedure to compute Fibonacci numbers leverages this notion in order to reach \(\Theta(n)\) time complexity and looks something like this:&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;previous&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;previous&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;previous&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;A Python program that simply prints the result of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fib(47)&lt;/code&gt; now takes about 0.04 seconds to complete on my machine (CPython v3.8.1).
+In fact, that time is mostly the Python environment starting up and it is approximately the same when computing the 10,000th Fibonacci number.
+We can even turn this function into a &lt;a href=&quot;https://wiki.python.org/moin/Generators&quot;&gt;generator&lt;/a&gt; so as to compute Fibonacci numbers on demand as we iterate through them.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;fibs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;previous&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;yield&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;previous&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;previous&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# printing the first 100 numbers of the sequence
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;enumerate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fibs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;fib(%d) = %d&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Although the loop-based version is definitely more efficient than the previous one, its implementation is not as obvious and does not resemble the sequence’s mathematical definition.
+Perhaps we can improve this by sending &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;previous&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;current&lt;/code&gt; as additional arguments to a recursive procedure:&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;previous&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;previous&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;While performance remains mostly the same and the procedure is a tad more versatile (by setting &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;previous&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;current&lt;/code&gt; to another pair of consecutive Fibonacci numbers we can now compute the sequence from any starting point, as if with a different “seed”), calling this new routine with somewhat bigger values of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;n&lt;/code&gt; yields a crash with the message &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RecursionError: maximum recursion depth exceeded ...&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;This happens because Python does not optimize &lt;a href=&quot;https://en.wikipedia.org/wiki/Tail_call&quot;&gt;tail calls&lt;/a&gt;, so each iteration takes some space in the call stack, eventually reaching its limit.
+In fact, our procedure now has a space complexity of \(\Theta(n)\) while the loop version was just \(\Theta(1)\).
+Most functional languages support proper tail recursion, but before we go there let’s see how C++ fares in this case (since C doesn’t have default argument values without &lt;a href=&quot;https://modelingwithdata.org/arch/00000022.htm&quot;&gt;macros&lt;/a&gt;).&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;constexpr&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;likely&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]]&lt;/span&gt;
+		&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Modern compilers are able to recognize this pattern and perform Tail Call Optimization (TCO), so the procedure above is made equivalent to the constant-space &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;for&lt;/code&gt; loop implementation.
+Making the function &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;constexpr&lt;/code&gt; also signals to the compiler that it should try to optimize calls for values known at compile time.
+For instance, a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;main&lt;/code&gt; function that simply returns &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fib(40)&lt;/code&gt; gets compiled into&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-asm&quot;&gt;main:
+        mov     eax, 102334155
+        ret
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Since we wish for proper tail recursion as well as infinite-precision arithmetic, I choose Scheme as our next programming language.
+In the example below, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;iterate&lt;/code&gt; is a tail-recursive function defined inside the body of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fib&lt;/code&gt; that performs the computation in constant space and linear time.&lt;/p&gt;
+
+&lt;div class=&quot;language-scheme highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;fib&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;iterate&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;previous&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;current&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;current&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;iterate&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;current&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;previous&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;fft-the-fast-fibonacci-transform&quot;&gt;FFT: the Fast Fibonacci Transform&lt;/h2&gt;
+
+&lt;p&gt;One may realize that each call to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;iterate&lt;/code&gt; is basically a transformation applied to the last two parameters while &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;n&lt;/code&gt; is simply a countdown controling how many times this is repeated.
+This can be represented as follows:&lt;/p&gt;
+
+\[T(c, p) = (c + p, c)\]
+
+&lt;p&gt;If \(p\) and \(c\) are consecutive Fibonacci numbers, we can say that&lt;/p&gt;
+
+\[T(F_k, F_{k-1}) = (F_k + F_{k-1}, F_k) = (F_{k+1}, F_k)\]
+
+&lt;p&gt;and thus&lt;/p&gt;
+
+\[T^n(F_k, F_{k-1}) = (F_{k+n}, F_{k+n-1})\]
+
+&lt;p&gt;\(T\) happens to be a &lt;a href=&quot;https://en.wikipedia.org/wiki/Linear_map&quot;&gt;linear transformation&lt;/a&gt; (proving that property is left as an exercise to the reader).
+Its transformation matrix, sometimes called the Fibonacci matrix, is easily found:&lt;/p&gt;
+
+\[A \begin{bmatrix}c \\ p\end{bmatrix} = \begin{bmatrix}c + p \\ c\end{bmatrix}\\
+A = \begin{bmatrix}A \begin{bmatrix}1\\0\end{bmatrix} &amp;amp; A\begin{bmatrix}0\\1\end{bmatrix}\end{bmatrix}\\
+A = \begin{bmatrix}1 &amp;amp; 1\\ 1 &amp;amp; 0\end{bmatrix}\]
+
+&lt;p&gt;After that, we can accomplish transformation composition through matrix multiplication, in other words:&lt;/p&gt;
+
+\[A^n \begin{bmatrix}0 \\ 1\end{bmatrix} = \begin{bmatrix}F_n \\ F_{n-1}\end{bmatrix}\]
+
+&lt;p&gt;At this point we have found a method to compute Fibonacci numbers through matrix exponentiation, and since the latter can be achieved – through a &lt;a href=&quot;https://en.wikipedia.org/wiki/Exponentiation_by_squaring&quot;&gt;Successive Squaring&lt;/a&gt; algorithm – in \(\Theta(\log_2 n)\) time, so can the former.
+The Octave code below does exactly that.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-octave&quot;&gt;function F_n = fib(n)
+
+	A = [1, 1;
+	     1, 0];
+
+	x = [0;
+	     1];
+
+	y = A^n * x;
+
+	F_n = y(1);
+
+endfunction
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you are into linear algebra, you may remember that there is a special basis in which a linear transformation can be represented as a diagonal matrix.
+This makes it a little bit easier to perform matrix exponentiation: simply raise each diagonal element to the desired power and then go back to the canonical basis to find the end result.
+Using all this &lt;a href=&quot;https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors&quot;&gt;eigen-stuff&lt;/a&gt; leads us to Binet’s formula, the closed-form solution for Fibonacci numbers:&lt;/p&gt;
+
+\[F_n = {(\phi^n - \psi^n) \over (\phi - \psi)} = {(\phi^n - \psi^n) \over \sqrt{5}}\]
+
+&lt;p&gt;where \(\phi\) is the golden ratio and \(\psi\) its complement (these are the eigenvalues for the Fibonacci transform).&lt;/p&gt;
+
+&lt;p&gt;So theoretically we could use that in our implementation:&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;math&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;PHI&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;# golden ratio number
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PSI&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PHI&lt;/span&gt;            &lt;span class=&quot;c1&quot;&gt;# and its complement
+&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;round&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PHI&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PSI&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;However, for big values of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;n&lt;/code&gt; we still get an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;OverflowError: (..., &apos;Numerical result out of range&apos;)&lt;/code&gt;; in some languages instead of throwing an exception the program would return its representation of infinity.
+This happens because now we’re dealing with floating-point numbers, which are not big enough for our desired range of values.&lt;/p&gt;
+
+&lt;p&gt;Going back to the Fibonacci matrix, we can assume that for some \(k\) (notice that it is true when \(k=1\))&lt;/p&gt;
+
+\[\begin{bmatrix}1 &amp;amp; 1\\ 1 &amp;amp; 0\end{bmatrix}^k = \begin{bmatrix}F_{k+1} &amp;amp; F_k\\ F_k &amp;amp; F_{k-1}\end{bmatrix}\]
+
+&lt;p&gt;then&lt;/p&gt;
+
+\[\begin{bmatrix}1 &amp;amp; 1\\ 1 &amp;amp; 0\end{bmatrix}^k \begin{bmatrix}1 &amp;amp; 1\\ 1 &amp;amp; 0\end{bmatrix} = \begin{bmatrix}F_{k+1} &amp;amp; F_k\\ F_k &amp;amp; F_{k-1}\end{bmatrix} \begin{bmatrix}1 &amp;amp; 1\\ 1 &amp;amp; 0\end{bmatrix}\\
+\begin{bmatrix}1 &amp;amp; 1\\ 1 &amp;amp; 0\end{bmatrix}^{k+1} = \begin{bmatrix}F_{k+1} + F_k &amp;amp; F_k + F_{k-1}\\ F_{k+1} &amp;amp; F_k\end{bmatrix}\\
+\begin{bmatrix}1 &amp;amp; 1\\ 1 &amp;amp; 0\end{bmatrix}^{k+1} = \begin{bmatrix}F_{k+2} &amp;amp; F_{k+1}\\ F_{k+1} &amp;amp; F_k\end{bmatrix}\]
+
+&lt;p&gt;this means for all \(n \ge 1\)&lt;/p&gt;
+
+\[\begin{bmatrix}1 &amp;amp; 1\\ 1 &amp;amp; 0\end{bmatrix}^n = \begin{bmatrix}F_{n+1} &amp;amp; F_n\\ F_n &amp;amp; F_{n-1}\end{bmatrix}\]
+
+&lt;p&gt;At this point, we can square both sides:&lt;/p&gt;
+
+\[\begin{bmatrix}1 &amp;amp; 1\\ 1 &amp;amp; 0\end{bmatrix}^n \begin{bmatrix}1 &amp;amp; 1\\ 1 &amp;amp; 0\end{bmatrix}^n = \begin{bmatrix}F_{n+1} &amp;amp; F_n\\ F_n &amp;amp; F_{n-1}\end{bmatrix} \begin{bmatrix}F_{n+1} &amp;amp; F_n\\ F_n &amp;amp; F_{n-1}\end{bmatrix}\\
+\begin{bmatrix}1 &amp;amp; 1\\ 1 &amp;amp; 0\end{bmatrix}^{2n} = \begin{bmatrix}F_{n+1}^{2} + F_n^2 &amp;amp; F_n (F_{n+1} + F_{n-1})\\ F_n (F_{n+1} + F_{n-1}) &amp;amp; F_n^2 + F_{n-1}^{2}\end{bmatrix}\]
+
+&lt;p&gt;And since the general rule still applies, we have&lt;/p&gt;
+
+\[F_{2n} = F_n (F_{n+1} + F_{n-1}) = F_n (F_{n+1} + F_{n+1} - F_n) = F_n (2F_{n+1} - F_n)\\
+F_{2n+1} = F_{n+1}^{2} + F_n^2\]
+
+&lt;p&gt;This means we can compute Fibonacci numbers through a successive squaring method, thus achieving \(\Theta(\log_2 n)\) bigint arithmetic operations.
+Evidently, this method has the same asymptotic time complexity as exponentating the Fibonacci matrix, but it may save a few operations.
+The fast recursive procedure is given below in Haskell.
+In case you’ve noticed, space complexity – the call stack – has risen from constant to \(\Theta(\log_2 n)\), but since logarithmic growth is so slow, most of the time there is no need to worry about stack overflows.&lt;/p&gt;
+
+&lt;div class=&quot;language-haskell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;fib_&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;::&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Int&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;fib_&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;fib_&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fk&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fk1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fib_&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;div&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+             &lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt;        &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fk&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fk1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fk&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+             &lt;span class=&quot;n&quot;&gt;fn1&lt;/span&gt;       &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fk1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;^&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fk&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;^&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+         &lt;span class=&quot;kr&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mod&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
+            &lt;span class=&quot;kr&quot;&gt;then&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fn1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;kr&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fn1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fn1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;fib&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;::&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Int&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Integer&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;fib&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;where&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fib_&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Another way to see this is to think of the previously mentioned transformation \(T\) as a special case of \(T_{pq}(a, b) = (a (q + p) + bq, aq + bp)\) when \(p = 0, q = 1\).
+It is then always possible to find \(p&apos;, q&apos;\) such that \(T_{p&apos;q&apos;} = T_{pq}^2\): just let \(p&apos; = q^2 + p^2\) and \(q&apos; = q^2 + 2qp\).
+Let &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;n&lt;/code&gt; be the number of transformations that need to be applied.
+Then for each step, if &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;n&lt;/code&gt; is odd we simply apply the transformation and go to the next iteration; otherwise &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;n&lt;/code&gt; is even and we change &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;p&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;q&lt;/code&gt; such that only half the number of transformations is now needed.
+This is an exercise in Abelson &amp;amp; Sussman’s classic, &lt;a href=&quot;https://mitpress.mit.edu/sites/default/files/sicp/full-text/book/book-Z-H-11.html#footnote_Temp_70&quot;&gt;Structure and Interpretation
+of Computer Programs&lt;/a&gt; (a.k.a. “The Wizard Book”).&lt;/p&gt;
+
+&lt;div class=&quot;language-scheme highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;fib&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;iter&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;q&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;cond&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;[(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;even?&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+           &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;iter&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;q&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;q&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+                 &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;q&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;q&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;q&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+                 &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)]&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+           &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;iter&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;q&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                 &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;q&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;q&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+                 &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;q&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))])))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;memoization-and-streams&quot;&gt;Memoization and Streams&lt;/h2&gt;
+
+&lt;p&gt;Another common way to obtain Fibonacci numbers is to pre-compute them such that each input &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;n&lt;/code&gt; maps to a memory location where \(F_n\) is stored.
+\(F_n\) can thus be thought of as a vector being indexed at its nth position.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;fibs_&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fibs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)]&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# fibs is the generator
+&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;memo_fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fibs_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fibs_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fibs_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fibs_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fibs_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;fibs_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;append&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The Python code above allocates a chunk of memory and fills it sequentially with the Fibonacci sequence such that later accesses need no computation and could, theoretically, be made in \(\Theta(1)\) time.
+When the number is too far down the sequence and hasn’t been calculated yet, we start with the closest pair of Fibonacci numbers and continue to fill the vector until the desired number is reached.&lt;/p&gt;
+
+&lt;p&gt;This approach may end up taking too much space, so there’s still some optimization to be done.
+Another issue is that memory is updated dynamically, requiring eventual reallocations and other such expensive operations.&lt;/p&gt;
+
+&lt;p&gt;Using a language with better support for lambdas and first-class functions, we could turn this memoization / tabling technique into something a little more generic.
+In this case we use Guile’s hash-tables to map a procedure’s argument list to its cached results.&lt;/p&gt;
+
+&lt;div class=&quot;language-scheme highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;;; make a function that caches its past results&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;memoize&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;proc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;cache&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;make-table&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;delegate&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;hit&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;lookup&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;cache&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;or&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;hit&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;apply&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;proc&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+              &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;insert!&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;cache&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;args&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+              &lt;span class=&quot;nv&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))&lt;/span&gt;
+    &lt;span class=&quot;nv&quot;&gt;delegate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;;; GUILE specific&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;make-table&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;make-hash-table&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;lookup&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;hash-ref&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;insert!&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;hash-set!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;;; example&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;memo-fib&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;memoize&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;n&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;memo-fib&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;memo-fib&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))))))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This memoization process can be thought of as a data structure which contains past results and generates new ones on demand.
+The same thing happens with &lt;a href=&quot;https://en.wikipedia.org/wiki/Lazy_evaluation&quot;&gt;lazy&lt;/a&gt; lists, which are potentially infinite data structures also known as streams.
+Haskell, being a lazy programming language, has this behaviour by default:&lt;/p&gt;
+
+&lt;div class=&quot;language-haskell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;fibs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;::&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Integer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Integer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;fibs&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fibs&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;kr&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fib&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fibs&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;-- fib contains the entire sequence&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fib&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!!&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;47&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;-- Fn = fib !! n&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The snippet above shows a possibly infinite list named &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fib&lt;/code&gt; which contains the whole Fibonacci sequence.
+It is returned by the function &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fibs&lt;/code&gt; in constant time and each indexing operation on it sequentially computes Fibonacci numbers while storing past results in the beggining of the list.&lt;/p&gt;
+
+&lt;h2 id=&quot;negafibonacci&quot;&gt;Negafibonacci&lt;/h2&gt;
+
+&lt;p&gt;All of the techniques and algorithms shown so far consider the Fibonacci sequence to be indexed by natural numbers.
+Most implementations seen in the wild also make this assumption, sometimes throwing an error when negative integers are used, others just blatantly ignoring these inputs.&lt;/p&gt;
+
+&lt;p&gt;The sequence can be easily extended with the “Negafibonacci” numbers by following&lt;/p&gt;
+
+\[F_n = F_{n-1} + F_{n-2}\\
+F_{n-2} = F_n - F_{n-1}\]
+
+&lt;p&gt;which leads us to&lt;/p&gt;
+
+\[F_{-1} = F_{1} - F_{0} = 1 - 0 = 1\\
+F_{-2} = F_{0} - F_{-1} = 0 - 1 = -1\\
+F_{-3} = ... = 2\\
+F_{-4} = -3\\
+F_{-5} = 5\\
+...\]
+
+&lt;p&gt;It is then easy to notice that whenever \(n &amp;lt; 0\)&lt;/p&gt;
+
+&lt;p&gt;\(F(n) = F(-n)\) if \(n\) is odd, and&lt;/p&gt;
+
+&lt;p&gt;\(F(n) = -F(-n)\) if \(n\) is instead even.&lt;/p&gt;
+
+&lt;p&gt;Some may be tempted to write this in the mathematically equivalent form&lt;/p&gt;
+
+\[F(n &amp;lt; 0) = (-1)^{n-1} F(-n)\]
+
+&lt;p&gt;but I personally discourage doing this in actual code as it makes it much less evident what the property is and may lead to an expensive exponentiation process just to get the right sign when compared to a simple conditional:&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;abs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;and&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fn&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;tldr&quot;&gt;TL;DR&lt;/h2&gt;
+
+&lt;p&gt;If you came here to see a code snippet with a final, optimal algorithm for Fibonacci numbers, then I’m sorry to disappoint you.
+Instead, the conclusion of this overly long post is that there will always be many ways to compute something, each with its own tradeoffs.&lt;/p&gt;
+
+&lt;p&gt;In the end, though, I can say that:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Unless you’re benchmarking something, forget about the double-recursive procedure.&lt;/li&gt;
+  &lt;li&gt;The sequence grows exponentially, so bignums are a must.&lt;/li&gt;
+  &lt;li&gt;When Fibonacci numbers are only required sparsely, use some form of the fast transform to guarantee \(\Theta(\log_2 n)\) time and \(\Theta(1)\) space complexity.&lt;/li&gt;
+  &lt;li&gt;A generator is a very clean way to iterate through Fibonacci numbers sequentially.&lt;/li&gt;
+  &lt;li&gt;If the whole sequence – or perhaps some slice of it – is needed, streams are the way to go.&lt;/li&gt;
+  &lt;li&gt;Dynamic memoization and/or static tabling is the approach people usually suggest to optimize Fibonacci numbers, but the memory overhead is hardly ever worth it: consider using the fast transform instead.
+Of course, if a value can be statically optimized (during compilation, for instance, with C++’s &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;constexpr&lt;/code&gt;), then this is usually preferred.&lt;/li&gt;
+  &lt;li&gt;Translating math directly into code usually turns out terribly inefficient (see the double-recursive procedure), but using it smartly gives you very useful properties (see the FFT).&lt;/li&gt;
+  &lt;li&gt;Knowing different programming languages gives insight into useful techniques you wouldn’t normally consider.&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>Gabriel Baiocchi de Sant&apos;Anna</name></author><category term="tutorial" /><category term="algorithms" /><summary type="html">Includes recipes easy enough for beginners to follow and spicy enough to please veterans</summary></entry><entry><title type="html">On the computation of π</title><link href="/tutorial/pi/" rel="alternate" type="text/html" title="On the computation of π" /><published>2019-07-07T00:00:00-03:00</published><updated>2019-07-07T00:00:00-03:00</updated><id>/tutorial/pi</id><content type="html" xml:base="/tutorial/pi/">&lt;head&gt;
+  &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html;charset=utf-8&quot; /&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot; /&gt;
+  &lt;title&gt;On the computation of &amp;pi;&lt;/title&gt;
+  &lt;meta name=&quot;generator&quot; content=&quot;Org mode&quot; /&gt;
+  &lt;meta name=&quot;author&quot; content=&quot;Gabriel B. Sant&apos;Anna&quot; /&gt;
+  &lt;script type=&quot;text/x-mathjax-config&quot;&gt;
+    MathJax.Hub.Config({
+        displayAlign: &quot;center&quot;,
+        displayIndent: &quot;0em&quot;,
+
+        &quot;HTML-CSS&quot;: { scale: 100,
+                      linebreaks: { automatic: &quot;false&quot; },
+                      webFont: &quot;TeX&quot;},
+        SVG: {scale: 100,
+              linebreaks: { automatic: &quot;false&quot; },
+              font: &quot;TeX&quot;},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: &quot;AMS&quot;},
+               MultLineWidth: &quot;85%&quot;,
+               TagSide: &quot;right&quot;,
+               TagIndent: &quot;.8em&quot;}
+    });
+  &lt;/script&gt;
+  &lt;script type=&quot;text/javascript&quot;
+    src=&quot;https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML&quot;&gt;
+  &lt;/script&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+  &lt;div id=&quot;content&quot;&gt;
+
+    &lt;div id=&quot;outline-container-orga7b4068&quot; class=&quot;outline-2&quot;&gt;
+      &lt;h2 id=&quot;orga7b4068&quot;&gt;&lt;span class=&quot;section-number-2&quot;&gt;1&lt;/span&gt; Asking the math library&lt;/h2&gt;
+      &lt;div class=&quot;outline-text-2&quot; id=&quot;text-1&quot;&gt;
+        &lt;p&gt;My computer tells me that &amp;pi; is &lt;i&gt;approximatively&lt;/i&gt;&lt;/p&gt;
+
+        &lt;div class=&quot;org-src-container&quot;&gt;
+          &lt;pre class=&quot;src src-python&quot;&gt;&lt;span style=&quot;color: #F92672;&quot;&gt;from&lt;/span&gt; math &lt;span style=&quot;color: #F92672;&quot;&gt;import&lt;/span&gt; *pi&lt;/pre&gt;
+        &lt;/div&gt;
+
+        &lt;pre class=&quot;example&quot;&gt;3.141592653589793&lt;/pre&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+
+    &lt;div id=&quot;outline-container-orgeb0560f&quot; class=&quot;outline-2&quot;&gt;
+      &lt;h2 id=&quot;orgeb0560f&quot;&gt;&lt;span class=&quot;section-number-2&quot;&gt;2&lt;/span&gt; Buffon&apos;s needle&lt;/h2&gt;
+      &lt;div class=&quot;outline-text-2&quot; id=&quot;text-2&quot;&gt;
+        &lt;p&gt;
+          By the method of &lt;a href=&quot;http://www.cut-the-knot.org/fta/Buffon/buffon9.shtml&quot;&gt;Buffon&apos;s needle&lt;/a&gt; we
+          get the &lt;b&gt;approximation&lt;/b&gt;
+        &lt;/p&gt;
+
+        &lt;div class=&quot;org-src-container&quot;&gt;
+          &lt;pre class=&quot;src src-python&quot;&gt;&lt;span style=&quot;color: #F92672;&quot;&gt;import&lt;/span&gt; numpy &lt;span style=&quot;color: #F92672;&quot;&gt;as&lt;/span&gt; np
+
+&lt;span style=&quot;color: #FD971F;&quot;&gt;N&lt;/span&gt; = &lt;span style=&quot;color: #AE81FF;&quot;&gt;10000&lt;/span&gt;
+np.random.seed&lt;span style=&quot;color: #AE81FF;&quot;&gt;(&lt;/span&gt;seed=&lt;span style=&quot;color: #AE81FF;&quot;&gt;42&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;)&lt;/span&gt;
+
+&lt;span style=&quot;color: #FD971F;&quot;&gt;x&lt;/span&gt; = np.random.uniform&lt;span style=&quot;color: #AE81FF;&quot;&gt;(&lt;/span&gt;size=N, low=&lt;span style=&quot;color: #AE81FF;&quot;&gt;0&lt;/span&gt;, high=&lt;span style=&quot;color: #AE81FF;&quot;&gt;1&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;)&lt;/span&gt;
+&lt;span style=&quot;color: #FD971F;&quot;&gt;theta&lt;/span&gt; = np.random.uniform&lt;span style=&quot;color: #AE81FF;&quot;&gt;(&lt;/span&gt;size=N, low=&lt;span style=&quot;color: #AE81FF;&quot;&gt;0&lt;/span&gt;, high=pi/&lt;span style=&quot;color: #AE81FF;&quot;&gt;2&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;)&lt;/span&gt;
+
+&lt;span style=&quot;color: #FD971F;&quot;&gt;P&lt;/span&gt; = &lt;span style=&quot;color: #F92672;&quot;&gt;sum&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;(&lt;/span&gt;x + np.sin&lt;span style=&quot;color: #66D9EF;&quot;&gt;(&lt;/span&gt;theta&lt;span style=&quot;color: #66D9EF;&quot;&gt;)&lt;/span&gt; &amp;gt; &lt;span style=&quot;color: #AE81FF;&quot;&gt;1&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;)&lt;/span&gt; / N
+&lt;span style=&quot;color: #AE81FF;&quot;&gt;2&lt;/span&gt;/P
+&lt;/pre&gt;
+        &lt;/div&gt;
+
+        &lt;pre class=&quot;example&quot;&gt;3.128911138923655&lt;/pre&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+
+    &lt;div id=&quot;outline-container-orgb6fc6bd&quot; class=&quot;outline-2&quot;&gt;
+      &lt;h2 id=&quot;orgb6fc6bd&quot;&gt;&lt;span class=&quot;section-number-2&quot;&gt;3&lt;/span&gt; Using Monte Carlo experiments&lt;/h2&gt;
+      &lt;div class=&quot;outline-text-2&quot; id=&quot;text-3&quot;&gt;
+        &lt;p&gt;
+          A method that is easier to understand and does not make use of the \(\sin\) function is based on the fact that
+          if \(X \sim U(0,1)\) and \(Y \sim U(0,1)\), then \(P[X^2+Y^2 \leq 1] = \pi/4\) (see &lt;a
+            href=&quot;https://en.wikipedia.org/wiki/Monte_Carlo_method&quot;&gt;&quot;Monte Carlo method&quot; on Wikipedia&lt;/a&gt;).
+          The following code uses this approach:
+        &lt;/p&gt;
+
+        &lt;div class=&quot;org-src-container&quot;&gt;
+          &lt;pre class=&quot;src src-python&quot;&gt;&lt;span style=&quot;color: #F92672;&quot;&gt;import&lt;/span&gt; matplotlib.pyplot &lt;span style=&quot;color: #F92672;&quot;&gt;as&lt;/span&gt; plt
+
+np.random.seed&lt;span style=&quot;color: #AE81FF;&quot;&gt;(&lt;/span&gt;seed=&lt;span style=&quot;color: #AE81FF;&quot;&gt;42&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;)&lt;/span&gt;
+&lt;span style=&quot;color: #FD971F;&quot;&gt;x&lt;/span&gt; = np.random.uniform&lt;span style=&quot;color: #AE81FF;&quot;&gt;(&lt;/span&gt;size=N, low=&lt;span style=&quot;color: #AE81FF;&quot;&gt;0&lt;/span&gt;, high=&lt;span style=&quot;color: #AE81FF;&quot;&gt;1&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;)&lt;/span&gt;
+&lt;span style=&quot;color: #FD971F;&quot;&gt;y&lt;/span&gt; = np.random.uniform&lt;span style=&quot;color: #AE81FF;&quot;&gt;(&lt;/span&gt;size=N, low=&lt;span style=&quot;color: #AE81FF;&quot;&gt;0&lt;/span&gt;, high=&lt;span style=&quot;color: #AE81FF;&quot;&gt;1&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;)&lt;/span&gt;
+
+&lt;span style=&quot;color: #FD971F;&quot;&gt;inside&lt;/span&gt; = &lt;span style=&quot;color: #AE81FF;&quot;&gt;(&lt;/span&gt;x**&lt;span style=&quot;color: #AE81FF;&quot;&gt;2&lt;/span&gt; + y**&lt;span style=&quot;color: #AE81FF;&quot;&gt;2&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;)&lt;/span&gt; &amp;lt;= &lt;span style=&quot;color: #AE81FF;&quot;&gt;1&lt;/span&gt;
+&lt;span style=&quot;color: #FD971F;&quot;&gt;outside&lt;/span&gt; = np.logical_not&lt;span style=&quot;color: #AE81FF;&quot;&gt;(&lt;/span&gt;inside&lt;span style=&quot;color: #AE81FF;&quot;&gt;)&lt;/span&gt;
+
+&lt;span style=&quot;color: #FD971F;&quot;&gt;fig&lt;/span&gt;, &lt;span style=&quot;color: #FD971F;&quot;&gt;ax&lt;/span&gt; = plt.subplots&lt;span style=&quot;color: #AE81FF;&quot;&gt;(&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;1&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;)&lt;/span&gt;
+ax.scatter&lt;span style=&quot;color: #AE81FF;&quot;&gt;(&lt;/span&gt;x&lt;span style=&quot;color: #66D9EF;&quot;&gt;[&lt;/span&gt;inside&lt;span style=&quot;color: #66D9EF;&quot;&gt;]&lt;/span&gt;, y&lt;span style=&quot;color: #66D9EF;&quot;&gt;[&lt;/span&gt;inside&lt;span style=&quot;color: #66D9EF;&quot;&gt;]&lt;/span&gt;, c=&lt;span style=&quot;color: #E6DB74;&quot;&gt;&apos;b&apos;&lt;/span&gt;, alpha=&lt;span style=&quot;color: #AE81FF;&quot;&gt;0&lt;/span&gt;.&lt;span style=&quot;color: #AE81FF;&quot;&gt;2&lt;/span&gt;, edgecolor=&lt;span style=&quot;color: #AE81FF;&quot;&gt;None&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;)&lt;/span&gt;
+ax.scatter&lt;span style=&quot;color: #AE81FF;&quot;&gt;(&lt;/span&gt;x&lt;span style=&quot;color: #66D9EF;&quot;&gt;[&lt;/span&gt;outside&lt;span style=&quot;color: #66D9EF;&quot;&gt;]&lt;/span&gt;, y&lt;span style=&quot;color: #66D9EF;&quot;&gt;[&lt;/span&gt;outside&lt;span style=&quot;color: #66D9EF;&quot;&gt;]&lt;/span&gt;, c=&lt;span style=&quot;color: #E6DB74;&quot;&gt;&apos;r&apos;&lt;/span&gt;, alpha=&lt;span style=&quot;color: #AE81FF;&quot;&gt;0&lt;/span&gt;.&lt;span style=&quot;color: #AE81FF;&quot;&gt;2&lt;/span&gt;, edgecolor=&lt;span style=&quot;color: #AE81FF;&quot;&gt;None&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;)&lt;/span&gt;
+ax.set_aspect&lt;span style=&quot;color: #AE81FF;&quot;&gt;(&lt;/span&gt;&lt;span style=&quot;color: #E6DB74;&quot;&gt;&apos;equal&apos;&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;)&lt;/span&gt;
+
+plt.savefig&lt;span style=&quot;color: #AE81FF;&quot;&gt;(&lt;/span&gt;matplot_lib_filename&lt;span style=&quot;color: #AE81FF;&quot;&gt;)&lt;/span&gt;
+&lt;span style=&quot;color: #F92672;&quot;&gt;print&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;(&lt;/span&gt;matplot_lib_filename&lt;span style=&quot;color: #AE81FF;&quot;&gt;)&lt;/span&gt;
+&lt;/pre&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;figure&quot;&gt;
+          &lt;p&gt;&lt;img src=&quot;/assets/images/pi-square.png&quot; alt=&quot;/assets/images/pi-square.png&quot;/&gt;&lt;/p&gt;
+        &lt;/div&gt;
+
+        &lt;p&gt;
+          It is then straightforward to obtain an approximation to &amp;pi; by counting how many times, on
+          average, \(X^2 + Y^2 \le 1\):
+        &lt;/p&gt;
+
+        &lt;div class=&quot;org-src-container&quot;&gt;
+          &lt;pre class=&quot;src src-python&quot;&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;4&lt;/span&gt; * np.mean&lt;span style=&quot;color: #AE81FF;&quot;&gt;(&lt;/span&gt;inside&lt;span style=&quot;color: #AE81FF;&quot;&gt;)&lt;/span&gt;&lt;/pre&gt;
+        &lt;/div&gt;
+
+        &lt;pre class=&quot;example&quot;&gt;3.1556&lt;/pre&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+
+    &lt;div id=&quot;outline-container-orga44e510&quot; class=&quot;outline-2&quot;&gt;
+      &lt;h2 id=&quot;orga44e510&quot;&gt;&lt;span class=&quot;section-number-2&quot;&gt;4&lt;/span&gt; Through Wallis&apos; product&lt;/h2&gt;
+      &lt;div class=&quot;outline-text-2&quot; id=&quot;text-4&quot;&gt;
+        &lt;p&gt;
+          &lt;a href=&quot;https://en.wikipedia.org/wiki/Wallis_product&quot;&gt;John Wallis&apos; product&lt;/a&gt; for &amp;pi; states that the
+          infinite product below converges to \(\pi / 2\).
+          Check out the &lt;a href=&quot;https://www.youtube.com/watch?v=8GPy_UMV-08&quot;&gt;geometrical proof&lt;/a&gt;.
+        &lt;/p&gt;
+
+        &lt;div class=&quot;org-src-container&quot;&gt;
+          &lt;pre class=&quot;src src-python&quot;&gt;&lt;span style=&quot;color: #FD971F;&quot;&gt;prod&lt;/span&gt; = &lt;span style=&quot;color: #AE81FF;&quot;&gt;1&lt;/span&gt;
+&lt;span style=&quot;color: #F92672;&quot;&gt;for&lt;/span&gt; i &lt;span style=&quot;color: #F92672;&quot;&gt;in&lt;/span&gt; &lt;span style=&quot;color: #F92672;&quot;&gt;range&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;(&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;2&lt;/span&gt;, N&lt;span style=&quot;color: #AE81FF;&quot;&gt;)&lt;/span&gt;:
+    &lt;span style=&quot;color: #FD971F;&quot;&gt;prod&lt;/span&gt; *= i / &lt;span style=&quot;color: #AE81FF;&quot;&gt;(&lt;/span&gt;i-&lt;span style=&quot;color: #AE81FF;&quot;&gt;1&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;)&lt;/span&gt; &lt;span style=&quot;color: #F92672;&quot;&gt;if&lt;/span&gt; i % &lt;span style=&quot;color: #AE81FF;&quot;&gt;2&lt;/span&gt; == &lt;span style=&quot;color: #AE81FF;&quot;&gt;0&lt;/span&gt; &lt;span style=&quot;color: #F92672;&quot;&gt;else&lt;/span&gt; &lt;span style=&quot;color: #AE81FF;&quot;&gt;(&lt;/span&gt;i-&lt;span style=&quot;color: #AE81FF;&quot;&gt;1&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;)&lt;/span&gt; / i
+
+prod * &lt;span style=&quot;color: #AE81FF;&quot;&gt;2&lt;/span&gt;
+&lt;/pre&gt;
+        &lt;/div&gt;
+
+        &lt;pre class=&quot;example&quot;&gt;3.141435562175509&lt;/pre&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+
+    &lt;div id=&quot;outline-container-org3475054&quot; class=&quot;outline-2&quot;&gt;
+      &lt;h2 id=&quot;org3475054&quot;&gt;&lt;span class=&quot;section-number-2&quot;&gt;5&lt;/span&gt; As the root of a function&lt;/h2&gt;
+      &lt;div class=&quot;outline-text-2&quot; id=&quot;text-5&quot;&gt;
+        &lt;p&gt;
+          As we know, \(sin(\pi) = 0\), thus value for &amp;pi; can be found by approximating the root (one of them, that is) of
+          \(sin(x)\).
+          This can be done using &lt;a href=&quot;https://en.wikipedia.org/wiki/Newton&apos;s_method&quot;&gt;Newton&apos;s method&lt;/a&gt;, for
+          instace.
+        &lt;/p&gt;
+
+        &lt;div class=&quot;org-src-container&quot;&gt;
+          &lt;pre class=&quot;src src-python&quot;&gt;&lt;span style=&quot;color: #F92672;&quot;&gt;from&lt;/span&gt; scipy.optimize &lt;span style=&quot;color: #F92672;&quot;&gt;import&lt;/span&gt; fsolve
+&lt;span style=&quot;color: #FD971F;&quot;&gt;results&lt;/span&gt; = fsolve&lt;span style=&quot;color: #AE81FF;&quot;&gt;(&lt;/span&gt;sin, x0=&lt;span style=&quot;color: #AE81FF;&quot;&gt;3&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;)&lt;/span&gt;
+results&lt;span style=&quot;color: #AE81FF;&quot;&gt;[&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;0&lt;/span&gt;&lt;span style=&quot;color: #AE81FF;&quot;&gt;]&lt;/span&gt;
+&lt;/pre&gt;
+        &lt;/div&gt;
+
+        &lt;pre class=&quot;example&quot;&gt;3.141592653589793&lt;/pre&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+&lt;/body&gt;</content><author><name>Gabriel Baiocchi de Sant&apos;Anna</name></author><category term="tutorial" /><category term="numerical" /><summary type="html">How to calculate the mathematical constant through 5 different methods</summary></entry><entry><title type="html">How to install Quartus II on Linux</title><link href="/tutorial/quartus-linux/" rel="alternate" type="text/html" title="How to install Quartus II on Linux" /><published>2019-03-13T00:00:00-03:00</published><updated>2019-03-13T00:00:00-03:00</updated><id>/tutorial/quartus-linux</id><content type="html" xml:base="/tutorial/quartus-linux/">&lt;p&gt;Please note that this tutorial is intended for Debian-derived Linux distros such as Ubuntu, Mint, MX, etc.&lt;/p&gt;
+
+&lt;p&gt;Users running Arch-based distros should refer to the &lt;a href=&quot;https://wiki.archlinux.org/index.php/Altera_Design_Software&quot;&gt;Arch Wiki&lt;/a&gt; (in fact, arch users can automatically download, install, and get the Quartus toolkit to work on their computers by simply using one of the &lt;a href=&quot;https://aur.archlinux.org/packages/?O=0&amp;amp;K=quartus-free&quot;&gt;AUR’s packages&lt;/a&gt;).&lt;/p&gt;
+
+&lt;h2 id=&quot;1-download--install&quot;&gt;1) Download &amp;amp; Install&lt;/h2&gt;
+
+&lt;p&gt;Go to &lt;a href=&quot;https://www.intel.com/content/www/us/en/programmable/downloads/download-center.html&quot; class=&quot;btn&quot;&gt;Intel Download Center&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Select by Device&lt;/strong&gt; -&amp;gt; Choose Device Family -&amp;gt; Choose your Device&lt;/p&gt;
+
+&lt;p&gt;Click on the most recent &lt;strong&gt;Web Edition&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;Select the rigth OS and click on &lt;strong&gt;Individual Files&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;Download only what you need.&lt;/p&gt;
+
+&lt;p&gt;Give the downloaded script execution permission:&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;chmod&lt;/span&gt; +x QuartusSetup.run
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Run the installation script:&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;/path/to/script/QuartusSetup.run
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;2-add-path-dependencies&quot;&gt;2) Add PATH dependencies&lt;/h2&gt;
+
+&lt;p&gt;Create the following script file to be run at startup, one way to accomplish this is to append &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;source /path/to/script/quartus.sh&lt;/code&gt; to your shell configuration file.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;QUARTUS_64BIT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1                         &lt;span class=&quot;c&quot;&gt;# Remove this if running on 32 bit&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;ALTERA_ROOT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/Applications/altera&quot;&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# Change this to the path you&apos;ve installed Altera Quartus at&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;QUARTUS_ROOTDIR_OVERRIDE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$ALTERA_ROOT&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/quartus&quot;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;QSYS_ROOTDIR&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$QUARTUS_ROOTDIR_OVERRIDE&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/sopc_builder/bin&quot;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;QUARTUS_LIBRARY_PATHS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$QUARTUS_ROOTDIR_OVERRIDE&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/linux/:/lib/x86_64-linux-gnu/&quot;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;SOPC_KIT_NIOS2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$ALTERA_ROOT&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/nios2eds&quot;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;LD_LIBRARY_PATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$LD_LIBRARY_PATH&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$QUARTUS_LIBRARY_PATHS&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$PATH&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$ALTERA_ROOT&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/quartus/bin&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;3-install-32-bit-packages&quot;&gt;3) Install 32-bit packages&lt;/h2&gt;
+
+&lt;p&gt;A few 32-bit compatibility packages will probably need to be installed on 64-bit systems in order for some tools to work.&lt;/p&gt;
+
+&lt;p&gt;Try opening and using any tool directly fom the Quartus GUI. If it doesn’t work, run it from the terminal and there should be some complaint about a missing packge or library. Look up on what package you may find this library and install it.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;The eclipse-nios2 tool requires installing &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libgtk2.0-0:i386&lt;/code&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;It may also require starting it through the terminal with:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$SOPC_KIT_NIOS2&lt;/span&gt;/bin/eclipse-nios2 &lt;span class=&quot;nt&quot;&gt;-configuration&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;/.nios2-ide-6.1 &lt;span class=&quot;nv&quot;&gt;$WORKSPACE_ARGS&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$@&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Extra packages I needed on a MX Linux install included &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gcc-multilib&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;lib32ncurses5&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libx11-6&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libfreetype6&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libpng12&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libc6&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libxtst6&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;zlib1g&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libssl1.0.0&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libssl-dev&lt;/code&gt;; generally the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;:i386&lt;/code&gt; versions. You may also need Java 8 or greater.&lt;/p&gt;
+
+&lt;h2 id=&quot;4-usb-blaster-configuration&quot;&gt;4) USB-Blaster configuration&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;This part is based on &lt;a href=&quot;http://www.fpga-dev.com/altera-usb-blaster-with-ubuntu/&quot;&gt;a blog post from fpga-dev&lt;/a&gt; which can no longer be read.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;At first, connect the cable and make sure the USB device is recognized:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;dmesg | &lt;span class=&quot;nb&quot;&gt;tail&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;...]
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;16059.962298] usb 2-2: New USB device found, &lt;span class=&quot;nv&quot;&gt;idVendor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;09fb, &lt;span class=&quot;nv&quot;&gt;idProduct&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;6010
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;16059.962301] usb 2-2: New USB device strings: &lt;span class=&quot;nv&quot;&gt;Mfr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1, &lt;span class=&quot;nv&quot;&gt;Product&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;2, &lt;span class=&quot;nv&quot;&gt;SerialNumber&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;3
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;16059.962303] usb 2-2: Product: CV SoCKit
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;16059.962305] usb 2-2: Manufacturer: Altera
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;16059.962307] usb 2-2: SerialNumber: ARCVSC-123-457
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;lsusb | &lt;span class=&quot;nb&quot;&gt;grep &lt;/span&gt;Altera
+Bus 002 Device 007: ID 09fb:6010 Altera
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Take note of the Product ID listed - 6010 in the above example.&lt;/p&gt;
+
+&lt;p&gt;The Quartus software will use the Linux built-in usb_device drivers. By default, only root has access to these so we must make sure the user is allowed to access them as well.&lt;/p&gt;
+
+&lt;p&gt;jtagd, part of the Quartus tools, is a deamon that provides the interface between the Altera tool accessing the JTAG chain and the USB driver. If not already running, jtagd will be startetd automatically when the Quartus software or jtagconfig is run. You’ll usually run these as a user, which means jtagd will also run as a user. That is why edited permission for the usb_device is necessary.&lt;/p&gt;
+
+&lt;p&gt;Create a file /etc/udev/rules.d/51-usbblaster.rules, make sure it has read permissions for root, and fill it with this content:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;SUBSYSTEM==&quot;usb&quot;,\
+ENV{DEVTYPE}==&quot;usb_device&quot;,\
+ATTR{idVendor}==&quot;09fb&quot;,\
+ATTR{idProduct}==&quot;6010&quot;,\
+MODE=&quot;0666&quot;,\
+NAME=&quot;bus/usb/$env{BUSNUM}/$env{DEVNUM}&quot;,\
+RUN+=&quot;/bin/chmod 0666 %c&quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Edit the value for ATTR{idProduct} to match the Product ID determined before.&lt;/p&gt;
+
+&lt;p&gt;If you have more than one Product ID you want this to work for, simply repeat the above lines in the same file and use the other Product IDs for ATTR{idProduct}.&lt;/p&gt;
+
+&lt;p&gt;For the changes to take effect, reboot the machine.&lt;/p&gt;
+
+&lt;p&gt;Make sure jtagd has access to the list of devices:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo mkdir&lt;/span&gt; /etc/jtagd
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo cp&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$QUARTUS_ROOTDIR_OVERRIDE&lt;/span&gt;/linux64/pgm_parts.txt /etc/jtagd/jtagd.pgm_parts
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Also make sure this file has read access for the user.&lt;/p&gt;
+
+&lt;p&gt;The cable should now be recognized as a valid hardware by the Quartus tools. From Quartus, select Tools, Programmer, Hardware Setup… and then select the board from the drop-down list. Now, the Programmer, JTAG Chain Debugger and System console should all recognize and use the USB-Blaster device.&lt;/p&gt;</content><author><name>Gabriel Baiocchi de Sant&apos;Anna</name></author><category term="tutorial" /><category term="linux" /><category term="eda" /><summary type="html">Altera Quartus II installation tutorial for Debian-based Linux distros</summary></entry><entry><title type="html">A Brief History of Programming Languages</title><link href="/link/programming-language-history/" rel="alternate" type="text/html" title="A Brief History of Programming Languages" /><published>2009-05-07T00:00:00-03:00</published><updated>2010-09-04T00:00:00-03:00</updated><id>/link/programming-language-history</id><content type="html" xml:base="/link/programming-language-history/"></content><author><name>Gabriel Baiocchi de Sant&apos;Anna</name></author><category term="link" /><category term="humour" /><category term="programming-languages" /><summary type="html">[extern] Direct link to a much funnier blog than this one</summary></entry></feed>
